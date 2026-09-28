@@ -148,6 +148,10 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 /* タイトルをブロックの一番上に（画像の上にまたがる） */
 .item-head{grid-column:1 / -1;order:-1;display:flex;flex-direction:column;gap:.35em;min-width:0}
 .item.title-top{grid-template-rows:auto 1fr}
+/* 画像が上のとき: 横の頒布物に合わせて伸びた分は文字の段だけが受け持つ
+   → タイトルは画像のすぐ下（上ぞろえ）、値段はいちばん下（下ぞろえ）になる */
+.item.pos-top{grid-template-rows:auto 1fr}
+.item.pos-top.title-top{grid-template-rows:auto auto 1fr}
 .img img{display:block;width:100%;height:auto}
 /* 仮の画像: 本の縦横比の四角に文字。文字の大きさは四角の幅に合わせる(cqw) */
 .img:has(> .ph){container-type:inline-size}
