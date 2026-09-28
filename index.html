@@ -4,23 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>海星式お品書きメーカー</title>
-<meta name="description" content="同人イベントのA3お品書きを、ブラウザでかんたんに作れるツール。テンプレ7種・配色の切り替え・PDF/PNG/JPGで保存、CSSで自由にカスタムもできます。">
+<meta name="description" content="同人イベントのお品書き（A3・B4・A4・B5）を、ブラウザでかんたんに作れるツール。テンプレ8種・配色の切り替え・PDF/PNG/JPGで保存、CSSで自由にカスタムもできます。">
 <!-- SNSでリンクを貼ったときのカード（Twitter/X・Discord など） -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="海星式お品書きメーカー">
 <meta property="og:title" content="海星式お品書きメーカー">
-<meta property="og:description" content="同人イベントのA3お品書きを、ブラウザでかんたんに。テンプレ7種・配色の切り替え・PDF/PNG/JPGで保存、CSSで自由にカスタム。">
+<meta property="og:description" content="同人イベントのお品書き（A3・B4・A4・B5）を、ブラウザでかんたんに。テンプレ8種・配色の切り替え・PDF/PNG/JPGで保存、CSSで自由にカスタム。">
 <meta property="og:url" content="https://hitodeo0.github.io/oshinagaki-maker/">
 <meta property="og:image" content="https://hitodeo0.github.io/oshinagaki-maker/ogp.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="海星式お品書きメーカー：A3のお品書きを、ブラウザでかんたんに。">
+<meta property="og:image:alt" content="海星式お品書きメーカー：お品書きを、ブラウザでかんたんに。">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="海星式お品書きメーカー">
-<meta name="twitter:description" content="同人イベントのA3お品書きを、ブラウザでかんたんに。テンプレ7種・配色の切り替え・PDF/PNG/JPGで保存、CSSで自由にカスタム。">
+<meta name="twitter:description" content="同人イベントのお品書き（A3・B4・A4・B5）を、ブラウザでかんたんに。テンプレ8種・配色の切り替え・PDF/PNG/JPGで保存、CSSで自由にカスタム。">
 <meta name="twitter:image" content="https://hitodeo0.github.io/oshinagaki-maker/ogp.png">
-<meta name="twitter:image:alt" content="海星式お品書きメーカー：A3のお品書きを、ブラウザでかんたんに。">
+<meta name="twitter:image:alt" content="海星式お品書きメーカー：お品書きを、ブラウザでかんたんに。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=M+PLUS+1p:wght@400;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&family=Zen+Maru+Gothic:wght@500;700;900&family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@400;700;900&family=Shippori+Mincho+B1:wght@500;800&family=DotGothic16&family=Oswald:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -50,7 +50,7 @@
     <span class="sp"></span>
     <span class="status" id="status"></span>
     <button id="btnHelp">使い方</button>
-    <select id="imgExport" title="お品書きを画像として保存します（A3・300dpi）" style="background:#3a3531;color:#fff;border-color:#57504a">
+    <select id="imgExport" title="お品書きを画像として保存します（選んだ用紙サイズ・300dpi）" style="background:#3a3531;color:#fff;border-color:#57504a">
       <option value="">画像で保存…</option>
       <option value="png">PNG（きれい・重い）</option>
       <option value="jpg">JPG（軽い）</option>
@@ -125,9 +125,11 @@
         <p class="hint">切り替えると、見た目の設定がそのテーマの初期状態になります（用紙の向き・列数・余白の使い方はそのまま）。<br>
         それまでのデザインは、マイテーマに「作業中：テーマ名」で自動保存されます。</p>
         <div class="row">
-          <label class="f">用紙の向き<select data-k="orient"><option value="portrait">A3 縦</option><option value="landscape">A3 横</option></select></label>
+          <label class="f">用紙サイズ<select data-k="paper"><option value="A3">A3</option><option value="B4">B4</option><option value="A4">A4</option><option value="B5">B5</option></select></label>
+          <label class="f">向き<select data-k="orient"><option value="portrait">縦</option><option value="landscape">横</option></select></label>
           <label class="f">列数<select data-k="cols" data-num><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
         </div>
+        <p class="hint" style="margin-top:-4px">画面ではA3の大きさで作り、印刷・画像保存のときに選んだサイズに縮めます。小さい用紙では文字も小さくなるので、「全体の文字サイズ」で調整してください。</p>
         <label class="f">縦に余った余白の使い方<select data-k="vfill">
           <option value="start">上に詰める（下に余白が残る）</option>
           <option value="evenly">均等に配置（ブロックの上下に同じだけ余白）</option>
@@ -380,7 +382,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.2.0（2026/09/29 更新）</span>
+      <span class="ver">v1.3.0（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>

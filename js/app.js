@@ -35,7 +35,7 @@ const newItem = (o = {}) => ({ id: uid(), type:'item', cls:'', text:'', title:''
 
 function defaultState() {
   return {
-    v: 1, theme: 'blank', orient: 'portrait', cols: 2, colRatio: '', vfill: 'start', scale: 1.25, hs: 0.9, gap: 1,   /* A3に貼って離れて読むので、文字は大きめが初期値 */
+    v: 1, theme: 'blank', paper: 'A3', orient: 'portrait', cols: 2, colRatio: '', vfill: 'start', scale: 1.25, hs: 0.9, gap: 1,   /* A3に貼って離れて読むので、文字は大きめが初期値 */
     headAlign: 'none', circleFit: false, circleSX: 100,
     imgGap: 6, stampTilt: -8, stampSize: 1,   // 画像と文字の間(mm)・重ねた見出し（スタンプ）の傾き(度)・大きさ(倍)
     colLine: { on:false, width:0.4, role:'ink', inner:true },   // 列の間の区切り線（太さmm・色はデザインの色の役割・区画の中にも引くか）
@@ -230,6 +230,12 @@ function spaceHTML(v) {
   return m ? `<span class="sh-space-pre">${esc(m[1])}</span>${esc(m[2])}${esc(m[3])}` : esc(v);
 }
 
+// A3 に対する縮小率。B判は縦横比がほんの少し違うので、はみ出さない方に合わせる（わずかに余白が出るのを防ぐため少しだけ小さく）
+function paperScale() {
+  const [, w, h] = PAPERS[state.paper] || PAPERS.A3;
+  return state.paper === 'A3' || !PAPERS[state.paper] ? 1 : Math.min(w / 297, h / 420) * 0.999;
+}
+
 function render() {
   const s = state, i = s.info, sh = $('#sheet');
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
@@ -260,7 +266,9 @@ function render() {
     ${i.headline ? `<div class="headline">${esc(i.headline)}</div>` : ''}
     <main class="items vfill-${s.vfill || 'start'}">${blocksHTML()}</main>
     ${i.notes ? `<footer class="notes">${esc(i.notes)}</footer>` : ''}`;
-  $('#pageCss').textContent = `@page{size:A3 ${s.orient};margin:0}`;
+  // 印刷: 用紙の大きさを mm で指定し、A3 で作った用紙をその大きさに縮める
+  const [, pw, ph] = PAPERS[s.paper] || PAPERS.A3, land = s.orient === 'landscape', k = paperScale();
+  $('#pageCss').textContent = `@page{size:${land ? ph : pw}mm ${land ? pw : ph}mm;margin:0}` + (k < 1 ? `@media print{.scaler>.sheet{zoom:${k}}}` : '');
   $('#userCss').textContent = s.css;
   $$('[data-show]').forEach(el => { const v = +getPath(s, el.dataset.show); el.textContent = Math.abs(v) >= 10 || Number.isInteger(v) && el.dataset.show === 'stampTilt' ? Math.round(v) : v.toFixed(2).replace(/0$/, ''); });
   // 影の欄: オフ・テーマのままのときは薄く表示
@@ -1265,7 +1273,7 @@ async function buildFontEmbedCss(node) {
   return parts.filter(Boolean).join('\n');
 }
 
-// 画像で保存（PNG / JPG）。A3 を 300dpi（3508×4961px、横向きなら縦横が逆）で書き出す
+// 画像で保存（PNG / JPG）。選んだ用紙サイズを 300dpi で書き出す（A3 なら 3508×4961px、横向きなら縦横が逆）
 async function exportImage(type) {
   if (!window.htmlToImage) { alert('画像を作る部品を読み込めませんでした。インターネットにつながっているか確認してください。'); return; }
   const sh = $('#sheet');
@@ -1278,7 +1286,7 @@ async function exportImage(type) {
     try { fontCss = await buildFontEmbedCss(sh); } catch (e) { console.warn(e); }
     fontCss += state.fileFonts.map(f => `@font-face{font-family:'${f.family.replace(/'/g, "\\'")}';src:url(${f.data});font-weight:100 900}`).join('\n');
     const opts = {
-      pixelRatio: 300 / 96, fontEmbedCSS: fontCss,
+      pixelRatio: 300 / 96 * paperScale(), fontEmbedCSS: fontCss,
       width: sh.offsetWidth, height: sh.offsetHeight,
       // プレビュー用の縮小・影を外して、用紙そのままの大きさで描く。
       // position は relative のまま（static にすると、背景の模様・枠などの重ねたレイヤーの位置の基準がなくなって消える）
