@@ -1161,7 +1161,13 @@ function themeCssText(key) {
   try { list = main.cssRules; } catch (e) { return ''; }   // file:// で開くとブラウザが読ませてくれないことがある
   const rules = [...list].filter(r => r instanceof CSSStyleRule);
   // 「a: b; c: d;」を1行1指定に整形
-  const pretty = (sel, style) => `${sel} {\n${style.cssText.split(/;\s*(?![^(]*\))/).map(s => s.trim()).filter(Boolean).map(s => '  ' + s + ';').join('\n')}\n}`;
+  // 指定の上に「どこの見た目か」の1行コメントをつける（カンマ区切りは「・」でつなぐ）
+  const note = sel => {
+    const parts = sel.split(/,\s*(?![^(]*\))/).map(p => p.replace(/\.theme-\w+|\.sheet|:where\([^)]*\)/g, '').trim());
+    const found = [...new Set(parts.map(p => EXPORT_NOTES[p]).filter(Boolean))];
+    return found.length ? `/* ${found.join('・')} */\n` : '';
+  };
+  const pretty = (sel, style) => `${note(sel)}${sel} {\n${style.cssText.split(/;\s*(?![^(]*\))/).map(s => s.trim()).filter(Boolean).map(s => '  ' + s + ';').join('\n')}\n}`;
   // 白紙テーマの :where(.theme-blank) は、書き出すときは .sheet に置き換える
   const rename = sel => sel.replace(/:where\(\.theme-blank\)/g, '.sheet');
   const common = COMMON_EXPORT.map(sel => rules.find(r => r.selectorText === sel)).filter(Boolean)

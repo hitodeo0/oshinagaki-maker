@@ -273,6 +273,36 @@ const CLASS_REF = [
 ];
 // 全テーマ共通の指定のうち、よく編集するものだけ（セレクタが完全一致するルールを書き出す）
 const COMMON_EXPORT = ['.title', '.spec', '.cp', '.desc', '.note', '.price', '.price .unit', '.badge', '.badge.new', '.badge.r18', '.grp-badge', '.grp-sub'];
+// テーマのCSSを書き出すとき、各指定の上につける1行コメント（.sheet / .theme-xxx を除いたセレクタで引く）
+const EXPORT_NOTES = {
+  '': '用紙全体（背景色・文字色・余白など）',
+  '.sh': 'ヘッダー全体（日付〜サークル名の並び、下の線など）',
+  '.sh-box': '日付・イベント名・スペースの入れ物',
+  '.sh-date': '日付',
+  '.sh-event': 'イベント名',
+  '.sh-space': 'スペース番号',
+  '.sh-circle': 'サークル名',
+  '.headline': 'キャッチ（全部新刊!! など）',
+  '> .deco': 'テーマの飾り（背景に重なる模様・線など）',
+  '.grp-auto': '区画の見出しの色（見出しの色を「テーマの色」にしたとき。--grp-bg が塗り、--grp-fg が文字色）',
+  '.grp-badge': '区画の見出し（新刊・既刊など）',
+  '.grp-sub': '区画のサブ文字（残部少！など）',
+  '.blk-hr': '区切り線ブロック',
+  '.img :is(img, .ph)': '頒布物の画像と仮画像（表紙まだ）',
+  '.info-main': '頒布物の文字部分の入れ物（タイトル〜説明）',
+  '.title': '頒布物のタイトル',
+  '.spec': '詳細（判型・ページ数）',
+  '.cp': 'カップリング',
+  '.desc': '説明文',
+  '.note': '注意書き（小さい文字）',
+  '.price': '値段',
+  '.price .unit': '値段の「円」',
+  '.price::before': '値段の前につく飾り',
+  '.price.text': '値段欄に「無料配布」など文字を書いたとき',
+  '.badge': '頒布物のバッジ（新刊・R-18 などの小さい札）',
+  '.badge.new': '「新刊」バッジ',
+  '.badge.r18': '「R-18」バッジ',
+};
 // 使い方の流れ。tab: 開くエディターのタブ / hl: 「画面で見る」で光らせる場所 / shot: guide フォルダに置けば表示されるスクショ
 const GUIDE_STEPS = [
   { title: '基本情報を入力する', tab: 'info', hl: '[data-pane="info"]', shot: 'guide/step1.png', body: `
