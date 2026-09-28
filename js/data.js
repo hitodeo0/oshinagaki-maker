@@ -9,6 +9,8 @@ const THEMES = {
             look: { hs: 0.85 } },
   band:   { name: '格子', desc: 'ひし形格子の背景＋上に色の帯', colors: { bg:'#e3e0df', paper:'#6f6364', ink:'#5e5354', accent:'#d7262f', sub:'#c9c2c1' }, fonts: { head:'Zen Maru Gothic', body:'Zen Maru Gothic', num:'Zen Maru Gothic' },
             look: { hs: 0.9, pattern: { type:'diamonddot', color:'#c9c2c1', size:26, weight:0.5, opacity:1 } } },
+  duo:    { name: 'ツートン', desc: '2色の帯ヘッダー。左の色ブロックに大きなスペース番号', colors: { bg:'#eceee1', paper:'#555c6c', ink:'#555c6c', accent:'#c0392b', sub:'#9ec4c3' }, fonts: { head:'M PLUS 1p', body:'M PLUS 1p', num:'Oswald' },
+            look: { hs: 0.9 } },
   frame:  { name: '額縁', desc: '二重の枠＋大きなスペース番号',                 colors: { bg:'#7ea2b7', paper:'#ece6d8', ink:'#1f2440', accent:'#d23a3a', sub:'#9dbbcc' }, fonts: { head:'Zen Kaku Gothic New', body:'Zen Kaku Gothic New', num:'Noto Sans JP' },
             look: { scale: 1.15, hs: 0.7 } },
   pop:    { name: 'ストライプ', desc: '斜めストライプの背景＋角丸カード',  colors: { bg:'#f39321', paper:'#e8e9ea', ink:'#222222', accent:'#d7262f', sub:'#d9601f' }, fonts: { head:'Dela Gothic One', body:'M PLUS Rounded 1c', num:'Zen Kaku Gothic New' },
@@ -32,6 +34,10 @@ const PALETTES = [
   { name: 'クリーム×ブルー',   colors: { bg:'#f7f3ea', paper:'#1136e8', ink:'#14163a', accent:'#ea5230', sub:'#fff200' } },
   { name: 'ミント',             colors: { bg:'#dff3ea', paper:'#2f7d6d', ink:'#1f3d36', accent:'#e0503a', sub:'#a9dccb' } },
   { name: 'モノクロ',           colors: { bg:'#ffffff', paper:'#111111', ink:'#111111', accent:'#d7262f', sub:'#cccccc' } },
+  { name: 'レモン×スモーキーブルー', colors: { bg:'#ece867', paper:'#7fa5b8', ink:'#33424a', accent:'#d7262f', sub:'#7fa5b8' } },
+  { name: 'ブルーグレー×ピンク', colors: { bg:'#d5dde4', paper:'#ffffff', ink:'#29313a', accent:'#e5336c', sub:'#b5c2cd' } },
+  { name: '生成り×墨×えんじ',  colors: { bg:'#faf7ef', paper:'#3d3f50', ink:'#3d3f50', accent:'#ad2a2c', sub:'#dcd7ca' } },
+  { name: 'コバルト×グレー',    colors: { bg:'#dcddd5', paper:'#0c2c93', ink:'#0c2c93', accent:'#e3262d', sub:'#aab6d6' } },
 ];
 // 背景パターン: [表示名, おすすめの大きさmm, 太さmm]
 const PATTERNS = {
@@ -47,6 +53,7 @@ const PATTERNS = {
   check:      ['市松', 20, 1],
   gingham:    ['ギンガムチェック', 16, 1],
   burst:      ['集中線（放射）', 20, 1],
+  cross:      ['×印を散らす', 45, 0.6],
 };
 const FONTS = ['Noto Sans JP','Zen Kaku Gothic New','M PLUS 1p','M PLUS Rounded 1c','Zen Maru Gothic','Dela Gothic One','Zen Old Mincho','Shippori Mincho B1','DotGothic16','Oswald','Bebas Neue'];
 // 仮の画像の縦横比: キー → [表示名, aspect-ratio]
@@ -118,13 +125,22 @@ const SNIPPETS = {
 .sheet .grp[data-label="新刊"] { font-size: 1.3em; }`,
     '「既刊」区画の中を小さめに': `.sheet .grp[data-label="既刊"] { font-size: .85em; }`,
     '区画の見出しを大きく': `.sheet .grp-badge { font-size: 3em; }`,
+    '丸い見出し・スタンプの文字の上に小さく N・E・W': `/* 見出しの形（スタンプの形）が「正円」のとき。内側の線を「点線」にすると合います */
+.sheet .grp-shape-circle .grp-badge::before { content: "N・E・W"; display: block; font-size: .28em; letter-spacing: .15em; }`,
     '区画のサブ文字（残部少！など）を大きく': `.sheet .grp-sub { font-size: 2.4em; }`,
+    '区画の見出しに蛍光ペン線（見出しの形を「文字だけ」に）': `.sheet .grp-shape-none .grp-badge { background: linear-gradient(transparent 62%, var(--c-sub) 62%); padding: 0 .2em; }`,
+    '「既刊」区画を色の面にする': `.sheet .grp[data-label="既刊"] { background: var(--c-sub); padding: 6mm; }`,
   },
   'ヘッダー': {
     'サークル名だけ大きく': `.sheet .sh-circle { font-size: 4em; } /* ロゴ画像なら .sheet .sh-circle img { height: 30mm; } */`,
     'ヘッダーを帯にする': `.sheet .sh { background: var(--c-paper); margin: -15mm -15mm 10mm; padding: 8mm 15mm; border: 0; }`,
     'ヘッダー下の線を消す': `.sheet .sh { border-bottom: 0; }`,
     'スペース番号を白抜き文字に': `.sheet .sh-space { color: transparent; -webkit-text-stroke: .6mm var(--c-ink); }`,
+    'スペースの前半（「東7 B63b」の「東7」）だけ小さく': `/* 基本情報のスペースに、空白で区切って「東7 B63b」のように入れる */
+.sheet .sh-space-pre { font-size: .55em; }`,
+    'サークル名を袋文字（フチどり）に': `/* フチの太さは 2mm を変える（実際に見えるのは半分） */
+.sheet .sh-circle { color: #fff; -webkit-text-stroke: 2mm var(--c-ink); paint-order: stroke fill; }`,
+    'サークル名をフチだけの文字に': `.sheet .sh-circle { color: transparent; -webkit-text-stroke: .5mm currentColor; }`,
   },
   '頒布物：大きさ（新刊・big など）': {
     'クラス名 big の頒布物を全体的に大きく': `/* 頒布物のクラス名欄に big と書く。数字を変えると倍率が変わる */
@@ -145,6 +161,13 @@ const SNIPPETS = {
     'タイトルに下線': `.sheet .title { border-bottom: .6mm solid currentColor; padding-bottom: .1em; }`,
     'タイトルを右寄せに（一番上に置いたとき）': `.sheet .item-head { text-align: right; align-items: flex-end; }`,
     '説明文を細字に': `.sheet .desc { font-weight: 400; }`,
+    'タイトルの前に画像を指す矢印（◀ ▶）': `.sheet .pos-left .title::before { content: "◀"; margin-right: .15em; }
+.sheet .pos-right .title::before { content: "▶"; margin-right: .15em; }`,
+    'カップリングの前に ❏': `.sheet .cp::before { content: "❏ "; }`,
+    '注意書きを細い枠で囲む（ライセンス表記など）': `.sheet .note { border: .3mm solid currentColor; padding: .6em .8em; }`,
+    'タイトル〜説明を白い箱に': `.sheet .info-main { background: #fff; padding: .5em .7em; }`,
+    '文字に白フチ（模様や画像の上でも読みやすく）': `/* フチの太さは .7mm を変える */
+.sheet :is(.sh, .title, .price, .grp-badge) { -webkit-text-stroke: .7mm #fff; paint-order: stroke fill; }`,
   },
   '頒布物：価格': {
     '価格を詳細のすぐ下に（下揃えにしない）': `.sheet .price { margin-top: 0; }`,
@@ -213,7 +236,7 @@ const VALUE_HINTS = {
 const CLASS_REF = [
   ['用紙・背景', [
     ['.sheet', '用紙全体（ここに書くと全体に反映）'],
-    ['.theme-blank', 'テーマごとの指定（.theme-grid / .theme-pop / .theme-frame / .theme-report）'],
+    ['.theme-blank', 'テーマごとの指定（.theme-grid / .theme-duo / .theme-pop / .theme-frame / .theme-report など）'],
     ['.pattern', '背景パターン（模様ごとに .p-grid / .p-dots / .p-diamond など）'],
     ['.frame', '縁取り・枠'],
     ['.bgimg', '背景画像（変数 --bgimg で他の場所にも使える）'],
@@ -221,7 +244,7 @@ const CLASS_REF = [
   ]],
   ['並び・区画', [
     ['.items', '一覧全体（grid）'],
-    ['.grp', '区画（形 .grp-shape-rect / -round / -circle / -none、線 .grp-ring-single / -double、ギザギザ .grp-jag、位置 .grp-pos-overlay、線 .grp-line-top など）'],
+    ['.grp', '区画（形 .grp-shape-rect / -round / -circle / -none、線 .grp-ring-single / -double、ギザギザ .grp-jag、位置 .grp-pos-overlay / .grp-pos-side、線 .grp-line-top など）'],
     ['.grp[data-label="新刊"]', '見出しが「新刊」の区画だけ'],
     ['.grp-badge', '区画の見出し'],
     ['.grp-sub', '区画のサブ文字（残部少！など）'],
@@ -237,6 +260,7 @@ const CLASS_REF = [
     ['.sh-date', '日付'],
     ['.sh-event', 'イベント名'],
     ['.sh-space', 'スペース'],
+    ['.sh-space-pre', 'スペースの前半（「東7 B63b」のように空白で区切ったときの「東7」）'],
     ['.sh-circle', 'サークル名'],
     ['.sh-circle img', 'サークルロゴ画像'],
     ['.sh-box', '日付・イベント名・スペースの入れ物'],
@@ -358,7 +382,7 @@ const FAQ = [
     ['区画の「新刊」見出しの形・位置・大きさを変えたい', `
       <ul>
         <li>形：区画の設定の「見出しの形」「内側の線」「ギザギザ」</li>
-        <li>位置：区画の設定の「見出しの位置」（区画の上・区画の左上／右上・最初の画像の四隅）</li>
+        <li>位置：区画の設定の「見出しの位置」（区画の上・区画の左上／右上・最初の画像の四隅・区画の左右に縦書き）</li>
         <li>大きさと傾き：デザインタブの「スタンプの大きさ」「重ねた見出し（スタンプ）の傾き」（見出しを重ねたとき）</li>
       </ul>`],
     ['区画の見出しだけCSSで変えたい', `

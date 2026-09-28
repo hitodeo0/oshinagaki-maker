@@ -224,6 +224,12 @@ function depOk(expr, get) {
 }
 const applyDeps = (root, get) => root && root.querySelectorAll('[data-dep]').forEach(el => el.classList.toggle('dep-off', !depOk(el.dataset.dep, get)));
 
+// 「東7 B63b」のように空白で区切ったスペースは、最初の部分を .sh-space-pre で包む（CSSでそこだけ小さくできる）
+function spaceHTML(v) {
+  const m = v.match(/^(\S+)([ 　]+)([\s\S]+)$/);
+  return m ? `<span class="sh-space-pre">${esc(m[1])}</span>${esc(m[2])}${esc(m[3])}` : esc(v);
+}
+
 function render() {
   const s = state, i = s.info, sh = $('#sheet');
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
@@ -250,7 +256,7 @@ function render() {
   const pattern = p.type !== 'none' ? `<div class="pattern p-${p.type}"></div>` : '';
   const frame = hasFrame ? `<div class="frame f-${fr.type}"></div>` : '';
   sh.innerHTML = `${pattern}${s.bg.layer === 'back' ? bgLayer + deco + frame : deco + frame + bgLayer}
-    <header class="sh"><div class="sh-box">${f('sh-date', i.date)}${f('sh-event', i.event)}${f('sh-space', i.space)}</div>${i.logo ? `<div class="sh-circle"><img src="${urlFor(i.logo)}" alt="${esc(i.circle)}"></div>` : i.circle ? `<div class="sh-circle"><span class="sh-circle-t">${esc(i.circle)}</span></div>` : ''}</header>
+    <header class="sh"><div class="sh-box">${f('sh-date', i.date)}${f('sh-event', i.event)}${i.space ? `<div class="sh-space">${spaceHTML(i.space)}</div>` : ''}</div>${i.logo ? `<div class="sh-circle"><img src="${urlFor(i.logo)}" alt="${esc(i.circle)}"></div>` : i.circle ? `<div class="sh-circle"><span class="sh-circle-t">${esc(i.circle)}</span></div>` : ''}</header>
     ${i.headline ? `<div class="headline">${esc(i.headline)}</div>` : ''}
     <main class="items vfill-${s.vfill || 'start'}">${blocksHTML()}</main>
     ${i.notes ? `<footer class="notes">${esc(i.notes)}</footer>` : ''}`;
@@ -721,11 +727,11 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
       </div>
       <div class="row">
         <label class="f">見出しの形<select data-ik="badgeShape">${opts([['none','文字だけ'],['rect','長方形'],['round','角丸'],['circle','正円']], grpShape(it).shape)}</select></label>
-        <label class="f" data-dep="badgeShape!=none">内側の線<select data-ik="badgeRing">${opts([['none','なし'],['single','1本'],['double','2本']], grpShape(it).ring)}</select></label>
+        <label class="f" data-dep="badgeShape!=none">内側の線<select data-ik="badgeRing">${opts([['none','なし'],['single','1本'],['double','2本'],['dotted','点線']], grpShape(it).ring)}</select></label>
         <label class="chk" style="flex:.7" data-dep="badgeShape!=none"><input type="checkbox" data-ik="badgeJag"${grpShape(it).jag ? ' checked' : ''}>ギザギザ</label>
       </div>
       <div class="row">
-        <label class="f">見出しの位置<select data-ik="badgePos">${opts([['top','区画の上'],['overlay','区画の左上に重ねる'],['overlay-r','区画の右上に重ねる'],['img-tl','最初の画像の左上'],['img-tr','最初の画像の右上'],['img-bl','最初の画像の左下'],['img-br','最初の画像の右下']], it.badgePos)}</select></label>
+        <label class="f">見出しの位置<select data-ik="badgePos">${opts([['top','区画の上'],['overlay','区画の左上に重ねる'],['overlay-r','区画の右上に重ねる'],['img-tl','最初の画像の左上'],['img-tr','最初の画像の右上'],['img-bl','最初の画像の左下'],['img-br','最初の画像の右下'],['side','区画の左に縦書き（線つき）'],['side-r','区画の右に縦書き（線つき）']], it.badgePos)}</select></label>
       </div>
       <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-ik="badgeAuto"${it.badgeAuto ? ' checked' : ''}>見出しの色をテーマの色に合わせる</label>
       <div class="row"${it.badgeAuto ? ' style="opacity:.4;pointer-events:none"' : ''}>
@@ -767,7 +773,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
       </div>
       ${it.badgeMode === 'stamp' ? `<div class="row" data-dep="badge1">
         <label class="f">スタンプの形<select data-ik="stampShape">${opts([['none','文字だけ'],['rect','長方形'],['round','角丸'],['circle','正円']], it.stampShape || 'circle')}</select></label>
-        <label class="f" data-dep="stampShape!=none">内側の線<select data-ik="stampRing">${opts([['none','なし'],['single','1本'],['double','2本']], it.stampRing || 'single')}</select></label>
+        <label class="f" data-dep="stampShape!=none">内側の線<select data-ik="stampRing">${opts([['none','なし'],['single','1本'],['double','2本'],['dotted','点線']], it.stampRing || 'single')}</select></label>
         <label class="chk" style="flex:.7" data-dep="stampShape!=none"><input type="checkbox" data-ik="stampJag"${it.stampJag ? ' checked' : ''}>ギザギザ</label>
       </div>
       <p class="hint" style="margin-top:-4px">大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>` : ''}

@@ -112,13 +112,18 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .pattern.p-dots{background-image:radial-gradient(circle,var(--c) var(--w),transparent calc(var(--w) + .15mm));background-size:var(--s) var(--s);background-position:center}
 .pattern.p-dots2{background-image:radial-gradient(circle,var(--c) var(--w),transparent calc(var(--w) + .15mm)),radial-gradient(circle,var(--c) var(--w),transparent calc(var(--w) + .15mm));background-size:var(--s) var(--s);background-position:0 0,calc(var(--s) / 2) calc(var(--s) / 2)}
 /* ひし形: 1マス(s×s)に×を描いて敷き詰める → 線と交点ドットが必ず揃う */
-.pattern.p-diamond,.pattern.p-diamonddot{
+.pattern.p-diamond,.pattern.p-diamonddot,.pattern.p-cross{
   --x1:linear-gradient(45deg,transparent calc(50% - var(--w) / 2),var(--c) 0 calc(50% + var(--w) / 2),transparent 0);
   --x2:linear-gradient(-45deg,transparent calc(50% - var(--w) / 2),var(--c) 0 calc(50% + var(--w) / 2),transparent 0);
   --dot:radial-gradient(circle,var(--c) calc(var(--w) * 3),transparent calc(var(--w) * 3 + .15mm));
   background-size:var(--s) var(--s)}
 .pattern.p-diamond{background-image:var(--x1),var(--x2)}
 .pattern.p-diamonddot{background-image:var(--dot),var(--dot),var(--x1),var(--x2);background-position:0 0,calc(var(--s) / 2) calc(var(--s) / 2),0 0,0 0}
+/* ×印: ひし形の線(マスの対角線)を、マスの中心の小さな円の中だけ見せる */
+.pattern.p-cross{background-image:var(--x1),var(--x2);
+  --r:calc(var(--s) * .06 + var(--w) * 2);
+  -webkit-mask:radial-gradient(circle,#000 var(--r),transparent calc(var(--r) + .1mm)) 0 0 / var(--s) var(--s);
+          mask:radial-gradient(circle,#000 var(--r),transparent calc(var(--r) + .1mm)) 0 0 / var(--s) var(--s)}
 .pattern.p-diag{background-image:repeating-linear-gradient(-45deg,var(--c) 0 var(--w),transparent var(--w) var(--s))}
 .pattern.p-hstripe{background-image:repeating-linear-gradient(0deg,var(--c) 0 var(--w),transparent var(--w) var(--s))}
 .pattern.p-vstripe{background-image:repeating-linear-gradient(90deg,var(--c) 0 var(--w),transparent var(--w) var(--s))}
@@ -210,6 +215,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .grp-shape-circle .grp-badge{border-radius:50%;aspect-ratio:1;min-width:2.9em;display:inline-grid;place-items:center;padding:.3em;font-size:1.6em}
 /* 線（見出しの内側に、文字色の線を1本・2本） */
 .grp-ring-single .grp-badge{box-shadow:inset 0 0 0 .1em var(--grp-bg),inset 0 0 0 .16em var(--grp-fg)}
+.grp-ring-dotted .grp-badge{outline:.09em dotted var(--grp-fg);outline-offset:-.32em}
 .grp-ring-double .grp-badge{box-shadow:inset 0 0 0 .1em var(--grp-bg),inset 0 0 0 .16em var(--grp-fg),inset 0 0 0 .24em var(--grp-bg),inset 0 0 0 .3em var(--grp-fg)}
 /* ギザギザ（形の外周をギザギザに切り抜く） */
 .grp-jag .grp-badge{clip-path:var(--burst);padding:.9em 1em}
@@ -235,6 +241,14 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .item-stamp.st-bl{left:-5mm;bottom:-6mm}
 .item-stamp.st-br{right:-5mm;bottom:-6mm}
 .grp-pos-overlay .grp-badge,.grp-pos-overlay-r .grp-badge,.grp[class*="grp-pos-img-"] .grp-badge{rotate:calc(var(--stamp-tilt,-8) * 1deg)}
+/* 区画の横に縦書き（見出しの外側に縦線） */
+.grp-pos-side,.grp-pos-side-r{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:calc(6mm * var(--gap))}
+.grp-pos-side-r{grid-template-columns:minmax(0,1fr) auto}
+.grp-pos-side-r>.grp-head{order:2}
+.grp-pos-side>.grp-head,.grp-pos-side-r>.grp-head{writing-mode:vertical-rl;flex-wrap:nowrap;align-items:flex-start;align-self:stretch;
+  border-left:.8mm solid var(--grp-bg);padding-left:3mm}
+.grp-pos-side .grp-badge,.grp-pos-side-r .grp-badge{text-orientation:upright}
+.grp-pos-side .grp-sub,.grp-pos-side-r .grp-sub{font-style:normal}
 .grp-line-top{border-top:.5mm solid var(--c-ink);padding-top:6mm}
 .grp-line-box{border:.5mm solid var(--c-ink);padding:6mm}
 .grp-line-left{border-left:.5mm solid var(--c-ink);padding-left:6mm}
@@ -357,9 +371,25 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-tag .img :is(img,.ph){filter:drop-shadow(1.5mm 1.5mm 0 var(--c-paper))}
 .theme-tag .blk-hr{border-top-color:var(--c-paper)}
 
+/* ---------- テーマ: ツートン（2色の帯ヘッダー） ---------- */
+.theme-duo{padding:0 16mm 14mm}
+.theme-duo .sh{margin:0 -16mm 12mm;padding:0 16mm 0 0;background:var(--c-paper);color:var(--c-bg);
+  display:grid;grid-template-columns:auto auto 1fr;grid-template-areas:"space date circle" "space event circle";column-gap:8mm;align-items:center}
+.theme-duo .sh-box{display:contents}
+.theme-duo .sh-space{grid-area:space;align-self:stretch;display:flex;align-items:center;background:var(--c-sub);color:var(--c-paper);
+  font-family:var(--f-num);font-size:6.5em;font-weight:700;line-height:1;padding:.12em .3em .12em 16mm;white-space:nowrap}
+.theme-duo .sh-date{grid-area:date;align-self:end;font-family:var(--f-num);font-size:1.5em;letter-spacing:.05em;color:var(--c-sub);white-space:nowrap}
+.theme-duo .sh-event{grid-area:event;align-self:start;font-size:1.3em;font-weight:700;color:var(--c-sub);white-space:nowrap}
+.theme-duo .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-head);font-weight:800;font-size:3.2em;line-height:1.1;color:var(--c-sub);white-space:nowrap;padding:5mm 0}
+.theme-duo .title{font-weight:800;font-size:2.6em}
+.theme-duo .desc{font-weight:500}
+.theme-duo .price{font-weight:700}
+.theme-duo .badge.new{background:none;color:var(--c-accent);border-color:var(--c-accent)}
+
 /* ---------- 区画の見出し: 「テーマの色を使う」ときの色（テーマごと） ---------- */
 .grp-auto{--grp-bg:var(--c-ink);--grp-fg:var(--c-bg)}
 .theme-grid .grp-auto{--grp-bg:var(--c-paper);--grp-fg:var(--c-bg)}
+.theme-duo .grp-auto{--grp-bg:var(--c-paper);--grp-fg:var(--c-bg)}
 .theme-pop .grp-auto{--grp-bg:var(--c-accent);--grp-fg:#fff}
 .theme-frame .grp-auto{--grp-bg:var(--c-ink);--grp-fg:var(--c-paper)}
 .theme-report .grp-auto{--grp-bg:var(--c-sub);--grp-fg:#fff200}
