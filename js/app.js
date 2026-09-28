@@ -29,6 +29,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const newItem = (o = {}) => ({ id: uid(), type:'item', cls:'', text:'', title:'',
   sub:'', badgeStyle:'tag', badgePos:'top', badgeBg:'#1f2440', badgeFg:'#ffffff', badgeAuto:false, line:'none', gcols:1, gratio:'',  // 区画用（badgeAuto: 見出しの色をテーマに合わせる。昔のデータは false のまま）
   badge1:'', r18:false, badge2:'', spec:'', cp:'', desc:'', note:'', price:'', unit:'円', img:'', span:1, imgPos:'left', imgAlign:'start', imgW:45, imgFill:false, titlePos:'info',
+  badgeMode:'text', stampPos:'tl', stampShape:'circle', stampRing:'single', stampJag:false,   // バッジをスタンプにするとき
   phOn:false, phRatio:'a5', phText:'表紙まだ', phBg:'#dddddd', phFg:'#555555', phLine:false,   // 仮の画像
   ...o });
 
@@ -36,7 +37,8 @@ function defaultState() {
   return {
     v: 1, theme: 'blank', orient: 'portrait', cols: 2, colRatio: '', vfill: 'start', scale: 1.25, hs: 0.9, gap: 1,   /* A3に貼って離れて読むので、文字は大きめが初期値 */
     headAlign: 'none', circleFit: false, circleSX: 100,
-    imgGap: 6, stampTilt: -8,   // 画像と文字の間(mm)・重ねた見出し（スタンプ）の傾き(度)
+    imgGap: 6, stampTilt: -8, stampSize: 1,   // 画像と文字の間(mm)・重ねた見出し（スタンプ）の傾き(度)・大きさ(倍)
+    colLine: { on:false, width:0.4, role:'ink', inner:true },   // 列の間の区切り線（太さmm・色はデザインの色の役割・区画の中にも引くか）
     // 影（ずれ・ぼかしは mm、濃さは 0〜1）。画像の影 mode: theme=テーマのまま / none=なし / custom=自分で決める
     textShadow: { on:false, x:0.3, y:0.3, blur:0.8, color:'#000000', alpha:0.35 },
     imgShadow: { mode:'theme', x:1.5, y:1.5, blur:3, color:'#000000', alpha:0.4 },
@@ -175,12 +177,16 @@ function itemHTML(it, n, cols = state.cols, imgExtra = '') {
   // 仮の画像（表紙まだ など）にしている場合は、画像があってもそちらを優先して出す
   const hasImg = it.phOn || it.img;
   const pos = hasImg ? it.imgPos : 'noimg';
+  const stamp = it.badge1 && it.badgeMode === 'stamp' && hasImg;
+  if (stamp) {
+    imgExtra += `<div class="item-stamp st-${it.stampPos || 'tl'} grp-auto grp-shape-${it.stampShape || 'circle'} grp-ring-${it.stampRing || 'single'}${it.stampJag ? ' grp-jag' : ''}"><span class="grp-badge">${esc(it.badge1)}</span></div>`;
+  }
   const imgHTML = it.phOn
     ? `<div class="img"><div class="ph${it.phLine ? ' ph-line' : ''}" style="--ph-ar:${PH_RATIOS[it.phRatio]?.[1] || '148 / 210'};--ph-bg:${it.phBg};--ph-fg:${it.phFg}">${esc(it.phText)}</div>${imgExtra}</div>`
     : it.img ? `<div class="img"><img src="${urlFor(it.img)}" alt="">${imgExtra}</div>` : '';
   const isNum = /^[\d,.\s]+$/.test(it.price);
   const badges = [
-    it.badge1 && `<span class="badge new">${esc(it.badge1)}</span>`,
+    !stamp && it.badge1 && `<span class="badge new">${esc(it.badge1)}</span>`,
     it.badge2 && `<span class="badge free">${esc(it.badge2)}</span>`,
   ].filter(Boolean).join('');
   // タイトルの位置が「ブロックの一番上」なら、バッジとタイトルを画像の上にまたがる行に出す
@@ -218,8 +224,9 @@ function render() {
     '--fr-c': fr.color, '--fr-w': fr.type === 'none' ? 0 : fr.width, '--fr-r': fr.radius, '--fr-inset': fr.inset,
     '--fr-style': ['double', 'dashed', 'dotted'].includes(fr.type) ? fr.type : 'solid',
     '--fr-fill': fr.fill ? hexToRgba(fr.fillColor, fr.fillAlpha ?? 1) : 'transparent', '--fr-sh': fr.shadow, '--fr-pad': fr.padding,
-    '--img-gap': s.imgGap ?? 6, '--stamp-tilt': s.stampTilt ?? -8,
+    '--img-gap': s.imgGap ?? 6, '--stamp-tilt': s.stampTilt ?? -8, '--stamp-size': s.stampSize ?? 1,
     '--ts': shadowCss(s.textShadow), '--is': shadowCss(s.imgShadow),
+    '--col-line-c': `var(--c-${s.colLine.role || 'ink'})`, '--col-line-w': s.colLine.width,
     '--tab-bg': s.tab.bg, '--tab-fg': s.tab.fg, '--tab-bw': s.tab.border, '--tab-bc': s.tab.borderColor, '--tab-pad': s.tab.pad,
   };
   for (const [k, v] of Object.entries(vars)) sh.style.setProperty(k, v);
@@ -248,11 +255,50 @@ function render() {
   layoutHeader();
   fitImages();
   fitPrices();
+  drawColLines();
   fit();
   // 画像読み込み後にもう一度（画像の縦横比が分かってから高さ合わせ・はみ出しチェック）
-  $$('img', sh).forEach(img => img.complete || img.addEventListener('load', () => { fitImages(); fitPrices(); checkOverflow(); }, { once: true }));
-  document.fonts?.ready.then(() => { layoutHeader(); fitImages(); fitPrices(); checkOverflow(); });
+  $$('img', sh).forEach(img => img.complete || img.addEventListener('load', () => { fitImages(); fitPrices(); drawColLines(); checkOverflow(); }, { once: true }));
+  document.fonts?.ready.then(() => { layoutHeader(); fitImages(); fitPrices(); drawColLines(); checkOverflow(); });
   checkOverflow();
+}
+
+// 列の間の区切り線。列の境目（列と列のすき間の真ん中）に縦線を置く。
+// 境目をまたぐブロック（横いっぱいの見出し・区画など）があるところは線を途切れさせる
+function drawColLines() {
+  const sh = $('#sheet');
+  $$('.col-line', sh).forEach(e => e.remove());
+  const cl = state.colLine;
+  if (!cl || !cl.on) return;
+  for (const l of $$('.items', sh)) {
+    if (l.classList.contains('grp-items') && !cl.inner) continue;
+    const cs = getComputedStyle(l);
+    const cols = cs.gridTemplateColumns.split(' ').map(parseFloat).filter(n => !isNaN(n));
+    if (cols.length < 2) continue;
+    const colGap = parseFloat(cs.columnGap) || 0, rowGap = parseFloat(cs.rowGap) || 0;
+    const kids = [...l.children].filter(c => !c.classList.contains('col-line'));
+    const H = l.clientHeight;
+    let x = 0;
+    for (let i = 0; i < cols.length - 1; i++) {
+      x += cols[i];
+      const bx = x + colGap / 2;   // 境目の位置（並びの左端から）
+      x += colGap;
+      // この境目をまたぐブロックの上下の範囲（少し余白をとる）は線を引かない
+      const blocked = kids.filter(c => c.offsetLeft < bx - 1 && c.offsetLeft + c.offsetWidth > bx + 1)
+        .map(c => [c.offsetTop - rowGap / 2, c.offsetTop + c.offsetHeight + rowGap / 2]).sort((a, b) => a[0] - b[0]);
+      let y = 0;
+      const segs = [];
+      for (const [t, b] of blocked) { if (t > y) segs.push([y, t]); y = Math.max(y, b); }
+      if (y < H) segs.push([y, H]);
+      for (const [t, b] of segs) {
+        if (b - t < 4) continue;
+        const d = document.createElement('div');
+        d.className = 'col-line';
+        d.style.left = bx + 'px'; d.style.top = t + 'px'; d.style.height = (b - t) + 'px';
+        l.appendChild(d);
+      }
+    }
+  }
 }
 
 // 値段の大きさを、同じ並び（区画の中・区画の外）でそろえる。
@@ -698,6 +744,16 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f">自由バッジ<input type="text" data-ik="badge2" value="${esc(it.badge2)}" placeholder="残りわずか 等"></label>
         <label class="chk"><input type="checkbox" data-ik="r18"${it.r18 ? ' checked' : ''}>R-18</label>
       </div>
+      <div class="row">
+        <label class="f">バッジの出し方<select data-ik="badgeMode">${opts([['text','タイトルの上'],['stamp','画像に重ねる（スタンプ）']], it.badgeMode || 'text')}</select></label>
+        ${it.badgeMode === 'stamp' ? `<label class="f">スタンプの位置<select data-ik="stampPos">${opts([['tl','左上'],['tr','右上'],['bl','左下'],['br','右下']], it.stampPos || 'tl')}</select></label>` : ''}
+      </div>
+      ${it.badgeMode === 'stamp' ? `<div class="row">
+        <label class="f">スタンプの形<select data-ik="stampShape">${opts([['none','文字だけ'],['rect','長方形'],['round','角丸'],['circle','正円']], it.stampShape || 'circle')}</select></label>
+        <label class="f">内側の線<select data-ik="stampRing">${opts([['none','なし'],['single','1本'],['double','2本']], it.stampRing || 'single')}</select></label>
+        <label class="chk" style="flex:.7"><input type="checkbox" data-ik="stampJag"${it.stampJag ? ' checked' : ''}>ギザギザ</label>
+      </div>
+      <p class="hint" style="margin-top:-4px">スタンプの色はテーマの色、傾きはデザインタブの「重ねた見出し（スタンプ）の傾き」に合わせます。画像がないときはタイトルの上に出ます。</p>` : ''}
       <label class="f">詳細（判型・ページ数・サイズ）<textarea data-ik="spec" rows="1" style="min-height:0" placeholder="A5 / 34P">${esc(it.spec)}</textarea></label>
       <label class="f">カップリング・ジャンル<textarea data-ik="cp" rows="1" style="min-height:0">${esc(it.cp)}</textarea></label>
       <label class="f">説明文<textarea data-ik="desc">${esc(it.desc)}</textarea></label>
@@ -741,7 +797,7 @@ $('#itemList').addEventListener('input', e => {
   it[k] = el.type === 'checkbox' ? el.checked : el.hasAttribute('data-num') ? +el.value : el.value;
   if (k === 'title' || k === 'text') $('.t', card).textContent = cardTitle(it);
   if (k === 'gcols') { render(); save(); buildItems(); return; }  // 区画内の横幅の選択肢を作り直す
-  if (k === 'phOn' || k === 'badgeAuto') { render(); save(); buildItems(); return; }   // 設定欄の出し入れ・有効/無効を切り替える
+  if (k === 'phOn' || k === 'badgeAuto' || k === 'badgeMode') { render(); save(); buildItems(); return; }   // 設定欄の出し入れ・有効/無効を切り替える
   if (k === 'imgW') el.previousElementSibling.textContent = el.value + '%';
   render(); save();
 });
@@ -812,7 +868,7 @@ $('#sheet').addEventListener('click', e => {
 
 /* ---------- マイテーマ ---------- */
 // デザインに関わる項目だけを保存・適用する（お品書きの中身には触らない）
-const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill','scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'textShadow', 'imgShadow', 'colors', 'fonts', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill','scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'textShadow', 'imgShadow', 'colLine', 'colors', 'fonts', 'bg', 'pattern', 'frame', 'tab', 'css'];
 // 古い保存データに無い項目を既定値で補う
 // 影の設定 → 「横 縦 ぼかし 色」（text-shadow と drop-shadow の両方でそのまま使える形）
 const shadowCss = sd => `${+sd.x || 0}mm ${+sd.y || 0}mm ${Math.max(0, +sd.blur || 0)}mm ${hexToRgba(sd.color || '#000000', sd.alpha ?? 0.4)}`;
@@ -833,14 +889,14 @@ function withDefaults(s) {
   const IS = { soft: { mode:'custom', x:0, y:1.5, blur:3, alpha:0.4 }, hard: { mode:'custom', x:2, y:2, blur:0, alpha:1 }, none: { mode:'none' }, theme: { mode:'theme' } };
   if (typeof s.textShadow === 'string') s.textShadow = TS[s.textShadow] || {};
   if (typeof s.imgShadow === 'string') s.imgShadow = IS[s.imgShadow] || {};
-  for (const k of ['info', 'bg', 'pattern', 'frame', 'tab', 'textShadow', 'imgShadow']) s[k] = { ...d[k], ...s[k] };
+  for (const k of ['info', 'bg', 'pattern', 'frame', 'tab', 'textShadow', 'imgShadow', 'colLine']) s[k] = { ...d[k], ...s[k] };
   return s;
 }
 let myThemes = [];
 const clone = o => JSON.parse(JSON.stringify(o));
 
 // テーマの初期状態の「見た目」。用紙の向き・列数・列の比率・余白の使い方は中身の並びに関わるので含めない
-const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'textShadow', 'imgShadow', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'textShadow', 'imgShadow', 'colLine', 'bg', 'pattern', 'frame', 'tab', 'css'];
 function themeLook(key) {
   const d = defaultState(), look = {};
   for (const k of LOOK_KEYS) look[k] = clone(d[k]);

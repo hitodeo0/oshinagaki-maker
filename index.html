@@ -139,6 +139,18 @@
           <button data-ratio="1 2 1" style="flex:none">1:2:1</button>
         </div>
         <p class="hint">左の列から順に、数字をスペースで区切って書きます（「60 40」なら左60%・右40%）。合計が100でなくても比率として扱います。区画の中の列の幅は、各区画の設定で指定できます。</p>
+        <label class="chk" style="margin:4px 0 6px"><input type="checkbox" data-k="colLine.on">列の間に区切り線を引く</label>
+        <div class="row">
+          <label class="f">線の太さ(mm) <span class="rangeval" data-show="colLine.width"></span><input type="range" min="0.1" max="3" step="0.1" data-k="colLine.width" data-num></label>
+          <label class="f">線の色<select data-k="colLine.role">
+            <option value="ink">文字の色</option>
+            <option value="sub">サブの色（模様・線）</option>
+            <option value="accent">アクセントの色</option>
+            <option value="paper">面・帯の色</option>
+          </select></label>
+        </div>
+        <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-k="colLine.inner">区画の中の列の間にも引く</label>
+        <p class="hint">列の境目（列の比率を変えても正しい位置）に縦線を引きます。横いっぱいの見出しや区画があるところでは線が途切れます。</p>
 
         <h3>ヘッダー</h3>
         <label class="f">日付・イベント名・スペースの左右揃え<select data-k="headAlign">
@@ -279,8 +291,9 @@
         <label class="f">ヘッダーの大きさ <span class="rangeval" data-show="hs"></span><input type="range" min="0.4" max="1.6" step="0.05" data-k="hs" data-num></label>
         <label class="f">商品どうしの間隔 <span class="rangeval" data-show="gap"></span><input type="range" min="0" max="3" step="0.1" data-k="gap" data-num></label>
         <label class="f">画像と文字の間(mm) <span class="rangeval" data-show="imgGap"></span><input type="range" min="0" max="20" step="0.5" data-k="imgGap" data-num></label>
+        <label class="f">スタンプの大きさ（倍） <span class="rangeval" data-show="stampSize"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="stampSize" data-num></label>
         <label class="f">重ねた見出し（スタンプ）の傾き(度) <span class="rangeval" data-show="stampTilt"></span><input type="range" min="-30" max="30" step="1" data-k="stampTilt" data-num></label>
-        <p class="hint">傾きは、区画の見出しを「左上に重ねる」「最初の画像の○○」にしたときに反映されます。0 でまっすぐ、マイナスで左に傾きます。</p>
+        <p class="hint">大きさと傾きは、頒布物のバッジを「画像に重ねる（スタンプ）」にしたときと、区画の見出しを「左上に重ねる」「最初の画像の○○」にしたときに反映されます。0 でまっすぐ、マイナスで左に傾きます。</p>
 
         <h3>文字の影</h3>
         <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-k="textShadow.on">タイトル・値段・ヘッダー・見出しに影をつける</label>

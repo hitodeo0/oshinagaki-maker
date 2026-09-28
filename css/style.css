@@ -132,7 +132,9 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .sh{font-size:calc(1em * var(--hs))}
 .sh-date,.sh-event,.sh-circle,.sh-space{white-space:pre-wrap}
 .headline{font-family:var(--f-head);font-size:calc(2.6em * var(--hs));font-weight:900;text-align:center;margin-bottom:6mm;line-height:1.15;white-space:pre-wrap}
-.items{display:grid;grid-template-columns:var(--cols-tpl);gap:calc(9mm * var(--gap)) calc(8mm * var(--gap));align-content:start}
+.items{position:relative;display:grid;grid-template-columns:var(--cols-tpl);gap:calc(9mm * var(--gap)) calc(8mm * var(--gap));align-content:start}
+/* 列の間の区切り線（位置は JS で列の境目を測って置く。横いっぱいのブロックのところでは途切れる） */
+.col-line{position:absolute;z-index:0;pointer-events:none;background:var(--col-line-c);width:calc(var(--col-line-w) * 1mm);translate:-50% 0}
 /* 縦に余った余白の使い方（一覧を用紙の残りの高さいっぱいに広げて、行の並べ方を変える） */
 .items.vfill-evenly,.items.vfill-between,.items.vfill-stretch{flex:1 1 auto;min-height:0}
 .items.vfill-evenly{align-content:space-evenly}
@@ -218,6 +220,15 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .grp-pos-img-bl .img>.grp-head{left:-5mm;bottom:-6mm}
 .grp-pos-img-br .img>.grp-head{right:-5mm;bottom:-6mm}
 .grp[class*="grp-pos-img-"]>.grp-head{position:absolute;z-index:3;left:-5mm;top:-7mm;pointer-events:none}
+/* 頒布物のバッジをスタンプにしたとき（形・線・ギザギザは区画の見出しと同じクラス） */
+.item-stamp{position:absolute;z-index:3;pointer-events:none;font-size:calc(var(--stamp-size,1) * 1em)}
+/* 区画の見出しを重ねたとき（スタンプ）も同じ大きさの倍率 */
+.grp-pos-overlay>.grp-head,.grp-pos-overlay-r>.grp-head,.img>.grp-head,.grp[class*="grp-pos-img-"]>.grp-head{font-size:calc(var(--stamp-size,1) * 1em)}
+.item-stamp .grp-badge{rotate:calc(var(--stamp-tilt,-8) * 1deg)}
+.item-stamp.st-tl{left:-5mm;top:-6mm}
+.item-stamp.st-tr{right:-5mm;top:-6mm}
+.item-stamp.st-bl{left:-5mm;bottom:-6mm}
+.item-stamp.st-br{right:-5mm;bottom:-6mm}
 .grp-pos-overlay .grp-badge,.grp-pos-overlay-r .grp-badge,.grp[class*="grp-pos-img-"] .grp-badge{rotate:calc(var(--stamp-tilt,-8) * 1deg)}
 .grp-line-top{border-top:.5mm solid var(--c-ink);padding-top:6mm}
 .grp-line-box{border:.5mm solid var(--c-ink);padding:6mm}
