@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>海星式お品書きメーカー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=M+PLUS+1p:wght@400;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&family=Zen+Maru+Gothic:wght@500;700;900&family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@400;700;900&family=Shippori+Mincho+B1:wght@500;800&family=DotGothic16&family=Oswald:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<!-- CSSエディター（CodeMirror 5）: 読み込めないときは普通の入力欄のまま動く -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
+<!-- 画像で保存（PNG/JPG）用 -->
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<style id="pageCss"></style>
+<style id="userCss"></style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <h1>海星式お品書きメーカー</h1>
+    <button id="btnNew">新規</button>
+    <button id="btnExport" title="基本情報・頒布物・画像・デザイン・読み込んだフォントを、まるごと1つのファイルに保存します">ファイルに保存</button>
+    <label class="btn" title="「ファイルに保存」で保存したお品書きを開きます（今の内容は置き換わります）">ファイルを開く<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
+    <span class="sp"></span>
+    <span class="status" id="status"></span>
+    <button id="btnHelp">使い方</button>
+    <select id="imgExport" title="お品書きを画像として保存します（A3・300dpi）" style="background:#3a3531;color:#fff;border-color:#57504a">
+      <option value="">画像で保存…</option>
+      <option value="png">PNG（きれい・重い）</option>
+      <option value="jpg">JPG（軽い）</option>
+    </select>
+    <button class="primary" id="btnPrint">印刷 / PDF</button>
+  </div>
+
+  <aside class="editor">
+    <div class="tabs">
+      <button data-tab="info" class="on">基本情報</button>
+      <button data-tab="items">頒布物</button>
+      <button data-tab="design">デザイン</button>
+      <button data-tab="css">CSS</button>
+    </div>
+    <div class="panes">
+      <!-- 基本情報 -->
+      <section class="pane on" data-pane="info">
+        <label class="f">イベント名<input type="text" data-k="info.event"></label>
+        <label class="f">開催日<input type="text" data-k="info.date" placeholder="2026/01/01"></label>
+        <label class="f">サークル名<input type="text" data-k="info.circle"></label>
+        <div class="imgslot" id="logoSlot">
+          <div class="thumb" id="logoThumb">ロゴなし</div>
+          <div><label class="btn">サークルロゴ画像<input type="file" accept="image/*" id="logoFile" hidden></label>
+          <button id="logoClear">外す</button>
+          <div class="hint" style="margin:4px 0 0">入れるとサークル名の文字の代わりに表示されます（大きさはヘッダーの大きさ・CSSの <code>.sh-circle img</code> で調整）</div></div>
+        </div>
+        <label class="f">スペース<input type="text" data-k="info.space" placeholder="A01a"></label>
+        <label class="f">キャッチ（任意）<input type="text" data-k="info.headline" placeholder="全部新刊!!"></label>
+        <label class="f">フッター（注意書きなど・任意）<textarea data-k="info.notes" placeholder="※R-18頒布物は年齢確認のため身分証の提示をお願いします。"></textarea></label>
+        <p class="hint">改行はそのまま反映されます。</p>
+      </section>
+
+      <!-- 頒布物 -->
+      <section class="pane" data-pane="items">
+        <div id="itemList"></div>
+        <div class="row">
+          <button class="add" data-add="item">＋ 頒布物</button>
+          <button class="add" data-add="sec">＋ 見出し</button>
+          <button class="add" data-add="txt">＋ テキスト</button>
+          <button class="add" data-add="hr">＋ 区切り線</button>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <button class="add" data-add="grp" style="border-color:#7b93e0">＋ 区画（新刊・既刊など）</button>
+          <button class="add" data-add="end" style="border-color:#7b93e0;flex:.6">＋ 区画おわり</button>
+        </div>
+        <p class="hint">「見出し」は「既刊」「別ジャンル既刊」など、「テキスト」は「残部少！」や注意書きなど、好きな位置に置ける文字です。<br>
+        どのブロックにも「クラス名」をつけられます。CSSタブで <code>.sheet .big .title{…}</code> のように、そのブロックだけデザインを変えられます。<br>
+        プレビューのブロックをクリックすると、その編集欄にジャンプします。画像は枠にドラッグ＆ドロップでも入れられます。</p>
+      </section>
+
+      <!-- デザイン -->
+      <section class="pane" data-pane="design">
+        <h3>マイテーマ</h3>
+        <div class="row" style="margin-bottom:8px">
+          <input type="text" id="myThemeName" placeholder="テーマ名（例: 冬イベント用）">
+          <button id="btnSaveTheme" style="flex:none">今のデザインを保存</button>
+        </div>
+        <ul id="myThemeList" class="fontlist"></ul>
+        <div class="row" style="margin:6px 0 4px">
+          <button id="btnExportThemes" style="justify-content:center" title="マイテーマ（デザインだけ。頒布物は含みません）をファイルに保存します">テーマをファイルに保存</button>
+          <label class="btn" style="justify-content:center" title="「テーマをファイルに保存」で保存したマイテーマを追加します">テーマのファイルを開く<input type="file" id="themeImport" accept=".json,application/json" hidden></label>
+        </div>
+        <p class="hint">色・フォント（読み込んだフォントファイルも）・サイズ・列数・用紙の向き・背景画像・CSSをまとめて保存します。お品書きの中身（商品など）は変わりません。<br>マイテーマはお品書きとは別に、このブラウザに保存されます。</p>
+
+        <h3>ベーステーマ</h3>
+        <label class="f"><select data-k="theme" id="themeSel"></select></label>
+        <p class="hint">「白紙」は飾りなしの状態です。CSSタブの「骨組みを挿入」から作り込むのがおすすめです。<br>ベーステーマを切り替えると、見た目の設定（色・フォント・サイズ・ヘッダー・背景・枠・付箋・CSS）がすべてそのテーマの初期状態になります。用紙の向き・列数・列の比率・余白の使い方はそのままです。<br>
+        切り替える前のデザインは「作業中：テーマ名」としてマイテーマに自動保存され、同じテーマに戻したときに復元できます。</p>
+        <div class="row">
+          <label class="f">用紙の向き<select data-k="orient"><option value="portrait">A3 縦</option><option value="landscape">A3 横</option></select></label>
+          <label class="f">列数<select data-k="cols" data-num><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+        </div>
+        <label class="f">縦に余った余白の使い方<select data-k="vfill">
+          <option value="start">上に詰める（下に余白が残る）</option>
+          <option value="evenly">均等に配置（ブロックの上下に同じだけ余白）</option>
+          <option value="between">上下に振り分け（最初は上端・最後は下端にぴったり）</option>
+          <option value="stretch">ブロックを縦に引き伸ばす</option>
+        </select></label>
+        <label class="f">列の幅の比率（空欄なら均等）<input type="text" data-k="colRatio" placeholder="例: 60 40"></label>
+        <div class="row" style="margin:-4px 0 6px;flex-wrap:wrap;gap:4px" id="ratioPresets">
+          <button data-ratio="" style="flex:none">均等</button>
+          <button data-ratio="60 40" style="flex:none">6:4</button>
+          <button data-ratio="40 60" style="flex:none">4:6</button>
+          <button data-ratio="2 1" style="flex:none">2:1</button>
+          <button data-ratio="1 2" style="flex:none">1:2</button>
+          <button data-ratio="1 2 1" style="flex:none">1:2:1</button>
+        </div>
+        <p class="hint">左の列から順に、数字をスペースで区切って書きます（「60 40」なら左60%・右40%）。合計が100でなくても比率として扱います。区画の中の列の幅は、各区画の設定で指定できます。</p>
+
+        <h3>ヘッダー</h3>
+        <label class="f">日付・イベント名・スペースの左右揃え<select data-k="headAlign">
+          <option value="none">揃えない</option>
+          <option value="max">一番長い行の幅に揃える</option>
+          <option value="space">スペースの幅に揃える</option>
+        </select></label>
+        <p class="hint">字間を自動で広げたり詰めたりして、3行の左右の端を揃えます（「2 0 2 6 / 1 0 / 0 3」のような見た目になります）。</p>
+        <label class="f">サークル名の横幅（長体） <span class="rangeval" data-show="circleSX"></span><input type="range" min="30" max="100" step="1" data-k="circleSX" data-num></label>
+        <p class="hint">100未満にすると、サークル名を縦長の文字にします（100 = そのまま、60 = 横幅60%）。縮めた後の幅で配置されるので、右揃えも崩れません。</p>
+        <label class="chk" style="margin:0 0 4px"><input type="checkbox" data-k="circleFit">サークル名の高さを「日付〜スペース」の高さに揃える</label>
+        <p class="hint">サークル名の文字の大きさを自動で決めて、日付の上端からスペースの下端までと同じ高さにします（1行のまま折り返しません）。ロゴ画像の場合は画像の高さを揃えます。<br>左右揃え・高さ合わせは、日付〜スペースとサークル名が横に並ぶレイアウト（白紙・付箋ヘッダー）向けです。</p>
+
+        <label class="chk" style="margin:12px 0 6px"><input type="checkbox" data-k="tab.on">日付・イベント名・スペースを付箋（タブ）にする</label>
+        <div class="row">
+          <label class="f">付箋の色<input type="color" data-k="tab.bg" style="width:100%;height:31px;padding:0"></label>
+          <label class="f">付箋の文字色<input type="color" data-k="tab.fg" style="width:100%;height:31px;padding:0"></label>
+        </div>
+        <div class="row">
+          <label class="f">下端の形<select data-k="tab.shape">
+            <option value="straight">まっすぐ</option>
+            <option value="zigzag">ギザギザ</option>
+            <option value="slant">斜め</option>
+            <option value="round">角丸</option>
+          </select></label>
+          <label class="f">形の大きさ(mm) <span class="rangeval" data-show="tab.size"></span><input type="range" min="1" max="12" step="0.5" data-k="tab.size" data-num></label>
+        </div>
+        <div class="row">
+          <label class="chk" style="margin-top:0"><input type="checkbox" data-k="tab.toTop">用紙の上端まで伸ばす</label>
+          <label class="chk" style="margin-top:0"><input type="checkbox" data-k="tab.toLeft">用紙の左端まで伸ばす</label>
+        </div>
+        <div class="row">
+          <label class="f">枠線の太さ(mm) <span class="rangeval" data-show="tab.border"></span><input type="range" min="0" max="3" step="0.1" data-k="tab.border" data-num></label>
+          <label class="f" style="flex:.6">枠線の色<input type="color" data-k="tab.borderColor" style="width:100%;height:31px;padding:0"></label>
+        </div>
+        <label class="chk" style="margin:0 0 8px"><input type="checkbox" data-k="tab.topLine">上端の枠線を表示する</label>
+        <label class="f">付箋の内側の余白(mm) <span class="rangeval" data-show="tab.pad"></span><input type="range" min="0" max="15" step="0.5" data-k="tab.pad" data-num></label>
+        <p class="hint">左上の日付〜スペースを、用紙の端から伸びる付箋（タブ）の形にします。サークル名はその右に並びます。<br>
+        白い箱＋黒い枠線にするなら、付箋の色を白・枠線を 0.5mm くらいにしてください。ギザギザ・斜めのときは、下端の枠線は形に沿いません。</p>
+
+        <h3>色</h3>
+        <div class="colors">
+          <label><input type="color" data-k="colors.bg">背景</label>
+          <label><input type="color" data-k="colors.paper">面・帯</label>
+          <label><input type="color" data-k="colors.ink">文字</label>
+          <label><input type="color" data-k="colors.accent">アクセント(R-18等)</label>
+          <label><input type="color" data-k="colors.sub">サブ(模様・線)</label>
+        </div>
+        <label class="f" style="margin:10px 0 0">配色だけ変える</label>
+        <div class="pal-dd" id="palDD">
+          <button class="pal pal-btn" id="palBtn" type="button"><span class="dots" id="palBtnDots"></span><span id="palBtnName">配色を選ぶ…</span><span style="margin-left:auto">▾</span></button>
+          <div class="pal-list" id="palettes"></div>
+        </div>
+        <p class="hint">レイアウトやフォントはそのままで、色の組み合わせだけ入れ替えます。模様・枠・付箋・区画の見出し・CSSで同じ色を使っているところも一緒に変わります。</p>
+        <p><button id="btnResetTheme">このテーマの初期状態に戻す</button></p>
+
+        <h3>背景パターン</h3>
+        <div class="row">
+          <label class="f">模様<select data-k="pattern.type" id="patternSel"></select></label>
+          <label class="f" style="flex:.45">色<input type="color" data-k="pattern.color" style="width:100%;height:31px;padding:0"></label>
+        </div>
+        <label class="f">大きさ・間隔 <span class="rangeval" data-show="pattern.size"></span><input type="range" min="2" max="80" step="0.5" data-k="pattern.size" data-num></label>
+        <label class="f">線・点の太さ <span class="rangeval" data-show="pattern.weight"></span><input type="range" min="0.1" max="20" step="0.1" data-k="pattern.weight" data-num></label>
+        <label class="f">濃さ <span class="rangeval" data-show="pattern.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="pattern.opacity" data-num></label>
+        <p class="hint">模様を切り替えると、大きさ・太さがその模様のおすすめ値に戻ります。</p>
+
+        <h3>縁取り・枠</h3>
+        <div class="row">
+          <label class="f">線<select data-k="frame.type">
+            <option value="none">なし</option>
+            <option value="solid">実線</option>
+            <option value="double">二重線</option>
+            <option value="inner">内側にもう1本</option>
+            <option value="dashed">破線</option>
+            <option value="dotted">点線</option>
+          </select></label>
+          <label class="f" style="flex:.45">線の色<input type="color" data-k="frame.color" style="width:100%;height:31px;padding:0"></label>
+        </div>
+        <div class="row">
+          <label class="chk" style="margin-top:0"><input type="checkbox" data-k="frame.fill">枠の中を塗る</label>
+          <label class="f" style="flex:.45">塗りの色<input type="color" data-k="frame.fillColor" style="width:100%;height:31px;padding:0"></label>
+        </div>
+        <label class="f">塗りの不透明度 <span class="rangeval" data-show="frame.fillAlpha"></span><input type="range" min="0" max="1" step="0.05" data-k="frame.fillAlpha" data-num></label>
+        <label class="f">用紙の端からの距離(mm)<span class="rangeval" data-show="frame.inset"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.inset" data-num></label>
+        <label class="f">角の丸さ(mm) <span class="rangeval" data-show="frame.radius"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.radius" data-num></label>
+        <label class="f">線の太さ(mm) <span class="rangeval" data-show="frame.width"></span><input type="range" min="0" max="8" step="0.1" data-k="frame.width" data-num></label>
+        <label class="f">影のずれ(mm) <span class="rangeval" data-show="frame.shadow"></span><input type="range" min="0" max="10" step="0.5" data-k="frame.shadow" data-num></label>
+        <div class="row">
+          <label class="chk" style="margin-top:0"><input type="checkbox" data-k="frame.pad">中身を枠の内側に収める</label>
+          <label class="f">枠と中身の間(mm) <span class="rangeval" data-show="frame.padding"></span><input type="range" min="0" max="30" step="0.5" data-k="frame.padding" data-num></label>
+        </div>
+        <p class="hint">「枠の中を塗る」＋角丸で、ポップテーマのような「模様の上に白いカード」が作れます。<br>
+        「中身を枠の内側に収める」をオフにすると、余白はテーマやCSSの指定どおりになります。</p>
+
+        <h3>背景画像</h3>
+        <div class="imgslot" id="bgSlot">
+          <div class="thumb" id="bgThumb">画像なし</div>
+          <div><label class="btn">画像を選択<input type="file" accept="image/*" id="bgFile" hidden></label>
+          <button id="bgClear">外す</button></div>
+        </div>
+        <div class="row">
+          <label class="f">敷き方<select data-k="bg.fit">
+            <option value="cover">全面（はみ出しはカット）</option>
+            <option value="contain">全体が入るように</option>
+            <option value="stretch">引き伸ばし</option>
+            <option value="repeat">タイル（繰り返し）</option>
+          </select></label>
+          <label class="f">重ね順<select data-k="bg.layer">
+            <option value="front">テーマの面より上</option>
+            <option value="back">テーマの面より下</option>
+          </select></label>
+        </div>
+        <label class="f">濃さ <span class="rangeval" data-show="bg.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="bg.opacity" data-num></label>
+        <label class="f">タイルの大きさ(mm) <span class="rangeval" data-show="bg.tile"></span><input type="range" min="5" max="300" step="1" data-k="bg.tile" data-num></label>
+        <p class="hint">「テーマの面より下」にすると、ポップや額縁の枠・カードが画像の上に乗ります。文字が読みにくいときは濃さを下げてください。</p>
+
+        <h3>フォント</h3>
+        <label class="f">見出し（サークル名・タイトル）<select data-k="fonts.head" class="fontSel"></select></label>
+        <label class="f">本文<select data-k="fonts.body" class="fontSel"></select></label>
+        <label class="f">数字（スペース・価格）<select data-k="fonts.num" class="fontSel"></select></label>
+        <div class="fontmgr">
+          <div class="row" style="margin-bottom:8px">
+            <label class="btn" style="justify-content:center">フォントファイルを読み込む<input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2,font/*" multiple hidden></label>
+            <button id="btnLocalFonts" style="justify-content:center">PCのフォント一覧を取得</button>
+          </div>
+          <div class="row" style="margin-bottom:8px">
+            <input type="text" id="fontName" placeholder="PCのフォント名を入力（例: 游明朝）">
+            <button id="btnAddFontName" style="flex:none">追加</button>
+          </div>
+          <ul id="fontList" class="fontlist"></ul>
+        </div>
+        <p class="hint">読み込んだフォントファイルは、自動保存と「ファイルに保存」したファイルにも含まれます（和文フォントは数MB〜数十MBあるので、保存したファイルもその分大きくなります）。<br>
+        PCのフォントは「フォント名で指定」しているだけなので、別のPCで開いたときは、そのPCにも同じフォントが入っている必要があります。<br>
+        太さが1種類しかないフォントは、そのままの太さで表示します（ブラウザが無理やり太字にするとにじんで見えるため）。</p>
+
+        <h3>サイズ</h3>
+        <label class="f">全体の文字サイズ <span class="rangeval" data-show="scale"></span><input type="range" min="0.5" max="1.8" step="0.05" data-k="scale" data-num></label>
+        <label class="f">ヘッダーの大きさ <span class="rangeval" data-show="hs"></span><input type="range" min="0.4" max="1.6" step="0.05" data-k="hs" data-num></label>
+        <label class="f">商品どうしの間隔 <span class="rangeval" data-show="gap"></span><input type="range" min="0" max="3" step="0.1" data-k="gap" data-num></label>
+        <label class="f">画像と文字の間(mm) <span class="rangeval" data-show="imgGap"></span><input type="range" min="0" max="20" step="0.5" data-k="imgGap" data-num></label>
+        <label class="f">重ねた見出し（スタンプ）の傾き(度) <span class="rangeval" data-show="stampTilt"></span><input type="range" min="-30" max="30" step="1" data-k="stampTilt" data-num></label>
+        <p class="hint">傾きは、区画の見出しを「左上に重ねる」「最初の画像の○○」にしたときに反映されます。0 でまっすぐ、マイナスで左に傾きます。</p>
+
+        <h3>文字の影</h3>
+        <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-k="textShadow.on">タイトル・値段・ヘッダー・見出しに影をつける</label>
+        <div class="shadow-ui" data-shadow="textShadow">
+          <div class="row" style="margin-bottom:6px">
+            <button type="button" data-shadow-preset="soft">ぼかし影にする</button>
+            <button type="button" data-shadow-preset="hard">くっきり影にする</button>
+          </div>
+          <div class="row">
+            <label class="f">横のずれ(mm) <span class="rangeval" data-show="textShadow.x"></span><input type="range" min="-5" max="5" step="0.1" data-k="textShadow.x" data-num></label>
+            <label class="f">縦のずれ(mm) <span class="rangeval" data-show="textShadow.y"></span><input type="range" min="-5" max="5" step="0.1" data-k="textShadow.y" data-num></label>
+          </div>
+          <div class="row">
+            <label class="f">ぼかし(mm) <span class="rangeval" data-show="textShadow.blur"></span><input type="range" min="0" max="10" step="0.1" data-k="textShadow.blur" data-num></label>
+            <label class="f">濃さ <span class="rangeval" data-show="textShadow.alpha"></span><input type="range" min="0" max="1" step="0.05" data-k="textShadow.alpha" data-num></label>
+            <label class="f" style="flex:.5">色<input type="color" data-k="textShadow.color" style="width:100%;height:31px;padding:0"></label>
+          </div>
+        </div>
+
+        <h3>画像の影</h3>
+        <label class="f"><select data-k="imgShadow.mode">
+          <option value="theme">テーマのまま</option>
+          <option value="none">なし</option>
+          <option value="custom">自分で決める</option>
+        </select></label>
+        <div class="shadow-ui" data-shadow="imgShadow">
+          <div class="row" style="margin-bottom:6px">
+            <button type="button" data-shadow-preset="soft">ぼかし影にする</button>
+            <button type="button" data-shadow-preset="hard">ずらし影にする</button>
+          </div>
+          <div class="row">
+            <label class="f">横のずれ(mm) <span class="rangeval" data-show="imgShadow.x"></span><input type="range" min="-10" max="10" step="0.1" data-k="imgShadow.x" data-num></label>
+            <label class="f">縦のずれ(mm) <span class="rangeval" data-show="imgShadow.y"></span><input type="range" min="-10" max="10" step="0.1" data-k="imgShadow.y" data-num></label>
+          </div>
+          <div class="row">
+            <label class="f">ぼかし(mm) <span class="rangeval" data-show="imgShadow.blur"></span><input type="range" min="0" max="15" step="0.1" data-k="imgShadow.blur" data-num></label>
+            <label class="f">濃さ <span class="rangeval" data-show="imgShadow.alpha"></span><input type="range" min="0" max="1" step="0.05" data-k="imgShadow.alpha" data-num></label>
+            <label class="f" style="flex:.5">色<input type="color" data-k="imgShadow.color" style="width:100%;height:31px;padding:0"></label>
+          </div>
+        </div>
+        <p class="hint">画像の影は透過画像でも形に沿います。仮の画像（表紙まだ など）にも同じ影がつきます。<br>
+        「テーマのまま」はテーマに入っている影です。数値で調整したいときは「自分で決める」にしてください。</p>
+      </section>
+
+      <!-- CSS -->
+      <section class="pane" data-pane="css">
+        <div class="css-warn">
+          <b>⚠ CSSが分からなければ、このタブは触らなくて大丈夫です。</b><br>
+          お品書きは「基本情報」「頒布物」「デザイン」の3つのタブだけで完成します。<br>
+          いじって見た目がおかしくなったら、<b>Ctrl + Z</b> で1つずつ元に戻せます。書いた部分を消せば、元の見た目に戻ります。
+          不安なときは、先に上の「ファイルに保存」をしておくと安心です。
+        </div>
+        <p class="hint">ここに書いたCSSはテーマの後に読み込まれるので、何でも上書きできます。単位は <code>mm</code> や <code>em</code> がおすすめ（<code>em</code> は「全体の文字サイズ」に連動）。</p>
+        <div class="row" style="margin-bottom:8px">
+          <button id="btnSkeleton" style="justify-content:center">骨組みを挿入</button>
+          <button id="btnExportThemeCss" style="justify-content:center">テーマのCSSを書き出す</button>
+        </div>
+        <div class="row" style="margin-bottom:8px">
+          <select id="snippetSel"><option value="">スニペットを挿入…</option></select>
+        </div>
+        <textarea class="css-area" data-k="css" spellcheck="false" placeholder=".sheet .price { color: #c00; }
+.sheet .title { letter-spacing: .05em; }
+/* 2番目の商品だけ */
+.sheet .item:nth-child(2) .price { font-size: 3em; }"></textarea>
+        <h3>使えるクラス</h3>
+        <p class="hint" style="margin-top:0">クラス名をクリックすると、CSS欄のカーソル位置にそのクラスの指定（<code>.sheet ○○ { }</code>）が入ります。変数はクリックすると <code>var(--○○)</code> が入ります。</p>
+        <div class="classlist" id="classRef"></div>
+      </section>
+    </div>
+  </aside>
+
+  <div class="stagewrap">
+    <div class="stagebar">
+      <select id="zoomSel">
+        <option value="fit">全体表示</option>
+        <option value="width">幅に合わせる</option>
+        <option value="1">100%</option>
+      </select>
+      <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
+      <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
+    </div>
+    <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
+  </div>
+</div>
+
+<!-- 使い方・よくある質問 -->
+<div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="helpTitle">使い方</h2>
+      <div class="modal-tabs">
+        <button data-help-tab="guide">使い方の流れ</button>
+        <button data-help-tab="faq">よくある質問</button>
+      </div>
+      <button id="helpClose" aria-label="閉じる">✕</button>
+    </div>
+    <div class="modal-body" id="helpBody"></div>
+  </div>
+</div>
+<div class="guide-toast" id="guideToast"><span id="guideToastText"></span><button id="guideBack">使い方に戻る</button></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
