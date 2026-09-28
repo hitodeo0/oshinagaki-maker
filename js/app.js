@@ -1153,9 +1153,13 @@ $('#btnSkeleton').onclick = () => {
 
 /* ---------- テーマのCSSを書き出す ---------- */
 function themeCssText(key) {
-  const main = [...document.styleSheets].find(s => s.ownerNode && s.ownerNode.tagName === 'STYLE' && !s.ownerNode.id);
+  // 本体のスタイルは css/style.css（ファイル分割前は <style> だった）
+  const main = [...document.styleSheets].find(s => s.href && /\/css\/style\.css(\?|$)/.test(s.href))
+    || [...document.styleSheets].find(s => s.ownerNode && s.ownerNode.tagName === 'STYLE' && !s.ownerNode.id);
   if (!main) return '';
-  const rules = [...main.cssRules].filter(r => r instanceof CSSStyleRule);
+  let list;
+  try { list = main.cssRules; } catch (e) { return ''; }   // file:// で開くとブラウザが読ませてくれないことがある
+  const rules = [...list].filter(r => r instanceof CSSStyleRule);
   // 「a: b; c: d;」を1行1指定に整形
   const pretty = (sel, style) => `${sel} {\n${style.cssText.split(/;\s*(?![^(]*\))/).map(s => s.trim()).filter(Boolean).map(s => '  ' + s + ';').join('\n')}\n}`;
   // 白紙テーマの :where(.theme-blank) は、書き出すときは .sheet に置き換える
@@ -1172,7 +1176,9 @@ $('#btnExportThemeCss').onclick = () => {
   const name = THEMES[state.theme]?.name || state.theme;
   const mark = `/* ===== テーマ「${name}」 ===== */`;
   if (state.css.includes(mark) && !confirm(`テーマ「${name}」のCSSはすでに書き出してあるようです。もう一度書き出しますか？`)) return;
-  appendCss(`/* テーマ「${name}」のCSSを書き出したもの。数字や色を書き換えると反映されます。\n   消せばテーマ本来の見た目に戻ります */\n` + themeCssText(state.theme));
+  const text = themeCssText(state.theme);
+  if (!text) { alert('このブラウザではテーマのCSSを読み出せませんでした。\nパソコンに保存した index.html を直接開いている場合は、公開ページ（https://〜）から開くと書き出せます。'); return; }
+  appendCss(`/* テーマ「${name}」のCSSを書き出したもの。数字や色を書き換えると反映されます。\n   消せばテーマ本来の見た目に戻ります */\n` + text);
 };
 
 /* ---------- 上部ボタン ---------- */
