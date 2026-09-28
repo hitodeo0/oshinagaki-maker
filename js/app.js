@@ -211,6 +211,19 @@ function itemHTML(it, n, cols = state.cols, imgExtra = '') {
   </article>`;
 }
 
+// data-dep の条件: 「|」はまたは、「&」はかつ。
+//   key（オンのとき） / !key（オフのとき） / key=a,b（どれかのとき） / key!=a（以外のとき） / key>0（数値が超えるとき）
+function depOk(expr, get) {
+  return expr.split('|').some(or => or.split('&').every(t => {
+    let m;
+    if ((m = t.match(/^(!?)([\w.]+)$/))) return !!get(m[2]) !== !!m[1];
+    if ((m = t.match(/^([\w.]+)(!?=)(.*)$/))) { const hit = m[3].split(',').includes(String(get(m[1]) ?? '')); return m[2] === '=' ? hit : !hit; }
+    if ((m = t.match(/^([\w.]+)>(.*)$/))) return +get(m[1]) > +m[2];
+    return true;
+  }));
+}
+const applyDeps = (root, get) => root && root.querySelectorAll('[data-dep]').forEach(el => el.classList.toggle('dep-off', !depOk(el.dataset.dep, get)));
+
 function render() {
   const s = state, i = s.info, sh = $('#sheet');
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
@@ -246,6 +259,8 @@ function render() {
   $$('[data-show]').forEach(el => { const v = +getPath(s, el.dataset.show); el.textContent = Math.abs(v) >= 10 || Number.isInteger(v) && el.dataset.show === 'stampTilt' ? Math.round(v) : v.toFixed(2).replace(/0$/, ''); });
   // 影の欄: オフ・テーマのままのときは薄く表示
   $$('.shadow-ui').forEach(el => el.classList.toggle('off', el.dataset.shadow === 'textShadow' ? !s.textShadow.on : s.imgShadow.mode !== 'custom'));
+  // チェックを入れていないなど、今は反映されない設定を薄く表示
+  applyDeps($('[data-pane="design"]'), k => getPath(s, k));
   const th = $('#bgThumb');
   th.style.backgroundImage = s.bg.img ? `url("${urlFor(s.bg.img)}")` : '';
   th.textContent = s.bg.img ? '' : '画像なし';
@@ -654,6 +669,8 @@ $('#ratioPresets').addEventListener('click', e => {
   input.dispatchEvent(new Event('input', { bubbles: true }));
 });
 $('#btnResetTheme').onclick = async () => {
+  const name = THEMES[state.theme]?.name || state.theme;
+  if (!confirm(`デザインの設定をすべて、テーマ「${name}」の初期状態に戻しますか？\n\n戻るもの：色・フォント・サイズ・ヘッダー・付箋・背景パターン・枠・背景画像・影・CSSタブに書いたCSS\nそのまま：頒布物の中身・用紙の向き・列数・列の比率・余白の使い方\n\n今のデザインは「作業中：${name}」としてマイテーマに保存されるので、あとから戻せます。`)) return;
   await autoSaveWork();   // 戻す前の状態は「作業中：テーマ名」に残す
   Object.assign(state, themeLook(state.theme));
   buildFontOptions(); syncFields(); render(); save();
@@ -704,8 +721,8 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
       </div>
       <div class="row">
         <label class="f">見出しの形<select data-ik="badgeShape">${opts([['none','文字だけ'],['rect','長方形'],['round','角丸'],['circle','正円']], grpShape(it).shape)}</select></label>
-        <label class="f">内側の線<select data-ik="badgeRing">${opts([['none','なし'],['single','1本'],['double','2本']], grpShape(it).ring)}</select></label>
-        <label class="chk" style="flex:.7"><input type="checkbox" data-ik="badgeJag"${grpShape(it).jag ? ' checked' : ''}>ギザギザ</label>
+        <label class="f" data-dep="badgeShape!=none">内側の線<select data-ik="badgeRing">${opts([['none','なし'],['single','1本'],['double','2本']], grpShape(it).ring)}</select></label>
+        <label class="chk" style="flex:.7" data-dep="badgeShape!=none"><input type="checkbox" data-ik="badgeJag"${grpShape(it).jag ? ' checked' : ''}>ギザギザ</label>
       </div>
       <div class="row">
         <label class="f">見出しの位置<select data-ik="badgePos">${opts([['top','区画の上'],['overlay','区画の左上に重ねる'],['overlay-r','区画の右上に重ねる'],['img-tl','最初の画像の左上'],['img-tr','最初の画像の右上'],['img-bl','最初の画像の左下'],['img-br','最初の画像の右下']], it.badgePos)}</select></label>
@@ -719,7 +736,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f">区画の線<select data-ik="line">${opts([['none','なし'],['top','上に線'],['left','左に線'],['box','四角で囲む']], it.line)}</select></label>
         <label class="f">区画の中の列数<select data-ik="gcols" data-num>${opts([1, 2, 3, 4].map(c => [c, c + '列']), +it.gcols)}</select></label>
       </div>
-      <label class="f">区画の中の列の幅の比率（空欄なら均等）<input type="text" data-ik="gratio" value="${esc(it.gratio)}" placeholder="例: 60 40"></label>
+      <label class="f" data-dep="gcols>1">区画の中の列の幅の比率（空欄なら均等）<input type="text" data-ik="gratio" value="${esc(it.gratio)}" placeholder="例: 60 40"></label>
       ${common}
       <p class="hint" style="margin:0">この下に並べたブロックが、次の「区画」か「区画おわり」までこの区画に入ります。「文字だけ」のときは見出しの色が文字の色になります。</p>
     </div></details>`;
@@ -745,13 +762,13 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="chk"><input type="checkbox" data-ik="r18"${it.r18 ? ' checked' : ''}>R-18</label>
       </div>
       <div class="row">
-        <label class="f">バッジの出し方<select data-ik="badgeMode">${opts([['text','タイトルの上'],['stamp','画像に重ねる（スタンプ）']], it.badgeMode || 'text')}</select></label>
-        ${it.badgeMode === 'stamp' ? `<label class="f">スタンプの位置<select data-ik="stampPos">${opts([['tl','左上'],['tr','右上'],['bl','左下'],['br','右下']], it.stampPos || 'tl')}</select></label>` : ''}
+        <label class="f" data-dep="badge1">バッジの出し方<select data-ik="badgeMode">${opts([['text','タイトルの上'],['stamp','画像に重ねる（スタンプ）']], it.badgeMode || 'text')}</select></label>
+        ${it.badgeMode === 'stamp' ? `<label class="f" data-dep="badge1">スタンプの位置<select data-ik="stampPos">${opts([['tl','左上'],['tr','右上'],['bl','左下'],['br','右下']], it.stampPos || 'tl')}</select></label>` : ''}
       </div>
-      ${it.badgeMode === 'stamp' ? `<div class="row">
+      ${it.badgeMode === 'stamp' ? `<div class="row" data-dep="badge1">
         <label class="f">スタンプの形<select data-ik="stampShape">${opts([['none','文字だけ'],['rect','長方形'],['round','角丸'],['circle','正円']], it.stampShape || 'circle')}</select></label>
-        <label class="f">内側の線<select data-ik="stampRing">${opts([['none','なし'],['single','1本'],['double','2本']], it.stampRing || 'single')}</select></label>
-        <label class="chk" style="flex:.7"><input type="checkbox" data-ik="stampJag"${it.stampJag ? ' checked' : ''}>ギザギザ</label>
+        <label class="f" data-dep="stampShape!=none">内側の線<select data-ik="stampRing">${opts([['none','なし'],['single','1本'],['double','2本']], it.stampRing || 'single')}</select></label>
+        <label class="chk" style="flex:.7" data-dep="stampShape!=none"><input type="checkbox" data-ik="stampJag"${it.stampJag ? ' checked' : ''}>ギザギザ</label>
       </div>
       <p class="hint" style="margin-top:-4px">スタンプの色はテーマの色、傾きはデザインタブの「重ねた見出し（スタンプ）の傾き」に合わせます。画像がないときはタイトルの上に出ます。</p>` : ''}
       <label class="f">詳細（判型・ページ数・サイズ）<textarea data-ik="spec" rows="1" style="min-height:0" placeholder="A5 / 34P">${esc(it.spec)}</textarea></label>
@@ -763,7 +780,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f" style="flex:.5">単位<input type="text" data-ik="unit" value="${esc(it.unit)}"></label>
       </div>
       ${common}
-      <div class="row">
+      <div class="row" data-dep="img|phOn">
         <label class="f">画像の位置<select data-ik="imgPos">
           ${[['left','左'],['right','右'],['top','上']].map(([v, l]) => `<option value="${v}"${it.imgPos === v ? ' selected' : ''}>${l}</option>`).join('')}
         </select></label>
@@ -771,9 +788,9 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
           ${[['start','上'],['center','中央'],['end','下']].map(([v, l]) => `<option value="${v}"${(it.imgAlign || 'start') === v ? ' selected' : ''}>${l}</option>`).join('')}
         </select></label>
       </div>
-      <label class="chk" style="margin:-2px 0 8px"><input type="checkbox" data-ik="imgFill"${it.imgFill ? ' checked' : ''}>画像の縦幅を区画の縦幅に合わせる（横幅は自動。画像の位置が左・右のとき）</label>
-      <label class="f">画像の幅 <span class="rangeval">${it.imgW}%</span><input type="range" min="15" max="100" step="1" data-ik="imgW" data-num value="${it.imgW}"></label>
-      <label class="f">タイトルの位置<select data-ik="titlePos">${opts([['info','画像の横（詳細と同じ欄）'],['top','ブロックの一番上（画像の上にまたがる）']], it.titlePos || 'info')}</select></label>
+      <label class="chk" style="margin:-2px 0 8px" data-dep="img&imgPos!=top|phOn&imgPos!=top"><input type="checkbox" data-ik="imgFill"${it.imgFill ? ' checked' : ''}>画像の縦幅を区画の縦幅に合わせる（横幅は自動。画像の位置が左・右のとき）</label>
+      <label class="f" data-dep="img|phOn">画像の幅 <span class="rangeval">${it.imgW}%</span><input type="range" min="15" max="100" step="1" data-ik="imgW" data-num value="${it.imgW}"></label>
+      <label class="f" data-dep="img|phOn">タイトルの位置<select data-ik="titlePos">${opts([['info','画像の横（詳細と同じ欄）'],['top','ブロックの一番上（画像の上にまたがる）']], it.titlePos || 'info')}</select></label>
     </div>
   </details>`;
 }
@@ -788,6 +805,11 @@ function buildItems() {
     return itemCard(it, n + 1, first ? n === 0 : open.has(it.id), inGrp ? +grp.gcols || 1 : state.cols, inGrp);
   }).join('')
     + `<datalist id="badgeList"><option>新刊</option><option>既刊</option><option>NEW</option><option>OLD</option><option>再販</option></datalist>`;
+  $$('#itemList .card').forEach(card => { const it = state.items.find(x => x.id === card.dataset.id); if (it) itemDeps(card, it); });
+}
+// 頒布物カードの「今は反映されない設定」を薄くする（区画の見出しの形は昔のデータの読み替えも含めて判定）
+function itemDeps(card, it) {
+  applyDeps(card, k => it.type === 'grp' && k === 'badgeShape' ? grpShape(it).shape : it[k]);
 }
 const findItem = el => { const card = el.closest('.card'); return card && [card, state.items.findIndex(x => x.id === card.dataset.id)]; };
 
@@ -799,6 +821,7 @@ $('#itemList').addEventListener('input', e => {
   if (k === 'gcols') { render(); save(); buildItems(); return; }  // 区画内の横幅の選択肢を作り直す
   if (k === 'phOn' || k === 'badgeAuto' || k === 'badgeMode') { render(); save(); buildItems(); return; }   // 設定欄の出し入れ・有効/無効を切り替える
   if (k === 'imgW') el.previousElementSibling.textContent = el.value + '%';
+  itemDeps(card, it);
   render(); save();
 });
 $('#itemList').addEventListener('click', e => {

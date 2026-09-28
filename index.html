@@ -116,9 +116,12 @@
         <p class="hint">色・フォント（読み込んだフォントファイルも）・サイズ・列数・用紙の向き・背景画像・CSSをまとめて保存します。お品書きの中身（商品など）は変わりません。<br>マイテーマはお品書きとは別に、このブラウザに保存されます。</p>
 
         <h3>ベーステーマ</h3>
-        <label class="f"><select data-k="theme" id="themeSel"></select></label>
+        <div class="row" style="align-items:flex-end">
+          <label class="f"><select data-k="theme" id="themeSel"></select></label>
+          <button id="btnResetTheme" style="flex:none;margin-bottom:10px" title="色・フォント・サイズ・ヘッダー・背景・枠・付箋・影・CSSを、すべて今のテーマの初期状態に戻します">デザインを全部リセット</button>
+        </div>
         <p class="hint">「白紙」は飾りなしの状態です。CSSタブの「骨組みを挿入」から作り込むのがおすすめです。<br>ベーステーマを切り替えると、見た目の設定（色・フォント・サイズ・ヘッダー・背景・枠・付箋・CSS）がすべてそのテーマの初期状態になります。用紙の向き・列数・列の比率・余白の使い方はそのままです。<br>
-        切り替える前のデザインは「作業中：テーマ名」としてマイテーマに自動保存され、同じテーマに戻したときに復元できます。</p>
+        切り替える前のデザインは「作業中：テーマ名」としてマイテーマに自動保存され、同じテーマに戻したときに復元できます。「デザインを全部リセット」を押したときも同じです。</p>
         <div class="row">
           <label class="f">用紙の向き<select data-k="orient"><option value="portrait">A3 縦</option><option value="landscape">A3 横</option></select></label>
           <label class="f">列数<select data-k="cols" data-num><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
@@ -129,8 +132,8 @@
           <option value="between">上下に振り分け（最初は上端・最後は下端にぴったり）</option>
           <option value="stretch">ブロックを縦に引き伸ばす</option>
         </select></label>
-        <label class="f">列の幅の比率（空欄なら均等）<input type="text" data-k="colRatio" placeholder="例: 60 40"></label>
-        <div class="row" style="margin:-4px 0 6px;flex-wrap:wrap;gap:4px" id="ratioPresets">
+        <label class="f" data-dep="cols>1">列の幅の比率（空欄なら均等）<input type="text" data-k="colRatio" placeholder="例: 60 40"></label>
+        <div class="row" style="margin:-4px 0 6px;flex-wrap:wrap;gap:4px" id="ratioPresets" data-dep="cols>1">
           <button data-ratio="" style="flex:none">均等</button>
           <button data-ratio="60 40" style="flex:none">6:4</button>
           <button data-ratio="40 60" style="flex:none">4:6</button>
@@ -140,7 +143,7 @@
         </div>
         <p class="hint">左の列から順に、数字をスペースで区切って書きます（「60 40」なら左60%・右40%）。合計が100でなくても比率として扱います。区画の中の列の幅は、各区画の設定で指定できます。</p>
         <label class="chk" style="margin:4px 0 6px"><input type="checkbox" data-k="colLine.on">列の間に区切り線を引く</label>
-        <div class="row">
+        <div class="row" data-dep="colLine.on">
           <label class="f">線の太さ(mm) <span class="rangeval" data-show="colLine.width"></span><input type="range" min="0.1" max="3" step="0.1" data-k="colLine.width" data-num></label>
           <label class="f">線の色<select data-k="colLine.role">
             <option value="ink">文字の色</option>
@@ -149,7 +152,7 @@
             <option value="paper">面・帯の色</option>
           </select></label>
         </div>
-        <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-k="colLine.inner">区画の中の列の間にも引く</label>
+        <label class="chk" style="margin:0 0 6px" data-dep="colLine.on"><input type="checkbox" data-k="colLine.inner">区画の中の列の間にも引く</label>
         <p class="hint">列の境目（列の比率を変えても正しい位置）に縦線を引きます。横いっぱいの見出しや区画があるところでは線が途切れます。</p>
 
         <h3>ヘッダー</h3>
@@ -165,6 +168,7 @@
         <p class="hint">サークル名の文字の大きさを自動で決めて、日付の上端からスペースの下端までと同じ高さにします（1行のまま折り返しません）。ロゴ画像の場合は画像の高さを揃えます。<br>左右揃え・高さ合わせは、日付〜スペースとサークル名が横に並ぶレイアウト（白紙・付箋ヘッダー）向けです。</p>
 
         <label class="chk" style="margin:12px 0 6px"><input type="checkbox" data-k="tab.on">日付・イベント名・スペースを付箋（タブ）にする</label>
+        <div data-dep="tab.on">
         <div class="row">
           <label class="f">付箋の色<input type="color" data-k="tab.bg" style="width:100%;height:31px;padding:0"></label>
           <label class="f">付箋の文字色<input type="color" data-k="tab.fg" style="width:100%;height:31px;padding:0"></label>
@@ -176,7 +180,7 @@
             <option value="slant">斜め</option>
             <option value="round">角丸</option>
           </select></label>
-          <label class="f">形の大きさ(mm) <span class="rangeval" data-show="tab.size"></span><input type="range" min="1" max="12" step="0.5" data-k="tab.size" data-num></label>
+          <label class="f" data-dep="tab.shape!=straight">形の大きさ(mm) <span class="rangeval" data-show="tab.size"></span><input type="range" min="1" max="12" step="0.5" data-k="tab.size" data-num></label>
         </div>
         <div class="row">
           <label class="chk" style="margin-top:0"><input type="checkbox" data-k="tab.toTop">用紙の上端まで伸ばす</label>
@@ -184,10 +188,11 @@
         </div>
         <div class="row">
           <label class="f">枠線の太さ(mm) <span class="rangeval" data-show="tab.border"></span><input type="range" min="0" max="3" step="0.1" data-k="tab.border" data-num></label>
-          <label class="f" style="flex:.6">枠線の色<input type="color" data-k="tab.borderColor" style="width:100%;height:31px;padding:0"></label>
+          <label class="f" style="flex:.6" data-dep="tab.border>0">枠線の色<input type="color" data-k="tab.borderColor" style="width:100%;height:31px;padding:0"></label>
         </div>
-        <label class="chk" style="margin:0 0 8px"><input type="checkbox" data-k="tab.topLine">上端の枠線を表示する</label>
+        <label class="chk" style="margin:0 0 8px" data-dep="tab.border>0"><input type="checkbox" data-k="tab.topLine">上端の枠線を表示する</label>
         <label class="f">付箋の内側の余白(mm) <span class="rangeval" data-show="tab.pad"></span><input type="range" min="0" max="15" step="0.5" data-k="tab.pad" data-num></label>
+        </div>
         <p class="hint">左上の日付〜スペースを、用紙の端から伸びる付箋（タブ）の形にします。サークル名はその右に並びます。<br>
         白い箱＋黒い枠線にするなら、付箋の色を白・枠線を 0.5mm くらいにしてください。ギザギザ・斜めのときは、下端の枠線は形に沿いません。</p>
 
@@ -205,16 +210,15 @@
           <div class="pal-list" id="palettes"></div>
         </div>
         <p class="hint">レイアウトやフォントはそのままで、色の組み合わせだけ入れ替えます。模様・枠・付箋・区画の見出し・CSSで同じ色を使っているところも一緒に変わります。</p>
-        <p><button id="btnResetTheme">このテーマの初期状態に戻す</button></p>
 
         <h3>背景パターン</h3>
         <div class="row">
           <label class="f">模様<select data-k="pattern.type" id="patternSel"></select></label>
-          <label class="f" style="flex:.45">色<input type="color" data-k="pattern.color" style="width:100%;height:31px;padding:0"></label>
+          <label class="f" style="flex:.45" data-dep="pattern.type!=none">色<input type="color" data-k="pattern.color" style="width:100%;height:31px;padding:0"></label>
         </div>
-        <label class="f">大きさ・間隔 <span class="rangeval" data-show="pattern.size"></span><input type="range" min="2" max="80" step="0.5" data-k="pattern.size" data-num></label>
-        <label class="f">線・点の太さ <span class="rangeval" data-show="pattern.weight"></span><input type="range" min="0.1" max="20" step="0.1" data-k="pattern.weight" data-num></label>
-        <label class="f">濃さ <span class="rangeval" data-show="pattern.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="pattern.opacity" data-num></label>
+        <label class="f" data-dep="pattern.type!=none">大きさ・間隔 <span class="rangeval" data-show="pattern.size"></span><input type="range" min="2" max="80" step="0.5" data-k="pattern.size" data-num></label>
+        <label class="f" data-dep="pattern.type!=none">線・点の太さ <span class="rangeval" data-show="pattern.weight"></span><input type="range" min="0.1" max="20" step="0.1" data-k="pattern.weight" data-num></label>
+        <label class="f" data-dep="pattern.type!=none">濃さ <span class="rangeval" data-show="pattern.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="pattern.opacity" data-num></label>
         <p class="hint">模様を切り替えると、大きさ・太さがその模様のおすすめ値に戻ります。</p>
 
         <h3>縁取り・枠</h3>
@@ -227,20 +231,20 @@
             <option value="dashed">破線</option>
             <option value="dotted">点線</option>
           </select></label>
-          <label class="f" style="flex:.45">線の色<input type="color" data-k="frame.color" style="width:100%;height:31px;padding:0"></label>
+          <label class="f" style="flex:.45" data-dep="frame.type!=none">線の色<input type="color" data-k="frame.color" style="width:100%;height:31px;padding:0"></label>
         </div>
         <div class="row">
           <label class="chk" style="margin-top:0"><input type="checkbox" data-k="frame.fill">枠の中を塗る</label>
-          <label class="f" style="flex:.45">塗りの色<input type="color" data-k="frame.fillColor" style="width:100%;height:31px;padding:0"></label>
+          <label class="f" style="flex:.45" data-dep="frame.fill">塗りの色<input type="color" data-k="frame.fillColor" style="width:100%;height:31px;padding:0"></label>
         </div>
-        <label class="f">塗りの不透明度 <span class="rangeval" data-show="frame.fillAlpha"></span><input type="range" min="0" max="1" step="0.05" data-k="frame.fillAlpha" data-num></label>
-        <label class="f">用紙の端からの距離(mm)<span class="rangeval" data-show="frame.inset"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.inset" data-num></label>
-        <label class="f">角の丸さ(mm) <span class="rangeval" data-show="frame.radius"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.radius" data-num></label>
-        <label class="f">線の太さ(mm) <span class="rangeval" data-show="frame.width"></span><input type="range" min="0" max="8" step="0.1" data-k="frame.width" data-num></label>
-        <label class="f">影のずれ(mm) <span class="rangeval" data-show="frame.shadow"></span><input type="range" min="0" max="10" step="0.5" data-k="frame.shadow" data-num></label>
+        <label class="f" data-dep="frame.fill">塗りの不透明度 <span class="rangeval" data-show="frame.fillAlpha"></span><input type="range" min="0" max="1" step="0.05" data-k="frame.fillAlpha" data-num></label>
+        <label class="f" data-dep="frame.type!=none|frame.fill">用紙の端からの距離(mm)<span class="rangeval" data-show="frame.inset"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.inset" data-num></label>
+        <label class="f" data-dep="frame.type!=none|frame.fill">角の丸さ(mm) <span class="rangeval" data-show="frame.radius"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.radius" data-num></label>
+        <label class="f" data-dep="frame.type!=none">線の太さ(mm) <span class="rangeval" data-show="frame.width"></span><input type="range" min="0" max="8" step="0.1" data-k="frame.width" data-num></label>
+        <label class="f" data-dep="frame.type!=none|frame.fill">影のずれ(mm) <span class="rangeval" data-show="frame.shadow"></span><input type="range" min="0" max="10" step="0.5" data-k="frame.shadow" data-num></label>
         <div class="row">
-          <label class="chk" style="margin-top:0"><input type="checkbox" data-k="frame.pad">中身を枠の内側に収める</label>
-          <label class="f">枠と中身の間(mm) <span class="rangeval" data-show="frame.padding"></span><input type="range" min="0" max="30" step="0.5" data-k="frame.padding" data-num></label>
+          <label class="chk" style="margin-top:0" data-dep="frame.type!=none|frame.fill"><input type="checkbox" data-k="frame.pad">中身を枠の内側に収める</label>
+          <label class="f" data-dep="frame.type!=none&frame.pad|frame.fill&frame.pad">枠と中身の間(mm) <span class="rangeval" data-show="frame.padding"></span><input type="range" min="0" max="30" step="0.5" data-k="frame.padding" data-num></label>
         </div>
         <p class="hint">「枠の中を塗る」＋角丸で、ポップテーマのような「模様の上に白いカード」が作れます。<br>
         「中身を枠の内側に収める」をオフにすると、余白はテーマやCSSの指定どおりになります。</p>
@@ -251,7 +255,7 @@
           <div><label class="btn">画像を選択<input type="file" accept="image/*" id="bgFile" hidden></label>
           <button id="bgClear">外す</button></div>
         </div>
-        <div class="row">
+        <div class="row" data-dep="bg.img">
           <label class="f">敷き方<select data-k="bg.fit">
             <option value="cover">全面（はみ出しはカット）</option>
             <option value="contain">全体が入るように</option>
@@ -263,8 +267,8 @@
             <option value="back">テーマの面より下</option>
           </select></label>
         </div>
-        <label class="f">濃さ <span class="rangeval" data-show="bg.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="bg.opacity" data-num></label>
-        <label class="f">タイルの大きさ(mm) <span class="rangeval" data-show="bg.tile"></span><input type="range" min="5" max="300" step="1" data-k="bg.tile" data-num></label>
+        <label class="f" data-dep="bg.img">濃さ <span class="rangeval" data-show="bg.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="bg.opacity" data-num></label>
+        <label class="f" data-dep="bg.img&bg.fit=repeat">タイルの大きさ(mm) <span class="rangeval" data-show="bg.tile"></span><input type="range" min="5" max="300" step="1" data-k="bg.tile" data-num></label>
         <p class="hint">「テーマの面より下」にすると、ポップや額縁の枠・カードが画像の上に乗ります。文字が読みにくいときは濃さを下げてください。</p>
 
         <h3>フォント</h3>

@@ -55,6 +55,8 @@ input[type=range]{width:100%}
 .cm-swatch{display:inline-block;width:.9em;height:.9em;margin:0 3px -1px 0;border:1px solid #888;border-radius:2px;cursor:pointer;vertical-align:baseline}
 code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 /* 影の設定欄（オフ・テーマのままのときは薄くして触れないように） */
+.dep-off{opacity:.4;pointer-events:none}   /* チェックが入っていないなど、今は反映されない設定 */
+.dep-off .dep-off{opacity:1}   /* 入れ子のときに二重に薄くならないように */
 .shadow-ui.off label{opacity:.4;pointer-events:none}   /* プリセットのボタンは押せる（押すと影がオンになる） */
 .css-warn{background:#fff4d6;border:1px solid #f0c24b;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;line-height:1.7;color:#5c4300}
 .classlist{font-size:12px;color:var(--ui-sub)}
