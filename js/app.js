@@ -713,7 +713,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f">横幅<select data-ik="span" data-num>${spanOpts}</select></label>
         <label class="f">クラス名（CSS用）<input type="text" data-ik="cls" value="${esc(it.cls)}" placeholder="big など"></label>
       </div>`;
-  if (it.type === 'end') return head + `<p class="hint" style="margin:0">ここより下のブロックは、どの区画にも入らず用紙に直接並びます。</p></div></details>`;
+  if (it.type === 'end') return head + `<p class="hint" style="margin:0">ここより下のブロックは、区画に入らず用紙に直接並びます。</p></div></details>`;
   if (it.type === 'grp') return head + `
       <div class="row">
         <label class="f">見出し<input type="text" data-ik="text" value="${esc(it.text)}" list="badgeList" placeholder="新刊 / 既刊 / NEW / OLD"></label>
@@ -738,7 +738,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
       </div>
       <label class="f" data-dep="gcols>1">区画の中の列の幅の比率（空欄なら均等）<input type="text" data-ik="gratio" value="${esc(it.gratio)}" placeholder="例: 60 40"></label>
       ${common}
-      <p class="hint" style="margin:0">この下に並べたブロックが、次の「区画」か「区画おわり」までこの区画に入ります。「文字だけ」のときは見出しの色が文字の色になります。</p>
+      <p class="hint" style="margin:0">次の「区画」か「区画おわり」までのブロックが、この区画に入ります。</p>
     </div></details>`;
   if (it.type !== 'item') return head + (it.type === 'hr' ? '' :`<label class="f">${TYPE_LABEL[it.type]}<textarea data-ik="text">${esc(it.text)}</textarea></label>`) + common + '</div></details>';
   return head + `
@@ -770,7 +770,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f" data-dep="stampShape!=none">内側の線<select data-ik="stampRing">${opts([['none','なし'],['single','1本'],['double','2本']], it.stampRing || 'single')}</select></label>
         <label class="chk" style="flex:.7" data-dep="stampShape!=none"><input type="checkbox" data-ik="stampJag"${it.stampJag ? ' checked' : ''}>ギザギザ</label>
       </div>
-      <p class="hint" style="margin-top:-4px">スタンプの色はテーマの色、傾きはデザインタブの「重ねた見出し（スタンプ）の傾き」に合わせます。画像がないときはタイトルの上に出ます。</p>` : ''}
+      <p class="hint" style="margin-top:-4px">大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>` : ''}
       <label class="f">詳細（判型・ページ数・サイズ）<textarea data-ik="spec" rows="1" style="min-height:0" placeholder="A5 / 34P">${esc(it.spec)}</textarea></label>
       <label class="f">カップリング・ジャンル<textarea data-ik="cp" rows="1" style="min-height:0">${esc(it.cp)}</textarea></label>
       <label class="f">説明文<textarea data-ik="desc">${esc(it.desc)}</textarea></label>

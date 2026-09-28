@@ -27,6 +27,8 @@ input[type=text],input[type=number],textarea,select{font:inherit;color:var(--ui-
 textarea{resize:vertical;min-height:54px}
 .row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
 .hint{color:var(--ui-sub);font-size:11px;line-height:1.6;margin:4px 0 12px}
+.hint ul{margin:0;padding-left:1.2em}
+.hint li+li{margin-top:2px}
 h3{font-size:13px;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--ui-line)}
 h3:first-child{margin-top:0}
 .card{border:1px solid var(--ui-line);border-radius:8px;margin-bottom:10px;background:#fcfbfa}
@@ -78,7 +80,8 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .stagebar{display:flex;gap:8px;align-items:center;padding:6px 14px;border-bottom:1px solid var(--ui-line);background:#fff}
 .warn{color:#c92a2a;font-weight:700;font-size:12px;display:none}
 .warn.on{display:block}
-.credit{margin-left:auto;font-size:11px;color:var(--ui-sub);text-decoration:none;white-space:nowrap}
+.ver{margin-left:auto;font-size:10px;color:var(--ui-sub);opacity:.7;white-space:nowrap}
+.credit{font-size:11px;color:var(--ui-sub);text-decoration:none;white-space:nowrap}
 .credit:hover{color:var(--ui-accent);text-decoration:underline}
 .stage{flex:1;overflow:auto;padding:24px}
 .scaler{margin:0 auto;position:relative}
