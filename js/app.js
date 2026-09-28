@@ -1320,7 +1320,7 @@ function openHelp(tab = 'guide') {
   $$('[data-help-tab]').forEach(b => b.classList.toggle('on', b.dataset.helpTab === tab));
   $('#helpTitle').textContent = tab === 'guide' ? '使い方' : 'よくある質問';
   $('#helpBody').innerHTML = tab === 'guide'
-    ? `<p style="margin-top:0">次の順番で入力していくと良い感じです。「画面で見る」を押すと、その場所が光ります。</p>` +
+    ? `<p style="margin-top:0">次の順番で進めるとスムーズです。「画面で見る」を押すと、その場所が光ります。</p>` +
       GUIDE_STEPS.map((s, i) => `<div class="guide-step" id="guide-step-${i}">
         <div class="guide-num">${i + 1}</div>
         <div><h3>${s.title}</h3>${s.body}
