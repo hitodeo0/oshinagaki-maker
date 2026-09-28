@@ -1126,9 +1126,10 @@ $('#classRef').innerHTML = CLASS_REF.map(([group, rows], i) => `<details${i < 4 
 $('#classRef').addEventListener('click', e => {
   const c = e.target.closest('[data-sel]'); if (!c) return;
   const sel = c.dataset.sel;
+  // 変数はカーソル位置に、クラスはスニペットと同じく一番最後に足す
   if (sel.startsWith('--')) { insertCss(`var(${sel})`, true); return; }
   // .theme-xxx や .tab-on は用紙(.sheet)自身につくクラスなので、間をあけずにつなげる
-  insertCss(sel === '.sheet' || /^\.(theme-|tab-on)/.test(sel) ? `.sheet${sel === '.sheet' ? '' : sel} {  }` : `.sheet ${sel} {  }`);
+  appendCss(sel === '.sheet' || /^\.(theme-|tab-on)/.test(sel) ? `.sheet${sel === '.sheet' ? '' : sel} {  }` : `.sheet ${sel} {  }`);
   // カーソルを { } の中へ
   if (cssEditor) {
     const p = cssEditor.getValue().lastIndexOf('{  }', cssEditor.indexFromPos(cssEditor.getCursor())) + 2;
