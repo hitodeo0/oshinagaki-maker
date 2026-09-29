@@ -50,8 +50,10 @@ async function buildFontEmbedCss(node) {
   return parts.filter(Boolean).join('\n');
 }
 
-// Safari（iPhone・iPad・Mac）かどうか。iPad は「Mac の Safari」を名乗るので、タッチの有無でも見分ける
-const IS_SAFARI = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// iPhone・iPad かどうか（iPad は「Mac」を名乗るので、タッチの有無でも見分ける）。iOS は Chrome なども中身は Safari と同じ
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// Safari と同じ仕組みのブラウザ（iOS の全ブラウザ・Mac の Safari）
+const IS_WEBKIT = IS_IOS || /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent);
 // Safari の canvas は面積の上限がある（約1677万ピクセル）。超えると真っ白になるので、その手前まで縮める
 const SAFARI_MAX_AREA = 16777216;
 
@@ -71,7 +73,7 @@ async function exportImage(type) {
     try { fontCss = await buildFontEmbedCss(sh); } catch (e) { console.warn(e); }
     fontCss += state.fileFonts.map(f => `@font-face{font-family:'${f.family.replace(/'/g, "\\'")}';src:url(${f.data});font-weight:100 900}`).join('\n');
     let pixelRatio = 300 / 96 * paperScale(), shrunk = false;
-    if (IS_SAFARI && sh.offsetWidth * sh.offsetHeight * pixelRatio ** 2 > SAFARI_MAX_AREA) {
+    if (IS_WEBKIT && sh.offsetWidth * sh.offsetHeight * pixelRatio ** 2 > SAFARI_MAX_AREA) {
       pixelRatio = Math.sqrt(SAFARI_MAX_AREA / (sh.offsetWidth * sh.offsetHeight)) * 0.98; shrunk = true;
     }
     const opts = {
@@ -81,9 +83,9 @@ async function exportImage(type) {
       // position は relative のまま（static にすると、背景の模様・枠などの重ねたレイヤーの位置の基準がなくなって消える）
       style: { transform: 'none', position: 'relative', left: '0', top: '0', margin: '0', boxShadow: 'none' },
     };
-    // Safari は1回目の描画で画像（表紙など）の読み込みが間に合わず抜けることがある。
-    // 小さい倍率で2回描いて画像を読み込ませておいてから、本番を描く
-    if (IS_SAFARI) for (let n = 0; n < 2; n++) await htmlToImage.toCanvas(sh, { ...opts, pixelRatio: 0.2 });
+    // Safari 系は最初の何回かの描画で画像（表紙など）の読み込みが間に合わず抜けることがある。
+    // 少し小さい倍率で先に3回描いて画像を読み込ませておいてから、本番を描く
+    if (IS_WEBKIT) for (let n = 0; n < 3; n++) await htmlToImage.toCanvas(sh, { ...opts, pixelRatio: 0.5 });
     // JPG は部品の backgroundColor を使うと用紙の背景色まで白で上書きされるので、
     // PNG と同じように描いてから、白い下地に重ねて JPG にする
     let url;
@@ -97,8 +99,9 @@ async function exportImage(type) {
       g.drawImage(src, 0, 0);
       url = c.toDataURL('image/jpeg', 0.92);
     }
-    const a = document.createElement('a');
-    a.href = url; a.download = `${fileBaseName()}${clear ? '_背景なし' : ''}.${type === 'jpg' ? 'jpg' : 'png'}`; a.click();
+    const name = `${fileBaseName()}${clear ? '_背景なし' : ''}.${type === 'jpg' ? 'jpg' : 'png'}`;
+    if (IS_IOS) showImageResult(url, name);   // iPhone・iPad はダウンロードが分かりにくいので、画像を画面に出して保存してもらう
+    else { const a = document.createElement('a'); a.href = url; a.download = name; a.click(); }
     status.textContent = shrunk ? '画像を保存しました（Safari の上限に合わせて少し小さめ）' : '画像を保存しました';
   } catch (e) {
     console.error(e);
@@ -108,6 +111,22 @@ async function exportImage(type) {
     sh.classList.remove('export-clear');
   }
 }
+// できた画像を画面に出す（「共有・写真に保存」ボタン、または画像の長押しで保存）
+function showImageResult(url, name) {
+  $('#imgResult').src = url;
+  const dl = $('#imgDownload'); dl.href = url; dl.download = name;
+  $('#imgShare').style.display = navigator.share ? '' : 'none';   // 共有に対応していないブラウザでは出さない
+  $('#imgShare').onclick = async () => {
+    try {
+      const file = new File([await (await fetch(url)).blob()], name, { type: url.startsWith('data:image/jpeg') ? 'image/jpeg' : 'image/png' });
+      if (navigator.canShare && !navigator.canShare({ files: [file] })) throw new Error('共有に対応していません');
+      await navigator.share({ files: [file] });
+    } catch (e) { if (e.name !== 'AbortError') alert('共有できませんでした。画像を長押しして保存してください。'); }
+  };
+  $('#imgModal').classList.add('on');
+}
+$('#imgModalClose').onclick = () => { $('#imgModal').classList.remove('on'); $('#imgResult').removeAttribute('src'); };
+$('#imgModal').addEventListener('click', e => { if (e.target.id === 'imgModal') $('#imgModalClose').click(); });
 $('#imgExport').onchange = e => { const t = e.target.value; e.target.value = ''; if (t) exportImage(t); };
 $('#fileImport').onchange = async e => {
   const f = e.target.files[0]; if (!f) return;

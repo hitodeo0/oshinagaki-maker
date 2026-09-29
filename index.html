@@ -492,7 +492,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.17.1（2026/09/29 更新）</span>
+      <span class="ver">v1.17.2（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
@@ -512,6 +512,23 @@
       <button id="helpClose" aria-label="閉じる">✕</button>
     </div>
     <div class="modal-body" id="helpBody"></div>
+  </div>
+</div>
+<!-- 画像で保存（iPhone・iPad）: できた画像を表示して保存してもらう -->
+<div class="modal" id="imgModal" role="dialog" aria-modal="true" aria-labelledby="imgModalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="imgModalTitle">画像ができました</h2>
+      <button id="imgModalClose" aria-label="閉じる">✕</button>
+    </div>
+    <div class="modal-body img-result">
+      <p class="hint" style="margin-top:0">「共有・写真に保存」から「画像を保存」を選ぶと、写真アプリに保存できます。<br>画像を長押しして「"写真"に追加」でも保存できます。</p>
+      <div class="row">
+        <button id="imgShare" class="btn-c primary">共有・写真に保存</button>
+        <a id="imgDownload" class="btn btn-c">ファイルとして保存</a>
+      </div>
+      <img id="imgResult" alt="できた画像">
+    </div>
   </div>
 </div>
 <div class="guide-toast" id="guideToast"><span id="guideToastText"></span><button id="guideBack">使い方に戻る</button></div>
