@@ -97,6 +97,13 @@ function spaceHTML(v) {
   return m ? `<span class="sh-space-pre">${esc(m[1])}</span>${esc(m[2])}${esc(m[3])}` : esc(v);
 }
 
+// キャッチ。「形と色を選ぶ」のときは区画の見出しと同じ形のクラス（grp-shape-* など）を使う
+function headlineHTML(s, text) {
+  const h = s.hlStyle, free = s.headlinePos === 'free' ? ' hl-free' : '';
+  if (h.mode !== 'custom') return `<div class="headline${free}">${esc(text)}</div>`;
+  return `<div class="headline hl-custom grp-shape-${h.shape} grp-ring-${h.ring}${h.jag && h.shape !== 'none' ? ' grp-jag' : ''}${free}"><span class="grp-badge">${esc(text)}</span></div>`;
+}
+
 function render() {
   const s = state, i = s.info, sh = $('#sheet');
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
@@ -112,6 +119,8 @@ function render() {
     '--fr-style': ['double', 'dashed', 'dotted'].includes(fr.type) ? fr.type : 'solid',
     '--fr-fill': fr.fill ? hexToRgba(fr.fillColor, fr.fillAlpha ?? 1) : 'transparent', '--fr-sh': fr.shadow, '--fr-top': fr.top || 0, '--fr-pad': fr.padding,
     '--title-k': s.titleK ?? 1, '--price-k': s.priceK ?? 1, '--text-k': s.textK ?? 1, '--grp-k': s.grpK ?? 1, '--circle-k': s.circleK ?? 1,
+    '--hl-x': s.headlineX ?? 78, '--hl-y': s.headlineY ?? 8, '--hl-k': s.headlineK ?? 1,
+    '--hl-bg': roleColor(s.hlStyle.bgRole, s.hlStyle.bg), '--hl-fg': roleColor(s.hlStyle.fgRole, s.hlStyle.fg), '--hl-tilt': s.hlStyle.tilt ?? 0,
     '--img-gap': s.imgGap ?? 6, '--stamp-tilt': s.stampTilt ?? -8, '--stamp-size': s.stampSize ?? 1,
     '--ts': shadowCss(s.textShadow), '--is': shadowCss(s.imgShadow),
     '--ld-char': JSON.stringify((LINE_MARKS[s.lineDeco.mark] || LINE_MARKS.none)[1]), '--ld-c': `var(--c-${s.lineDeco.role || 'accent'})`,
@@ -130,7 +139,7 @@ function render() {
   const frame = hasFrame ? `<div class="frame f-${fr.type}"></div>` : '';
   sh.innerHTML = `${pattern}${s.bg.layer === 'back' ? bgLayer + deco + frame : deco + frame + bgLayer}
     <header class="sh"><div class="sh-box">${f('sh-date', i.date)}${i.eventLogo ? `<div class="sh-event sh-logo"><img src="${urlFor(i.eventLogo)}" alt="${esc(i.event)}"></div>` : f('sh-event', i.event)}${i.space ? `<div class="sh-space">${spaceHTML(i.space)}</div>` : ''}</div>${i.logo ? `<div class="sh-circle"><img src="${urlFor(i.logo)}" alt="${esc(i.circle)}"></div>` : i.circle ? `<div class="sh-circle"><span class="sh-circle-t">${esc(i.circle)}</span></div>` : ''}</header>
-    ${i.headline ? `<div class="headline">${esc(i.headline)}</div>` : ''}
+    ${i.headline ? headlineHTML(s, i.headline) : ''}
     <main class="items vfill-${s.vfill || 'start'}">${blocksHTML()}</main>
     ${i.notes ? `<footer class="notes">${esc(i.notes)}</footer>` : ''}`;
   // 印刷: 用紙の大きさを mm で指定し、A3 で作った用紙をその大きさに縮める

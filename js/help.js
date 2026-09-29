@@ -5,8 +5,8 @@
 let guideLastStep = 0;
 function openHelp(tab = 'guide') {
   $$('[data-help-tab]').forEach(b => b.classList.toggle('on', b.dataset.helpTab === tab));
-  $('#helpTitle').textContent = tab === 'guide' ? '使い方' : 'よくある質問';
-  $('#helpBody').innerHTML = tab === 'guide'
+  $('#helpTitle').textContent = { guide: '使い方', faq: 'よくある質問', terms: '利用について' }[tab];
+  $('#helpBody').innerHTML = tab === 'terms' ? TERMS : tab === 'guide'
     ? `<p style="margin-top:0">次の順番で進めるとスムーズです。「画面で見る」を押すと、その場所が光ります。</p>` +
       GUIDE_STEPS.map((s, i) => `<div class="guide-step" id="guide-step-${i}">
         <div class="guide-num">${i + 1}</div>

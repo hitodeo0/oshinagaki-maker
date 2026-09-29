@@ -85,7 +85,7 @@
           <div class="hint" style="margin:4px 0 0">サークル名の文字の代わりに表示されます。</div></div>
         </div>
         <label class="f">スペース<input type="text" data-k="info.space" placeholder="A01a"></label>
-        <label class="f">キャッチ（任意）<input type="text" data-k="info.headline" placeholder="全部新刊!!"></label>
+        <label class="f">キャッチ（任意）<textarea data-k="info.headline" rows="2" class="ta1" placeholder="全部新刊!!"></textarea></label>
         <label class="f">フッター（注意書きなど・任意）<textarea data-k="info.notes" placeholder="※R-18頒布物は年齢確認のため身分証の提示をお願いします。"></textarea></label>
         <p class="hint">改行はそのまま反映されます。</p>
       </section>
@@ -331,6 +331,38 @@
         </div>
         <p class="hint">白い箱に黒い枠線にするなら、付箋の色を白、枠線の太さを 0.5mm くらいにします。<br>
         ギザギザ・斜めのときは、下端に枠線はつきません。</p>
+        <div class="sub-h">キャッチ（全部新刊!! など）</div>
+        <label class="f">キャッチの大きさ（倍） <span class="rangeval" data-show="headlineK"></span><input type="range" min="0.3" max="3" step="0.05" data-k="headlineK" data-num></label>
+        <label class="f">キャッチの見た目<select data-k="hlStyle.mode">
+          <option value="theme">テーマのまま</option>
+          <option value="custom">形と色を選ぶ</option>
+        </select></label>
+        <div data-dep="hlStyle.mode=custom">
+        <div class="row">
+          <label class="f">形<select data-k="hlStyle.shape"><option value="none">文字だけ</option><option value="rect">長方形</option><option value="round">角丸</option><option value="circle">正円</option></select></label>
+          <label class="f" data-dep="hlStyle.shape!=none">内側の線<select data-k="hlStyle.ring"><option value="none">なし</option><option value="single">1本</option><option value="double">2本</option><option value="dotted">点線</option></select></label>
+          <label class="chk" style="flex:.7" data-dep="hlStyle.shape!=none"><input type="checkbox" data-k="hlStyle.jag">ギザギザ</label>
+        </div>
+        <div class="row" data-dep="hlStyle.shape!=none">
+          <label class="f">塗りの色<select data-k="hlStyle.bgRole"><option value="ink">文字の色</option><option value="bg">背景の色</option><option value="paper">面・帯の色</option><option value="accent">アクセントの色</option><option value="sub">サブの色（模様・線）</option><option value="custom">自分で決める</option></select></label>
+          <label class="f" style="flex:.45" data-dep="hlStyle.bgRole=custom">&nbsp;<input type="color" data-k="hlStyle.bg" class="color-full"></label>
+        </div>
+        <div class="row">
+          <label class="f">文字の色<select data-k="hlStyle.fgRole"><option value="ink">文字の色</option><option value="bg">背景の色</option><option value="paper">面・帯の色</option><option value="accent">アクセントの色</option><option value="sub">サブの色（模様・線）</option><option value="custom">自分で決める</option></select></label>
+          <label class="f" style="flex:.45" data-dep="hlStyle.fgRole=custom">&nbsp;<input type="color" data-k="hlStyle.fg" class="color-full"></label>
+        </div>
+        <p class="hint" style="margin-top:-4px">ギザギザをオンにすると、形は星形のギザギザになります（正円なら丸い星形、それ以外は横長の星形）。</p>
+        <label class="f">傾き(度) <span class="rangeval" data-show="hlStyle.tilt"></span><input type="range" min="-30" max="30" step="1" data-k="hlStyle.tilt" data-num></label>
+        </div>
+        <label class="f">キャッチの位置<select data-k="headlinePos">
+          <option value="theme">テーマのまま</option>
+          <option value="free">好きな位置に置く</option>
+        </select></label>
+        <div class="row" data-dep="headlinePos=free">
+          <label class="f">横の位置(%) <span class="rangeval" data-show="headlineX"></span><input type="range" min="0" max="100" step="0.5" data-k="headlineX" data-num></label>
+          <label class="f">縦の位置(%) <span class="rangeval" data-show="headlineY"></span><input type="range" min="0" max="100" step="0.5" data-k="headlineY" data-num></label>
+        </div>
+        <p class="hint" style="margin-top:-4px">用紙の左上が 0・0、右下が 100・100 です。キャッチの真ん中がその位置に来ます。</p>
         </details>
 
         <details class="dsec" open data-sec="サイズ">
@@ -460,7 +492,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.14.2（2026/09/29 更新）</span>
+      <span class="ver">v1.16.4（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
@@ -475,6 +507,7 @@
       <div class="modal-tabs">
         <button data-help-tab="guide">使い方の流れ</button>
         <button data-help-tab="faq">よくある質問</button>
+        <button data-help-tab="terms">利用について</button>
       </div>
       <button id="helpClose" aria-label="閉じる">✕</button>
     </div>

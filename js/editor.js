@@ -101,7 +101,7 @@ document.addEventListener('input', e => {
   if (!el) return;
   const k = el.dataset.k;
   if (k === 'theme') { switchTheme(el.value); return; }   // テーマ切り替えは専用処理（作業中のデザインを自動保存してから切り替える）
-  const ROLE_COLOR = { 'pattern.role': 'pattern.color', 'tab.bgRole': 'tab.bg', 'tab.fgRole': 'tab.fg' };
+  const ROLE_COLOR = { 'pattern.role': 'pattern.color', 'tab.bgRole': 'tab.bg', 'tab.fgRole': 'tab.fg', 'hlStyle.bgRole': 'hlStyle.bg', 'hlStyle.fgRole': 'hlStyle.fg' };
   if (ROLE_COLOR[k] && el.value === 'custom') { const prev = getPath(state, k); if (state.colors[prev]) { setPath(state, ROLE_COLOR[k], state.colors[prev]); setTimeout(syncFields); } }
   setPath(state, k, el.type === 'checkbox' ? el.checked : el.hasAttribute('data-num') ? +el.value : el.value);
   if (k === 'pattern.type') { const [, size, weight] = PATTERNS[el.value]; Object.assign(state.pattern, { size, weight }); syncFields(); }
