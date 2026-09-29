@@ -28,7 +28,7 @@ function defaultState() {
     colors: { ...THEMES.blank.colors }, fonts: { ...THEMES.blank.fonts },
     bg: { img:'', fit:'cover', layer:'front', opacity:1, tile:60 },
     // 模様の色・付箋の色は role でデザインの色（sub / ink / paper / accent / bg）に合わせる。custom のときだけ color / bg / fg を使う
-    pattern: { type:'none', role:'sub', color:'#c8c8c8', size:10, weight:0.3, opacity:1 },
+    pattern: { ver:2, type:'none', role:'sub', color:'#c8c8c8', size:10, weight:0.3, opacity:1 },   // ver 2: 方眼・額縁テーマの方眼もここで描くようになった
     // 付箋ヘッダー（日付・イベント名・スペースを色つきの箱にして、用紙の端まで伸ばす）
     tab: { on:false, bgRole:'ink', fgRole:'bg', bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#111111', topLine:false,shape:'straight', size:3, toTop:true, toLeft:false, pad:5 },
     // 角の丸さ: radiusEach がオンなら rTL / rTR / rBR / rBL（左上・右上・右下・左下）をそれぞれ使う
@@ -68,6 +68,12 @@ function withDefaults(s) {
   const roleOf = c => ['sub', 'ink', 'paper', 'accent', 'bg'].find(r => s.colors && (s.colors[r] || '').toLowerCase() === (c || '').toLowerCase()) || 'custom';
   if (s.pattern && !s.pattern.role) s.pattern.role = roleOf(s.pattern.color);
   if (s.tab && !s.tab.bgRole) { s.tab.bgRole = roleOf(s.tab.bg); s.tab.fgRole = roleOf(s.tab.fg); }
+  // 方眼・額縁テーマの方眼は昔はテーマのCSSで描いていた → 模様が「なし」ならテーマの方眼を模様として入れる
+  if (s.pattern && s.pattern.ver !== 2) {
+    const tp = THEMES[s.theme]?.look?.pattern;
+    if (['grid', 'frame'].includes(s.theme) && tp && (s.pattern.type || 'none') === 'none') Object.assign(s.pattern, tp);
+    s.pattern.ver = 2;
+  }
   for (const k of NESTED_KEYS) s[k] = { ...d[k], ...s[k] };
   return s;
 }

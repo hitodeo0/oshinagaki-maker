@@ -356,13 +356,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 :where(.theme-blank) .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(2.6em * var(--circle-k,1));font-weight:900;text-align:right}
 
 /* ---------- テーマ: 方眼（方眼の背景＋上に濃い色の帯） ---------- */
-.theme-grid{
-  padding:0 18mm 16mm;
-  background-image:
-    linear-gradient(to right, color-mix(in srgb,var(--c-sub) 45%,transparent) .3mm, transparent .3mm),
-    linear-gradient(to bottom, color-mix(in srgb,var(--c-sub) 45%,transparent) .3mm, transparent .3mm);
-  background-size:11mm 11mm;background-position:-5mm -5mm;
-}
+.theme-grid{padding:0 18mm 16mm}   /* 方眼は背景パターン（テーマの初期設定）で描く */
 .theme-grid .sh{margin:0 -18mm 12mm;padding:7mm 18mm;background:var(--c-paper);color:var(--c-bg);
   display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"space circle date" "space circle event";column-gap:9mm;align-items:center}
 .theme-grid .sh-box{display:contents}
@@ -404,13 +398,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-duo .badge.new{background:none;color:var(--c-accent);border-color:var(--c-accent)}
 
 /* ---------- テーマ: 額縁 ---------- */
-.theme-frame{
-  padding:22mm 22mm;
-  background-image:
-    linear-gradient(to right, color-mix(in srgb,var(--c-sub) 70%,transparent) .5mm, transparent .5mm),
-    linear-gradient(to bottom, color-mix(in srgb,var(--c-sub) 70%,transparent) .5mm, transparent .5mm);
-  background-size:21mm 21mm;
-}
+.theme-frame{padding:22mm 22mm}   /* 方眼は背景パターン（テーマの初期設定）で描く */
 .theme-frame>.deco{inset:8mm;border:1.2mm solid var(--c-paper);border-radius:4mm;outline:.5mm solid var(--c-paper);outline-offset:-3.2mm}
 .theme-frame .sh{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.6em;margin-bottom:8mm;max-width:52%}
 .theme-frame .sh-box{display:contents}
