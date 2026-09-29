@@ -93,12 +93,11 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
   --c-bg:#fff;--c-paper:#eee;--c-ink:#222;--c-accent:#d33;--c-sub:#999;
   --f-head:sans-serif;--f-body:sans-serif;--f-num:sans-serif;
   --scale:1;--hs:1;--gap:1;--cols:2;
-  width:297mm;height:420mm;overflow:hidden;position:relative;
+  width:calc(var(--sheet-w,297) * 1mm);height:calc(var(--sheet-h,420) * 1mm);overflow:hidden;position:relative;   /* 大きさは用紙サイズ・向きから JS で決める */
   display:flex;flex-direction:column;
   background:var(--c-bg);color:var(--c-ink);
   font-family:var(--f-body);font-size:calc(4.6mm * var(--scale));line-height:1.4;
 }
-.sheet.landscape{width:420mm;height:297mm}
 /* 太さが1種類しかないフォント（Dela Gothic One など）をブラウザが無理やり太字にすると、にじんだ見た目になるので止める */
 .sheet{font-synthesis-weight:none}
 .sheet *{box-sizing:border-box}

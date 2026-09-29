@@ -230,10 +230,16 @@ function spaceHTML(v) {
   return m ? `<span class="sh-space-pre">${esc(m[1])}</span>${esc(m[2])}${esc(m[3])}` : esc(v);
 }
 
-// A3 に対する縮小率。B判は縦横比がほんの少し違うので、はみ出さない方に合わせる（わずかに余白が出るのを防ぐため少しだけ小さく）
-function paperScale() {
+// 画面で作る用紙の大きさ(mm)。短い辺は A3 と同じ 297mm、長い辺は用紙の縦横比どおり
+function paperSize() {
   const [, w, h] = PAPERS[state.paper] || PAPERS.A3;
-  return state.paper === 'A3' || !PAPERS[state.paper] ? 1 : Math.min(w / 297, h / 420) * 0.999;
+  const long = Math.round(297 * h / w * 100) / 100;
+  return state.orient === 'landscape' ? [long, 297] : [297, long];
+}
+// 実際の用紙に対する縮小率（A3 なら 1）。端数で2ページ目ができないよう、A3 以外はほんの少しだけ小さく
+function paperScale() {
+  const [, w] = PAPERS[state.paper] || PAPERS.A3;
+  return w === 297 ? 1 : w / 297 * 0.999;
 }
 
 function render() {
@@ -254,6 +260,8 @@ function render() {
     '--col-line-c': `var(--c-${s.colLine.role || 'ink'})`, '--col-line-w': s.colLine.width,
     '--tab-bg': s.tab.bg, '--tab-fg': s.tab.fg, '--tab-bw': s.tab.border, '--tab-bc': s.tab.borderColor, '--tab-pad': s.tab.pad,
   };
+  const [sw, shh] = paperSize();
+  vars['--sheet-w'] = sw; vars['--sheet-h'] = shh;
   for (const [k, v] of Object.entries(vars)) sh.style.setProperty(k, v);
   const f = (cls, v) => v ? `<div class="${cls}">${esc(v)}</div>` : '';
   const bgLayer = s.bg.img ? `<div class="bgimg fit-${s.bg.fit}"></div>` : '';
@@ -565,7 +573,7 @@ function fit() {
   const w = sh.offsetWidth, h = sh.offsetHeight;
   const aw = stage.clientWidth - 48, ah = stage.clientHeight - 48;
   const z = $('#zoomSel').value;
-  const k = z === 'fit' ? Math.min(aw / w, ah / h) : z === 'width' ? aw / w : +z;
+  const k = z === 'fit' ? Math.min(aw / w, ah / h) : z === 'width' ? aw / w : +z * paperScale();   // 100% = 実際の用紙の大きさ
   sh.style.transform = `scale(${k})`;
   sc.style.width = w * k + 'px';
   sc.style.height = h * k + 'px';

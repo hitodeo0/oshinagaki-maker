@@ -57,7 +57,8 @@ const PATTERNS = {
 };
 const FONTS = ['Noto Sans JP','Zen Kaku Gothic New','M PLUS 1p','M PLUS Rounded 1c','Zen Maru Gothic','Dela Gothic One','Zen Old Mincho','Shippori Mincho B1','DotGothic16','Oswald','Bebas Neue'];
 // 用紙サイズ: キー → [表示名, 幅mm, 高さmm]（縦向き）。B判は日本の印刷で使う JIS B
-// 編集画面はいつも A3 の大きさで作り、印刷・画像保存のときに選んだ用紙の大きさに縮める（A判・B判は縦横比が同じなので見た目は変わらない）
+// 用紙は「短い辺 = 297mm（A3 と同じ）」の大きさで作り、長い辺は選んだ用紙の縦横比に合わせる。
+// 文字や余白の大きさは A3 のときと同じ感覚のまま、印刷・画像保存のときに実際の大きさへ縮める
 const PAPERS = {
   A3: ['A3', 297, 420],
   B4: ['B4', 257, 364],
