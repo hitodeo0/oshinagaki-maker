@@ -142,11 +142,11 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .pattern.p-gingham{background-image:linear-gradient(90deg,color-mix(in srgb,var(--c) 50%,transparent) 50%,transparent 50%),linear-gradient(0deg,color-mix(in srgb,var(--c) 50%,transparent) 50%,transparent 50%);background-size:var(--s) var(--s)}
 .pattern.p-burst{background-image:repeating-conic-gradient(from 0deg at 50% 45%,var(--c) 0 calc(var(--p-w) * 4deg),transparent calc(var(--p-w) * 4deg) calc(var(--p-s) * .5deg))}
 /* 縁取り・枠 */
-.sheet>.frame{position:absolute;z-index:0;pointer-events:none;inset:calc(var(--fr-inset) * 1mm);
+.sheet>.frame{position:absolute;z-index:0;pointer-events:none;inset:calc(var(--fr-inset) * 1mm);top:calc((var(--fr-inset) + var(--fr-top,0)) * 1mm);
   border:calc(var(--fr-w) * 1mm) var(--fr-style,solid) var(--fr-c);border-radius:calc(var(--fr-r) * 1mm);
   background:var(--fr-fill,transparent);box-shadow:calc(var(--fr-sh) * 1mm) calc(var(--fr-sh) * 1mm) 0 var(--fr-c)}
 .frame.f-inner{outline:calc(var(--fr-w) * .5mm) solid var(--fr-c);outline-offset:calc(var(--fr-w) * -3mm - 1.5mm)}
-.sheet.fr-pad{padding:calc((var(--fr-inset) + var(--fr-w) + var(--fr-pad)) * 1mm)}
+.sheet.fr-pad{padding:calc((var(--fr-inset) + var(--fr-w) + var(--fr-pad)) * 1mm)}   /* 「上だけさらに下げる」(--fr-top) は線だけを動かし、中身の位置は変えない */
 .bgimg.fit-contain{background-size:contain}
 .bgimg.fit-stretch{background-size:100% 100%}
 .bgimg.fit-repeat{background-repeat:repeat;background-position:0 0;background-size:calc(var(--bg-tile) * 1mm) auto}
@@ -198,6 +198,15 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .price{margin-top:auto;padding-top:.1em;align-self:flex-end;font-family:var(--f-num);font-size:calc(4.2em * var(--price-fit,1) * var(--price-k,1));font-weight:900;line-height:1;white-space:nowrap}
 .price.text{font-size:calc(2.8em * var(--price-fit,1) * var(--price-k,1))}
 .price .unit{font-size:.5em;margin-left:.05em}
+/* 値段を説明文の横に: 文字の欄を横並びにして、値段は右下に置く */
+.item.price-side>.info{flex-direction:row;align-items:flex-end;gap:.6em}
+.item.price-side>.info>.info-main{flex:1 1 auto}
+.item.price-side>.info>.price{flex:none;margin-top:0}
+/* 値段を説明文に重ねる: 同じマスに置いて、説明は左上から・値段は右下に（説明が長いと重なる） */
+.item.price-over>.info{display:grid;grid-template:minmax(0,1fr) / minmax(0,1fr)}
+.item.price-over>.info>*{grid-area:1 / 1}
+.item.price-over>.info>.info-main{align-self:start}
+.item.price-over>.info>.price{align-self:end;justify-self:end;margin-top:0;position:relative;z-index:1}
 .notes{margin-top:auto;padding-top:6mm;font-size:.8em;white-space:pre-wrap}
 .sh-circle-t{white-space:inherit}   /* 折り返すかどうかはサークル名の入れ物(.sh-circle)の指定に従う */
 /* 付箋ヘッダー: テーマごとのヘッダーの組み方より優先させる（.sheet.tab-on で詳細度を上げている） */
@@ -217,11 +226,15 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .blk-hr{border:0;border-top:.5mm solid currentColor;margin:0;height:0;align-self:center;
   position:relative;overflow:visible;width:calc(100% + var(--ld-over,0) * 2mm);margin-left:calc(var(--ld-over,0) * -1mm)}
 /* 線の端の飾り（区切り線ブロックは ::before/::after、列の区切り線は JS で .line-mark を置く） */
-.ld-on .blk-hr::before,.ld-on .blk-hr::after,.line-mark{content:var(--ld-char);position:absolute;translate:-50% -50%;
-  font-size:calc(var(--ld-size,6) * 1mm);line-height:1;color:var(--ld-c);font-family:"Noto Sans JP",sans-serif;font-weight:400;pointer-events:none;z-index:1}
+.ld-on .blk-hr::before,.ld-on .blk-hr::after,.ld-on .grp-line-top::before,.ld-on .grp-line-top::after,.line-mark{content:var(--ld-char);position:absolute;translate:-50% -50%;
+  font-size:calc(var(--ld-size,6) * 1mm);line-height:1;color:var(--ld-c);font-family:"Noto Sans JP",sans-serif;font-weight:400;pointer-events:none;z-index:-1}   /* 線・箱・画像より後ろ（背景の模様よりは前） */
 .ld-on .blk-hr::before,.ld-on .blk-hr::after{top:.25mm}
 .ld-on .blk-hr::before{left:0}
 .ld-on .blk-hr::after{left:100%}
+/* 区画の「上に線」の両端にも */
+.ld-on .grp-line-top::before,.ld-on .grp-line-top::after{top:.25mm}
+.ld-on .grp-line-top::before{left:0}
+.ld-on .grp-line-top::after{left:100%}
 /* 区画（新刊ブロック・既刊ブロックなど） */
 .grp{grid-column:span var(--span,1);min-width:0;position:relative;display:flex;flex-direction:column;gap:calc(5mm * var(--gap))}
 .grp-items{flex:1}
@@ -280,7 +293,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 :where(.theme-blank) .sh-date{grid-area:date;font-size:1.2em}
 :where(.theme-blank) .sh-event{grid-area:event;font-size:1.2em}
 :where(.theme-blank) .sh-space{grid-area:space;font-family:var(--f-num);font-size:5em;font-weight:900;line-height:1}
-:where(.theme-blank) .sh-circle{grid-area:circle;font-family:var(--f-head);font-size:2.6em;font-weight:900;text-align:right}
+:where(.theme-blank) .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(2.6em * var(--circle-k,1));font-weight:900;text-align:right}
 
 /* ---------- テーマ: 方眼×ダークヘッダー ---------- */
 .theme-grid{
@@ -294,7 +307,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
   display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"space circle date" "space circle event";column-gap:9mm;align-items:center}
 .theme-grid .sh-box{display:contents}
 .theme-grid .sh-space{grid-area:space;font-family:var(--f-num);font-size:5.4em;line-height:1}
-.theme-grid .sh-circle{grid-area:circle;font-family:var(--f-head);font-size:3em;line-height:1.1;white-space:nowrap}
+.theme-grid .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(3em * var(--circle-k,1));line-height:1.1;white-space:nowrap}
 .theme-grid .sh-date{grid-area:date;align-self:end;letter-spacing:.25em;font-weight:700;font-size:1.1em;text-align:right;white-space:nowrap}
 .theme-grid .sh-event{grid-area:event;align-self:start;font-weight:900;font-size:1.5em;text-align:right;line-height:1.1;white-space:nowrap}
 .theme-grid .img :is(img,.ph){filter:drop-shadow(1.8mm 1.8mm 0 var(--c-ink))}
@@ -310,7 +323,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-pop .sh-box{display:contents}
 .theme-pop .sh-date{grid-area:date;letter-spacing:.35em;font-size:1.5em;font-weight:700}
 .theme-pop .sh-event{grid-area:event;font-size:1.5em;font-weight:700}
-.theme-pop .sh-circle{grid-area:circle;align-self:center;font-family:var(--f-head);font-size:2.8em}
+.theme-pop .sh-circle{grid-area:circle;align-self:center;font-family:var(--f-circle,var(--f-head));font-size:calc(2.8em * var(--circle-k,1))}
 .theme-pop .sh-space{grid-area:space;text-align:center;font-family:var(--f-num);font-size:11em;font-weight:700;line-height:1.1}
 .theme-pop .img :is(img,.ph){filter:drop-shadow(1.6mm 1.6mm 0 color-mix(in srgb,var(--c-ink) 70%,#800))}
 .theme-pop .badge.new{border-radius:999px;background:var(--c-paper);color:var(--c-ink);border:.2em solid var(--c-ink);box-shadow:0 0 0 .15em var(--c-paper),0 0 0 .28em var(--c-ink);padding:.3em .8em;font-size:1.2em}
@@ -329,7 +342,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-frame .sh-box{display:contents}
 .theme-frame .sh-date{order:1;font-weight:700;font-size:1.35em}
 .theme-frame .sh-event{order:2;font-weight:700;font-size:1.35em}
-.theme-frame .sh-circle{order:3;width:100%;font-family:var(--f-head);font-weight:900;font-size:3.4em;line-height:1.1}
+.theme-frame .sh-circle{order:3;width:100%;font-family:var(--f-circle,var(--f-head));font-weight:900;font-size:calc(3.4em * var(--circle-k,1));line-height:1.1}
 .theme-frame .sh-space{order:4;width:100%;font-family:var(--f-num);font-weight:900;font-size:10em;line-height:.95;color:var(--c-paper)}
 .theme-frame .img :is(img,.ph){filter:drop-shadow(.4mm 0 0 var(--c-ink)) drop-shadow(-.4mm 0 0 var(--c-ink)) drop-shadow(0 .4mm 0 var(--c-ink)) drop-shadow(0 -.4mm 0 var(--c-ink))}
 .theme-frame .headline,.theme-report .headline{position:absolute;z-index:2;top:16mm;right:16mm;max-width:46%;margin:0;
@@ -342,7 +355,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-report .sh-date{font-family:var(--f-num);font-weight:700;font-size:1.8em;line-height:1.1}
 .theme-report .sh-event{font-weight:700;letter-spacing:.25em;font-size:1.1em}
 .theme-report .sh-space{font-family:var(--f-num);font-weight:700;font-size:7em;line-height:1}
-.theme-report .sh-circle{font-family:var(--f-head);font-size:5em;line-height:1;text-align:right;font-weight:900}
+.theme-report .sh-circle{font-family:var(--f-circle,var(--f-head));font-size:calc(5em * var(--circle-k,1));line-height:1;text-align:right;font-weight:900}
 .theme-report .headline{top:auto;bottom:14mm;right:14mm;background:var(--c-sub);color:#fff200;rotate:-8deg;font-family:var(--f-num)}
 .theme-report .info-main{background:var(--c-accent);color:#fff;padding:.6em .8em .7em;border:.5mm solid var(--c-ink)}
 .theme-report .title{font-size:calc(2.1em * var(--title-k,1))}
@@ -365,7 +378,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-band .sh-date,.theme-band .sh-event{text-align:right;font-weight:700;font-size:1.1em;line-height:1.35;white-space:nowrap}
 .theme-band .sh-date{grid-area:date;letter-spacing:.1em}
 .theme-band .sh-event{grid-area:event}
-.theme-band .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-head);font-weight:700;font-size:3.2em;line-height:1.1;white-space:nowrap}
+.theme-band .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-circle,var(--f-head));font-weight:700;font-size:calc(3.2em * var(--circle-k,1));line-height:1.1;white-space:nowrap}
 .theme-band .title{font-weight:700}
 .theme-band .price{font-weight:700;padding:0 .1em;background:linear-gradient(transparent 58%, color-mix(in srgb,var(--c-paper) 30%,transparent) 58%)}
 .theme-band .img :is(img,.ph){filter:drop-shadow(2mm 2mm 0 color-mix(in srgb,var(--c-paper) 75%,transparent))}
@@ -379,7 +392,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-tag .sh-event{grid-area:event;font-weight:700}
 .theme-tag .sh-space{grid-area:space;font-family:var(--f-num);font-size:5em;font-weight:900;line-height:1}
 /* サークル名は白抜き（ふちだけ）の文字 */
-.theme-tag .sh-circle{grid-area:circle;font-family:var(--f-head);font-size:3em;font-weight:900;line-height:1;color:var(--c-paper)}
+.theme-tag .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(3em * var(--circle-k,1));font-weight:900;line-height:1;color:var(--c-paper)}
 .theme-tag .info-main{background:var(--c-accent);color:#fff;padding:.6em .8em .7em}
 .theme-tag .title{font-size:calc(2.1em * var(--title-k,1))}
 .theme-tag .price{background:#fff200;color:var(--c-paper);padding:.22em .45em .16em;--z:.11em;
@@ -399,7 +412,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
   font-family:var(--f-num);font-size:6.5em;font-weight:700;line-height:1;padding:.12em .3em .12em 16mm;white-space:nowrap}
 .theme-duo .sh-date{grid-area:date;align-self:end;font-family:var(--f-num);font-size:1.5em;letter-spacing:.05em;color:var(--c-sub);white-space:nowrap}
 .theme-duo .sh-event{grid-area:event;align-self:start;font-size:1.3em;font-weight:700;color:var(--c-sub);white-space:nowrap}
-.theme-duo .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-head);font-weight:800;font-size:3.2em;line-height:1.1;color:var(--c-sub);white-space:nowrap;padding:5mm 0}
+.theme-duo .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-circle,var(--f-head));font-weight:800;font-size:calc(3.2em * var(--circle-k,1));line-height:1.1;color:var(--c-sub);white-space:nowrap;padding:5mm 0}
 .theme-duo .title{font-weight:800;font-size:calc(2.6em * var(--title-k,1))}
 .theme-duo .desc{font-weight:500}
 .theme-duo .price{font-weight:700}

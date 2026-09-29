@@ -15,14 +15,18 @@ const THEMES = {
             look: { scale: 1.15, hs: 0.7 } },
   pop:    { name: 'ストライプ', desc: '斜めストライプの背景＋角丸カード',  colors: { bg:'#f39321', paper:'#e8e9ea', ink:'#222222', accent:'#d7262f', sub:'#d9601f' }, fonts: { head:'Dela Gothic One', body:'M PLUS Rounded 1c', num:'Zen Kaku Gothic New' },
             look: { scale: 1.1, hs: 0.55, pattern: { type:'diag', color:'#d9601f', size:60, weight:7, opacity:1 } } },   // スペース番号がとても大きいテーマなので、ヘッダーは小さめから
-  tag:    { name: '付箋', desc: '付箋ヘッダー＋ギザギザの値札', colors: { bg:'#bfe3f5', paper:'#1136e8', ink:'#14163a', accent:'#ea5230', sub:'#e3f4fc' }, fonts: { head:'Noto Sans JP', body:'Noto Sans JP', num:'Zen Kaku Gothic New' },
-            look: { scale: 1.15, hs: 0.85, headAlign: 'max', circleFit: true, circleSX: 85,
+  tag:    { name: '付箋', desc: '付箋ヘッダー＋ギザギザの値札', colors: { bg:'#bfe3f5', paper:'#1136e8', ink:'#14163a', accent:'#ea5230', sub:'#e3f4fc' }, fonts: { head:'Noto Sans JP', body:'Noto Sans JP', num:'Zen Kaku Gothic New', circle:'Train One' },
+            look: { scale: 1.15, hs: 0.85, headAlign: 'max', circleFit: false, circleSX: 100, circleK: 2.6, circlePos: 'corner', circleTop: 2, circleRight: -3,
                     pattern: { type:'grid', color:'#e3f4fc', size:24, weight:1.6, opacity:1 },
-                    frame: { type:'solid', color:'#1136e8', width:1.4, radius:12, inset:9, fill:true, fillColor:'#ffffff', fillAlpha:0.7, shadow:0, pad:true, padding:8 },
+                    frame: { type:'solid', color:'#1136e8', width:1.4, radius:12, inset:9, top:30, fill:true, fillColor:'#ffffff', fillAlpha:0.7, shadow:0, pad:true, padding:8 },
                     tab: { on:true, bgRole:'paper', fgRole:'custom', bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#1136e8', topLine:false, shape:'straight', size:3, toTop:true, toLeft:false, pad:5 } } },
   report: { name: '報告書', desc: '書類風。色の箱＋ラベル付きの値札',               colors: { bg:'#fbf7f1', paper:'#ffffff', ink:'#111111', accent:'#ea5230', sub:'#1136e8' }, fonts: { head:'Zen Old Mincho', body:'Zen Kaku Gothic New', num:'Oswald' },
             // テーマの初期状態で変えたい見た目（themeLook で既定値に上書きされる）。報告書は付箋ヘッダー（白地・黒枠）
-            look: { scale: 1.1, hs: 0.8, headAlign: 'max', tab: { on:true, bgRole:'custom', fgRole:'ink', bg:'#ffffff',   /* 色の箱の余白がある分、文字は少し小さめ */ fg:'#111111', border:0.5, borderColor:'#111111', topLine:false, shape:'straight', toTop:true, toLeft:false, pad:5 } } },
+            look: { scale: 1.1, hs: 0.8, headAlign: 'max',
+                    // P7風: サークル名は用紙の右上に大きく、列の区切り線あり
+                    circlePos: 'corner', circleTop: 3, circleRight: 8, circleK: 1.5,
+                    colLine: { on:true, width:0.3, role:'ink', inner:true },
+                    tab: { on:true, bgRole:'custom', fgRole:'ink', bg:'#ffffff',   /* 色の箱の余白がある分、文字は少し小さめ */ fg:'#111111', border:0.5, borderColor:'#111111', topLine:false, shape:'straight', toTop:true, toLeft:false, pad:5 } } },
 };
 // 配色（色の役割: bg 背景 / paper 面・帯 / ink 文字 / accent アクセント / sub 模様・線）
 // 各テーマの色 + よくある組み合わせ
@@ -208,6 +212,20 @@ const SNIPPETS = {
 }`,
     '画像に枠線（四角）': `.sheet .img img { outline: .5mm solid var(--c-ink); }`,
     '画像を少し傾ける': `.sheet .img img { rotate: -3deg; }`,
+  },
+  '飾り': {
+    'キラキラ（✦）を背景に散らす': `/* 線や箱より後ろ、背景の模様より前に出ます。
+   1つ分 = var(--kira) no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す
+   色を変えるときは fill='%23e8562a' の e8562a を別の色コードに */
+.sheet::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  --kira: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M10 0C10.6 8 12 9.4 20 10C12 10.6 10.6 12 10 20C9.4 12 8 10.6 0 10C8 9.4 9.4 8 10 0Z' fill='%23e8562a'/></svg>");
+  background:
+    var(--kira) no-repeat 95% 16% / 14mm,
+    var(--kira) no-repeat 4% 47% / 10mm,
+    var(--kira) no-repeat 52% 60% / 7mm,
+    var(--kira) no-repeat 96% 93% / 12mm;
+}`,
   },
   'その他（見出し・テキストブロック）': {
     '見出しブロックを縦書きに': `.sheet .blk-sec { writing-mode: vertical-rl; }`,

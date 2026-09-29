@@ -161,7 +161,7 @@
           <label class="f" data-dep="lineDeco.mark!=none">飾りの大きさ(mm) <span class="rangeval" data-show="lineDeco.size"></span><input type="range" min="2" max="20" step="0.5" data-k="lineDeco.size" data-num></label>
           <label class="f">線のはみ出し(mm) <span class="rangeval" data-show="lineDeco.over"></span><input type="range" min="0" max="20" step="0.5" data-k="lineDeco.over" data-num></label>
         </div>
-        <p class="hint" style="margin-top:-4px">列の区切り線と「区切り線」ブロックの両端につきます。はみ出しは、線を両端から少し伸ばします。</p>
+        <p class="hint" style="margin-top:-4px">列の区切り線・「区切り線」ブロック・区画の「上に線」の両端につきます。はみ出しは、線を両端から少し伸ばします。</p>
 
         <h3>マイテーマ</h3>
         <div class="row" style="margin-bottom:8px">
@@ -251,6 +251,7 @@
         </div>
         <label class="f" data-dep="frame.fill">塗りの不透明度 <span class="rangeval" data-show="frame.fillAlpha"></span><input type="range" min="0" max="1" step="0.05" data-k="frame.fillAlpha" data-num></label>
         <label class="f" data-dep="frame.type!=none|frame.fill">用紙の端からの距離(mm)<span class="rangeval" data-show="frame.inset"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.inset" data-num></label>
+        <label class="f" data-dep="frame.type!=none|frame.fill">線の上だけさらに下げる(mm) <span class="rangeval" data-show="frame.top"></span><input type="range" min="0" max="80" step="0.5" data-k="frame.top" data-num></label>
         <label class="f" data-dep="frame.type!=none|frame.fill">角の丸さ(mm) <span class="rangeval" data-show="frame.radius"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.radius" data-num></label>
         <label class="f" data-dep="frame.type!=none">線の太さ(mm) <span class="rangeval" data-show="frame.width"></span><input type="range" min="0" max="8" step="0.1" data-k="frame.width" data-num></label>
         <label class="f" data-dep="frame.type!=none|frame.fill">影のずれ(mm) <span class="rangeval" data-show="frame.shadow"></span><input type="range" min="0" max="10" step="0.5" data-k="frame.shadow" data-num></label>
@@ -321,6 +322,7 @@
         <label class="f">頒布物どうしの間隔 <span class="rangeval" data-show="gap"></span><input type="range" min="0" max="3" step="0.1" data-k="gap" data-num></label>
         <div class="sub-h">ヘッダー</div>
         <label class="f">ヘッダーの大きさ <span class="rangeval" data-show="hs"></span><input type="range" min="0.4" max="1.6" step="0.05" data-k="hs" data-num></label>
+        <label class="f" data-dep="!circleFit">サークル名の大きさ（倍） <span class="rangeval" data-show="circleK"></span><input type="range" min="0.5" max="4" step="0.05" data-k="circleK" data-num></label>
         <div class="sub-h">区画</div>
         <label class="f">区画の見出しの大きさ（倍） <span class="rangeval" data-show="grpK"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="grpK" data-num></label>
         <div class="sub-h">頒布物</div>
@@ -336,6 +338,7 @@
 
         <h3>フォント</h3>
         <label class="f">見出し（サークル名・タイトル）<select data-k="fonts.head" class="fontSel"></select></label>
+        <label class="f">サークル名だけ別のフォントにする<select data-k="fonts.circle" class="fontSel" data-same="見出しと同じ"></select></label>
         <label class="f">本文<select data-k="fonts.body" class="fontSel"></select></label>
         <label class="f">数字（スペース・価格）<select data-k="fonts.num" class="fontSel"></select></label>
         <div class="fontmgr">
@@ -432,7 +435,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.9.1（2026/09/29 更新）</span>
+      <span class="ver">v1.12.2（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
