@@ -302,6 +302,12 @@
           <option value="box">日付〜スペースの塊とそろえる</option>
           <option value="corner">用紙の右上に置く</option>
         </select></label>
+        <label class="f" data-dep="circlePos=box">サークル名の揃え<select data-k="circleAlign">
+          <option value="theme">テーマのまま</option>
+          <option value="left">左寄せ</option>
+          <option value="center">中央（日付〜スペースの塊から見て）</option>
+          <option value="right">右寄せ</option>
+        </select></label>
         <div class="row" data-dep="circlePos=corner">
           <label class="f">用紙の上端からの距離(mm) <span class="rangeval" data-show="circleTop"></span><input type="range" min="-20" max="60" step="0.5" data-k="circleTop" data-num></label>
           <label class="f">用紙の右端からの距離(mm) <span class="rangeval" data-show="circleRight"></span><input type="range" min="-20" max="60" step="0.5" data-k="circleRight" data-num></label>
@@ -504,7 +510,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.19.4（2026/09/29 更新）</span>
+      <span class="ver">v1.20.1（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>

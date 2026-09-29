@@ -14,7 +14,7 @@ function defaultState() {
   return {
     v: 1, theme: 'blank', paper: 'A3', orient: 'portrait', cols: 2, colRatio: '', vfill: 'start', scale: 1.25, hs: 0.9, gap: 1,   /* A3に貼って離れて読むので、文字は大きめが初期値 */
     headAlign: 'none', circleFit: false, circleSX: 100,
-    circlePos: 'box', circleTop: 5, circleRight: 12,
+    circlePos: 'box', circleTop: 5, circleRight: 12, circleAlign: 'theme',   // circleAlign: サークル名の揃え（theme / left / center / right）
     headlinePos: 'theme', headlineX: 78, headlineY: 8, headlineK: 1,   // headlineK: キャッチの大きさ（倍）
     // キャッチの見た目（theme: テーマのまま / custom: 形・色・傾きを選ぶ。形・線・ギザギザは区画の見出しと同じクラスを使う）
     hlStyle: { mode:'theme', shape:'rect', ring:'none', jag:false, bgRole:'ink', fgRole:'bg', bg:'#111111', fg:'#ffffff', tilt:-4 },   // キャッチの位置（theme: テーマのまま / free: 用紙の左上から % で、キャッチの真ん中の位置）   // サークル名の位置（box: 日付〜スペースの塊とそろえる / corner: 用紙の右上。距離は用紙の端から mm）
@@ -95,7 +95,7 @@ function paperScale() {
 
 // テーマの初期状態の「見た目」。用紙の向き・列数・列の比率・余白の使い方は中身の並びに関わるので含めない
 // （用紙サイズはテーマでもマイテーマでも変えない）
-const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'circlePos', 'circleTop', 'circleRight', 'headlinePos', 'headlineX', 'headlineY', 'headlineK', 'hlStyle', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'circleK', 'textShadow', 'imgShadow', 'colLine', 'lineDeco', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'circlePos', 'circleTop', 'circleRight', 'circleAlign', 'headlinePos', 'headlineX', 'headlineY', 'headlineK', 'hlStyle', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'circleK', 'textShadow', 'imgShadow', 'colLine', 'lineDeco', 'bg', 'pattern', 'frame', 'tab', 'css'];
 // マイテーマに保存・適用する項目 = 見た目 ＋ テーマ・並び方（お品書きの中身には触らない）
 const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill', ...LOOK_KEYS];
 function themeLook(key) {

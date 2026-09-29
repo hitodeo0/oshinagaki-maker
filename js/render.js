@@ -108,7 +108,7 @@ function render() {
   const s = state, i = s.info, sh = $('#sheet');
   ensureUsedFonts(s);
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
-  sh.className = `sheet theme-${s.theme} ${s.orient}${hasFrame && fr.pad ? ' fr-pad' : ''}${s.tab.on ? ' tab-on' : ''}${s.tab.on && s.tab.topLine === false ? ' tab-notop' : ''}${s.textShadow.on ? ' ts-on' : ''}${s.lineDeco.mark !== 'none' ? ' ld-on' : ''}${s.imgShadow.mode !== 'theme' ? ' is-' + s.imgShadow.mode : ''}`;
+  sh.className = `sheet theme-${s.theme} ${s.orient}${hasFrame && fr.pad ? ' fr-pad' : ''}${s.tab.on ? ' tab-on' : ''}${s.tab.on && s.tab.topLine === false ? ' tab-notop' : ''}${s.textShadow.on ? ' ts-on' : ''}${s.lineDeco.mark !== 'none' ? ' ld-on' : ''}${s.circleAlign && s.circleAlign !== 'theme' ? ' ca-' + s.circleAlign : ''}${s.imgShadow.mode !== 'theme' ? ' is-' + s.imgShadow.mode : ''}`;
   const vars = {
     '--c-bg': s.colors.bg, '--c-paper': s.colors.paper, '--c-ink': s.colors.ink, '--c-accent': s.colors.accent, '--c-sub': s.colors.sub,
     '--f-head': fontStack(s.fonts.head, s.fonts.body), '--f-body': fontStack(s.fonts.body), '--f-num': fontStack(s.fonts.num, s.fonts.head, s.fonts.body),

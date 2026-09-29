@@ -277,6 +277,10 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .sheet.tab-on .sh-box > *{grid-area:auto;order:0;width:auto;text-align:left;color:inherit;align-self:flex-start}
 .sheet.tab-on .sh-circle{flex:1;min-width:0;text-align:right;grid-area:auto;order:0;width:auto}
 .sh-circle img{display:inline-block;vertical-align:top;height:1.3em;width:auto;max-width:100%;object-fit:contain}   /* inline-block にして、サークル名の文字と同じ揃え（右揃えなど）に従う */
+/* サークル名の揃え（「テーマのまま」以外を選んだとき。文字・ロゴ画像とも） */
+.sheet.ca-left .sh .sh-circle{text-align:left}
+.sheet.ca-center .sh .sh-circle{text-align:center}
+.sheet.ca-right .sh .sh-circle{text-align:right}
 .sh-event img{display:inline-block;vertical-align:middle;height:2.4em;width:auto;max-width:100%;object-fit:contain}
 /* 見出し・テキスト・区切り線ブロック */
 .blk{grid-column:span var(--span,1);min-width:0}
@@ -361,7 +365,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
   display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"space circle date" "space circle event";column-gap:9mm;align-items:center}
 .theme-grid .sh-box{display:contents}
 .theme-grid .sh-space{grid-area:space;font-family:var(--f-num);font-size:5.4em;line-height:1}
-.theme-grid .sh-circle{grid-area:circle;text-align:center;font-family:var(--f-circle,var(--f-head));font-size:calc(3em * var(--circle-k,1));line-height:1.1;white-space:nowrap}
+.theme-grid .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(3em * var(--circle-k,1));line-height:1.1;white-space:nowrap}
 .theme-grid .sh-date{grid-area:date;align-self:end;letter-spacing:.25em;font-weight:700;font-size:1.1em;text-align:right;white-space:nowrap}
 .theme-grid .sh-event{grid-area:event;align-self:start;font-weight:900;font-size:1.5em;text-align:right;line-height:1.1;white-space:nowrap}
 .theme-grid .img :is(img,.ph){filter:drop-shadow(1.8mm 1.8mm 0 var(--c-ink))}
@@ -404,7 +408,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-frame .sh-box{display:contents}
 .theme-frame .sh-date{order:1;font-weight:700;font-size:1.35em}
 .theme-frame .sh-event{order:2;font-weight:700;font-size:1.35em}
-.theme-frame .sh-circle{order:3;width:100%;text-align:center;font-family:var(--f-circle,var(--f-head));font-weight:900;font-size:calc(3.4em * var(--circle-k,1));line-height:1.1}
+.theme-frame .sh-circle{order:3;width:100%;font-family:var(--f-circle,var(--f-head));font-weight:900;font-size:calc(3.4em * var(--circle-k,1));line-height:1.1}
 .theme-frame .sh-space{order:4;width:100%;font-family:var(--f-num);font-weight:900;font-size:10em;line-height:.95;color:var(--c-paper)}
 .theme-frame .img :is(img,.ph){filter:drop-shadow(.4mm 0 0 var(--c-ink)) drop-shadow(-.4mm 0 0 var(--c-ink)) drop-shadow(0 .4mm 0 var(--c-ink)) drop-shadow(0 -.4mm 0 var(--c-ink))}
 .theme-frame .headline,.theme-report .headline{position:absolute;z-index:2;top:16mm;right:16mm;max-width:46%;margin:0;

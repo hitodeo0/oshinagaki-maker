@@ -214,8 +214,30 @@ function fitCircle() {
   if (t) Object.assign(t.style, { display: '', transform: '', transformOrigin: '', whiteSpace: '' });
   const target = state.circleFit ? fitCircleHeight(sh, circle, img) : null;
   squeezeCircle(circle, t);
+  if (state.circlePos !== 'corner' && state.circleAlign && state.circleAlign !== 'theme') fitCircleToBlock(sh, circle);
   if (state.circlePos === 'corner') placeCircleCorner(sh, circle, img, t);
   else if (target != null) alignCircleBottom(sh, circle, img, t, target);
+}
+
+// サークル名の揃え（左・中央・右）を選んだとき: サークル名が日付〜スペースの塊の上か下に積まれているなら（額縁テーマなど）、
+// サークル名の欄を塊と同じ幅・同じ左端にする → 左右の揃えが「塊から見て」になる。塊の横に並ぶテーマでは何もしない
+function fitCircleToBlock(sh, circle) {
+  const k = sh.getBoundingClientRect().width / sh.offsetWidth || 1;
+  // 要素の箱ではなく、実際に文字（画像）がある範囲で測る（額縁のスペース番号の欄は横いっぱいに広がっているため）
+  // 字間を広げた行は、最後の文字の後ろにも字間の分の空きがつくので、その分を除く
+  const extent = el => {
+    const r = document.createRange(); r.selectNodeContents(el); const b = r.getBoundingClientRect();
+    const ls = parseFloat(getComputedStyle(el).letterSpacing) || 0;
+    return { left: b.left, right: b.right - Math.max(0, ls) * k };
+  };
+  const rs = ['.sh-date', '.sh-event', '.sh-space'].map(s => $(s, sh)).filter(Boolean).map(extent);
+  if (!rs.length) return;
+  const left = Math.min(...rs.map(r => r.left)), right = Math.max(...rs.map(r => r.right));
+  const cr = circle.getBoundingClientRect();
+  if (!(cr.left <= left + 2 && cr.right >= right - 2)) return;   // 塊の横に並んでいる
+  // 幅は「元の幅 − 左右の余白」にして、元どおり1行を占める（前の行に入り込まない）ようにする
+  const ml = (left - cr.left) / k, mr = (cr.right - right) / k;
+  Object.assign(circle.style, { width: `calc(${cr.width / k}px - ${ml + mr}px)`, marginLeft: ml + 'px', marginRight: mr + 'px', flex: 'none' });
 }
 
 // 用紙の右上に置く: ヘッダーの並びから外し（absolute）、文字のインクの上端・右端を用紙の端から決めた距離に合わせる
