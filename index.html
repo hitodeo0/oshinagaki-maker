@@ -23,7 +23,7 @@
 <meta name="twitter:image:alt" content="海星式お品書きメーカー：お品書きを、ブラウザでかんたんに。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=M+PLUS+1p:wght@400;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&family=Zen+Maru+Gothic:wght@500;700;900&family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@400;700;900&family=Shippori+Mincho+B1:wght@500;800&family=DotGothic16&family=Oswald:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=M+PLUS+1p:wght@400;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&family=Zen+Maru+Gothic:wght@500;700;900&family=Dela+Gothic+One&family=Zen+Old+Mincho:wght@400;700;900&family=Shippori+Mincho+B1:wght@500;800&family=DotGothic16&family=Train+One&family=Oswald:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <!-- CSSエディター（CodeMirror 5）: 読み込めないときは普通の入力欄のまま動く -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
@@ -147,6 +147,21 @@
         </div>
         <label class="chk" style="margin:0 0 6px" data-dep="colLine.on"><input type="checkbox" data-k="colLine.inner">区画の中の列の間にも引く</label>
         <p class="hint">横いっぱいの見出しや区画があるところでは、線が途切れます。</p>
+        <div class="sub-h">線の端の飾り</div>
+        <div class="row">
+          <label class="f">飾り<select data-k="lineDeco.mark" id="lineMarkSel"></select></label>
+          <label class="f" data-dep="lineDeco.mark!=none">飾りの色<select data-k="lineDeco.role">
+            <option value="accent">アクセントの色</option>
+            <option value="ink">文字の色</option>
+            <option value="sub">サブの色（模様・線）</option>
+            <option value="paper">面・帯の色</option>
+          </select></label>
+        </div>
+        <div class="row">
+          <label class="f" data-dep="lineDeco.mark!=none">飾りの大きさ(mm) <span class="rangeval" data-show="lineDeco.size"></span><input type="range" min="2" max="20" step="0.5" data-k="lineDeco.size" data-num></label>
+          <label class="f">線のはみ出し(mm) <span class="rangeval" data-show="lineDeco.over"></span><input type="range" min="0" max="20" step="0.5" data-k="lineDeco.over" data-num></label>
+        </div>
+        <p class="hint" style="margin-top:-4px">列の区切り線と「区切り線」ブロックの両端につきます。はみ出しは、線を両端から少し伸ばします。</p>
 
         <h3>マイテーマ</h3>
         <div class="row" style="margin-bottom:8px">
@@ -254,6 +269,15 @@
         <p class="hint">字間を自動で調整して、3行の左右の端を揃えます。</p>
         <label class="f">サークル名の横幅（長体） <span class="rangeval" data-show="circleSX"></span><input type="range" min="30" max="100" step="1" data-k="circleSX" data-num></label>
         <p class="hint">小さくするほど縦長の文字になります（100 でそのまま）。</p>
+        <label class="f">サークル名の位置<select data-k="circlePos">
+          <option value="box">日付〜スペースの塊とそろえる</option>
+          <option value="corner">用紙の右上に置く</option>
+        </select></label>
+        <div class="row" data-dep="circlePos=corner">
+          <label class="f">用紙の上端からの距離(mm) <span class="rangeval" data-show="circleTop"></span><input type="range" min="-20" max="60" step="0.5" data-k="circleTop" data-num></label>
+          <label class="f">用紙の右端からの距離(mm) <span class="rangeval" data-show="circleRight"></span><input type="range" min="-20" max="60" step="0.5" data-k="circleRight" data-num></label>
+        </div>
+        <p class="hint" style="margin-top:-4px">「用紙の右上に置く」は、ヘッダーの並びから外して右上に重ねます。マイナスにすると用紙からはみ出させて、端で切れたように見せられます。</p>
         <label class="chk" style="margin:0 0 4px"><input type="checkbox" data-k="circleFit">サークル名の高さを「日付〜スペース」の高さに揃える</label>
         <p class="hint">サークル名（ロゴ画像）の大きさを自動で決めます。<br>
         左右揃え・高さ合わせは、日付とサークル名が横に並ぶテーマ（白紙・付箋ヘッダー）向けです。</p>
@@ -408,7 +432,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.7.2（2026/09/29 更新）</span>
+      <span class="ver">v1.9.1（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>

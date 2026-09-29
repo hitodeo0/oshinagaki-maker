@@ -38,9 +38,11 @@ function defaultState() {
   return {
     v: 1, theme: 'blank', paper: 'A3', orient: 'portrait', cols: 2, colRatio: '', vfill: 'start', scale: 1.25, hs: 0.9, gap: 1,   /* A3に貼って離れて読むので、文字は大きめが初期値 */
     headAlign: 'none', circleFit: false, circleSX: 100,
+    circlePos: 'box', circleTop: 5, circleRight: 12,   // サークル名の位置（box: 日付〜スペースの塊とそろえる / corner: 用紙の右上。距離は用紙の端から mm）
     imgGap: 6, stampTilt: -8, stampSize: 1,
     titleK: 1, priceK: 1, textK: 1, grpK: 1,   // 文字ごとの大きさ（倍）: タイトル・値段・詳細〜説明文・区画の見出し   // 画像と文字の間(mm)・重ねた見出し（スタンプ）の傾き(度)・大きさ(倍)
-    colLine: { on:false, width:0.4, role:'ink', inner:true },   // 列の間の区切り線（太さmm・色はデザインの色の役割・区画の中にも引くか）
+    colLine: { on:false, width:0.4, role:'ink', inner:true },
+    lineDeco: { mark:'none', role:'accent', size:6, over:0 },   // 列の区切り線・区切り線ブロックの両端の飾り（大きさ・はみ出しは mm）   // 列の間の区切り線（太さmm・色はデザインの色の役割・区画の中にも引くか）
     // 影（ずれ・ぼかしは mm、濃さは 0〜1）。画像の影 mode: theme=テーマのまま / none=なし / custom=自分で決める
     textShadow: { on:false, x:0.3, y:0.3, blur:0.8, color:'#000000', alpha:0.35 },
     imgShadow: { mode:'theme', x:1.5, y:1.5, blur:3, color:'#000000', alpha:0.4 },
@@ -254,7 +256,7 @@ const roleColor = (role, color) => role && role !== 'custom' ? `var(--c-${role})
 function render() {
   const s = state, i = s.info, sh = $('#sheet');
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
-  sh.className = `sheet theme-${s.theme} ${s.orient}${hasFrame && fr.pad ? ' fr-pad' : ''}${s.tab.on ? ' tab-on' : ''}${s.tab.on && s.tab.topLine === false ? ' tab-notop' : ''}${s.textShadow.on ? ' ts-on' : ''}${s.imgShadow.mode !== 'theme' ? ' is-' + s.imgShadow.mode : ''}`;
+  sh.className = `sheet theme-${s.theme} ${s.orient}${hasFrame && fr.pad ? ' fr-pad' : ''}${s.tab.on ? ' tab-on' : ''}${s.tab.on && s.tab.topLine === false ? ' tab-notop' : ''}${s.textShadow.on ? ' ts-on' : ''}${s.lineDeco.mark !== 'none' ? ' ld-on' : ''}${s.imgShadow.mode !== 'theme' ? ' is-' + s.imgShadow.mode : ''}`;
   const vars = {
     '--c-bg': s.colors.bg, '--c-paper': s.colors.paper, '--c-ink': s.colors.ink, '--c-accent': s.colors.accent, '--c-sub': s.colors.sub,
     '--f-head': fontStack(s.fonts.head, s.fonts.body), '--f-body': fontStack(s.fonts.body), '--f-num': fontStack(s.fonts.num, s.fonts.head, s.fonts.body),
@@ -267,6 +269,8 @@ function render() {
     '--title-k': s.titleK ?? 1, '--price-k': s.priceK ?? 1, '--text-k': s.textK ?? 1, '--grp-k': s.grpK ?? 1,
     '--img-gap': s.imgGap ?? 6, '--stamp-tilt': s.stampTilt ?? -8, '--stamp-size': s.stampSize ?? 1,
     '--ts': shadowCss(s.textShadow), '--is': shadowCss(s.imgShadow),
+    '--ld-char': JSON.stringify((LINE_MARKS[s.lineDeco.mark] || LINE_MARKS.none)[1]), '--ld-c': `var(--c-${s.lineDeco.role || 'accent'})`,
+    '--ld-size': s.lineDeco.size, '--ld-over': s.lineDeco.over,
     '--col-line-c': `var(--c-${s.colLine.role || 'ink'})`, '--col-line-w': s.colLine.width,
     '--tab-bg': roleColor(s.tab.bgRole, s.tab.bg), '--tab-fg': roleColor(s.tab.fgRole, s.tab.fg), '--tab-bw': s.tab.border, '--tab-bc': s.tab.borderColor, '--tab-pad': s.tab.pad,
   };
@@ -316,7 +320,7 @@ function render() {
 // 境目をまたぐブロック（横いっぱいの見出し・区画など）があるところは線を途切れさせる
 function drawColLines() {
   const sh = $('#sheet');
-  $$('.col-line', sh).forEach(e => e.remove());
+  $$('.col-line, .line-mark', sh).forEach(e => e.remove());
   const cl = state.colLine;
   if (!cl || !cl.on) return;
   for (const l of $$('.items', sh)) {
@@ -339,12 +343,21 @@ function drawColLines() {
       const segs = [];
       for (const [t, b] of blocked) { if (t > y) segs.push([y, t]); y = Math.max(y, b); }
       if (y < H) segs.push([y, H]);
-      for (const [t, b] of segs) {
-        if (b - t < 4) continue;
+      const over = (+state.lineDeco.over || 0) * MM, mark = (LINE_MARKS[state.lineDeco.mark] || LINE_MARKS.none)[1];
+      for (const [t0, b0] of segs) {
+        if (b0 - t0 < 4) continue;
+        const t = t0 - over, b = b0 + over;   // はみ出し: 両端を少し伸ばす
         const d = document.createElement('div');
         d.className = 'col-line';
         d.style.left = bx + 'px'; d.style.top = t + 'px'; d.style.height = (b - t) + 'px';
         l.appendChild(d);
+        // 両端の飾り
+        if (mark) for (const y of [t, b]) {
+          const m = document.createElement('span');
+          m.className = 'line-mark'; m.textContent = mark;
+          m.style.left = bx + 'px'; m.style.top = y + 'px';
+          l.appendChild(m);
+        }
       }
     }
   }
@@ -502,12 +515,26 @@ function fitCircle() {
   const sh = $('#sheet'), circle = $('.sh-circle', sh);
   if (!circle) return;
   const img = $('img', circle), t = $('.sh-circle-t', circle);
-  Object.assign(circle.style, { fontSize: '', lineHeight: '', whiteSpace: '', height: '', position: '', top: '', display: '', width: '', textAlign: '', justifySelf: '', marginLeft: '', marginRight: '', flex: '' });
+  Object.assign(circle.style, { fontSize: '', lineHeight: '', whiteSpace: '', height: '', position: '', top: '', right: '', left: '', display: '', width: '', textAlign: '', justifySelf: '', marginLeft: '', marginRight: '', flex: '' });
   if (img) img.style.height = '';
   if (t) Object.assign(t.style, { display: '', transform: '', transformOrigin: '', whiteSpace: '' });
   const target = state.circleFit ? fitCircleHeight(sh, circle, img) : null;
   squeezeCircle(circle, t);
-  if (target != null) alignCircleBottom(sh, circle, img, t, target);
+  if (state.circlePos === 'corner') placeCircleCorner(sh, circle, img, t);
+  else if (target != null) alignCircleBottom(sh, circle, img, t, target);
+}
+
+// 用紙の右上に置く: ヘッダーの並びから外し（absolute）、文字のインクの上端・右端を用紙の端から決めた距離に合わせる
+function placeCircleCorner(sh, circle, img, t) {
+  const head = $('.sh', sh);
+  const k = sh.getBoundingClientRect().height / sh.offsetHeight || 1;
+  Object.assign(circle.style, { position: 'absolute', top: '0px', right: '0px', left: 'auto', marginLeft: '0', marginRight: '0', flex: 'none', whiteSpace: 'nowrap', textAlign: 'right' });
+  const textEl = t && t.style.display === 'inline-block' ? t : circle;
+  const sr = sh.getBoundingClientRect(), cr = circle.getBoundingClientRect();
+  const inkTop = img ? img.getBoundingClientRect().top / k : textEl.getBoundingClientRect().top / k + inkBox(textEl).top;
+  circle.style.top = (sr.top / k + (+state.circleTop || 0) * MM - inkTop) + 'px';
+  // 右端: 今の右端から、用紙の右端 − 距離 まで動かす
+  circle.style.right = (cr.right - sr.right) / k + (+state.circleRight || 0) * MM + 'px';
 }
 
 // 下端をスペース（最後の行）のインクの下端に合わせる（長体で中身が inline-block になった後に測る）
@@ -596,6 +623,7 @@ $('#zoomSel').addEventListener('change', () => { fit(); checkOverflow(); });
 /* ---------- エディター: 共通フィールド ---------- */
 function fillStatic() {
   $('#themeSel').innerHTML = Object.entries(THEMES).map(([k, t]) => `<option value="${k}">${t.name}（${t.desc}）</option>`).join('');
+  $('#lineMarkSel').innerHTML = Object.entries(LINE_MARKS).map(([k, [name]]) => `<option value="${k}">${name}</option>`).join('');
   $('#patternSel').innerHTML = Object.entries(PATTERNS).map(([k, [name]]) => `<option value="${k}">${name}</option>`).join('');
   $('#palettes').innerHTML = PALETTES.map((p, i) => `<button class="pal" data-pal="${i}" title="${esc(p.name)}">
       <span class="dots">${['bg', 'paper', 'ink', 'accent', 'sub'].map(r => `<i style="background:${p.colors[r]}"></i>`).join('')}</span>${esc(p.name)}</button>`).join('');
@@ -942,7 +970,7 @@ $('#sheet').addEventListener('click', e => {
 
 /* ---------- マイテーマ ---------- */
 // デザインに関わる項目だけを保存・適用する（お品書きの中身には触らない）
-const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill','scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'textShadow', 'imgShadow', 'colLine', 'colors', 'fonts', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill','scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'circlePos', 'circleTop', 'circleRight', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'textShadow', 'imgShadow', 'colLine', 'lineDeco', 'colors', 'fonts', 'bg', 'pattern', 'frame', 'tab', 'css'];
 // 古い保存データに無い項目を既定値で補う
 // 影の設定 → 「横 縦 ぼかし 色」（text-shadow と drop-shadow の両方でそのまま使える形）
 const shadowCss = sd => `${+sd.x || 0}mm ${+sd.y || 0}mm ${Math.max(0, +sd.blur || 0)}mm ${hexToRgba(sd.color || '#000000', sd.alpha ?? 0.4)}`;
@@ -966,14 +994,14 @@ function withDefaults(s) {
   const roleOf = c => ['sub', 'ink', 'paper', 'accent', 'bg'].find(r => s.colors && (s.colors[r] || '').toLowerCase() === (c || '').toLowerCase()) || 'custom';
   if (s.pattern && !s.pattern.role) s.pattern.role = roleOf(s.pattern.color);
   if (s.tab && !s.tab.bgRole) { s.tab.bgRole = roleOf(s.tab.bg); s.tab.fgRole = roleOf(s.tab.fg); }
-  for (const k of ['info', 'bg', 'pattern', 'frame', 'tab', 'textShadow', 'imgShadow', 'colLine']) s[k] = { ...d[k], ...s[k] };
+  for (const k of ['info', 'bg', 'pattern', 'frame', 'tab', 'textShadow', 'imgShadow', 'colLine', 'lineDeco']) s[k] = { ...d[k], ...s[k] };
   return s;
 }
 let myThemes = [];
 const clone = o => JSON.parse(JSON.stringify(o));
 
 // テーマの初期状態の「見た目」。用紙の向き・列数・列の比率・余白の使い方は中身の並びに関わるので含めない
-const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'textShadow', 'imgShadow', 'colLine', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'circlePos', 'circleTop', 'circleRight', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'textShadow', 'imgShadow', 'colLine', 'lineDeco', 'bg', 'pattern', 'frame', 'tab', 'css'];
 function themeLook(key) {
   const d = defaultState(), look = {};
   for (const k of LOOK_KEYS) look[k] = clone(d[k]);

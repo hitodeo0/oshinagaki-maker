@@ -55,7 +55,7 @@ const PATTERNS = {
   burst:      ['集中線（放射）', 20, 1],
   cross:      ['×印を散らす', 45, 0.6],
 };
-const FONTS = ['Noto Sans JP','Zen Kaku Gothic New','M PLUS 1p','M PLUS Rounded 1c','Zen Maru Gothic','Dela Gothic One','Zen Old Mincho','Shippori Mincho B1','DotGothic16','Oswald','Bebas Neue'];
+const FONTS = ['Noto Sans JP','Zen Kaku Gothic New','M PLUS 1p','M PLUS Rounded 1c','Zen Maru Gothic','Dela Gothic One','Zen Old Mincho','Shippori Mincho B1','DotGothic16','Train One','Oswald','Bebas Neue'];
 // 用紙サイズ: キー → [表示名, 幅mm, 高さmm]（縦向き）。B判は日本の印刷で使う JIS B
 // 用紙は「短い辺 = 297mm（A3 と同じ）」の大きさで作り、長い辺は選んだ用紙の縦横比に合わせる。
 // 文字や余白の大きさは A3 のときと同じ感覚のまま、印刷・画像保存のときに実際の大きさへ縮める
@@ -65,6 +65,8 @@ const PAPERS = {
   A4: ['A4', 210, 297],
   B5: ['B5', 182, 257],
 };
+// 線の端の飾り: キー → [表示名, 文字]
+const LINE_MARKS = { none: ['なし', ''], star: ['✦ キラキラ', '✦'], dot: ['● 丸', '●'], cross: ['× バツ', '×'], plus: ['＋ 十字', '＋'] };
 // 仮の画像の縦横比: キー → [表示名, aspect-ratio]
 const PH_RATIOS = {
   a5:  ['A5 縦', '148 / 210'], b5:  ['B5 縦', '182 / 257'],
