@@ -56,7 +56,7 @@ function defaultState() {
     info: { event:'イベント名', eventLogo:'', date:'2026/10/01', circle:'サークル名', logo:'', space:'A01', headline:'', notes:'' },
     items: [
       newItem({ type:'grp', text:'新刊', span:99, gcols:1, badgeAuto:true }),
-      newItem({ title:'サンプル新刊', badge1:'新刊', r18:true, spec:'A5 / 34P', cp:'○○ × △△', desc:'ここに本の説明を書きます。\n改行もそのまま反映されます。', note:'※年齢確認のため、身分証の提示をお願いします。', price:'500', span:2 }),
+      newItem({ title:'サンプル新刊', phOn:true, badge1:'新刊', r18:true, spec:'A5 / 34P', cp:'○○ × △△', desc:'ここに本の説明を書きます。\n改行もそのまま反映されます。', note:'※年齢確認のため、身分証の提示をお願いします。', price:'500', span:2 }),
       newItem({ type:'grp', text:'既刊', span:99, gcols:2, line:'top', badgeAuto:true }),
       newItem({ title:'ステッカー', badge1:'既刊', spec:'45mm × 65mm / 2枚セット', price:'400', imgPos:'top', imgW:70 }),
       newItem({ title:'ポストカード', spec:'配布は無くなり次第終了', price:'無料配布', unit:'' }),
