@@ -38,7 +38,8 @@ function defaultState() {
   return {
     v: 1, theme: 'blank', paper: 'A3', orient: 'portrait', cols: 2, colRatio: '', vfill: 'start', scale: 1.25, hs: 0.9, gap: 1,   /* A3に貼って離れて読むので、文字は大きめが初期値 */
     headAlign: 'none', circleFit: false, circleSX: 100,
-    imgGap: 6, stampTilt: -8, stampSize: 1,   // 画像と文字の間(mm)・重ねた見出し（スタンプ）の傾き(度)・大きさ(倍)
+    imgGap: 6, stampTilt: -8, stampSize: 1,
+    titleK: 1, priceK: 1, textK: 1, grpK: 1,   // 文字ごとの大きさ（倍）: タイトル・値段・詳細〜説明文・区画の見出し   // 画像と文字の間(mm)・重ねた見出し（スタンプ）の傾き(度)・大きさ(倍)
     colLine: { on:false, width:0.4, role:'ink', inner:true },   // 列の間の区切り線（太さmm・色はデザインの色の役割・区画の中にも引くか）
     // 影（ずれ・ぼかしは mm、濃さは 0〜1）。画像の影 mode: theme=テーマのまま / none=なし / custom=自分で決める
     textShadow: { on:false, x:0.3, y:0.3, blur:0.8, color:'#000000', alpha:0.35 },
@@ -263,6 +264,7 @@ function render() {
     '--fr-c': fr.color, '--fr-w': fr.type === 'none' ? 0 : fr.width, '--fr-r': fr.radius, '--fr-inset': fr.inset,
     '--fr-style': ['double', 'dashed', 'dotted'].includes(fr.type) ? fr.type : 'solid',
     '--fr-fill': fr.fill ? hexToRgba(fr.fillColor, fr.fillAlpha ?? 1) : 'transparent', '--fr-sh': fr.shadow, '--fr-pad': fr.padding,
+    '--title-k': s.titleK ?? 1, '--price-k': s.priceK ?? 1, '--text-k': s.textK ?? 1, '--grp-k': s.grpK ?? 1,
     '--img-gap': s.imgGap ?? 6, '--stamp-tilt': s.stampTilt ?? -8, '--stamp-size': s.stampSize ?? 1,
     '--ts': shadowCss(s.textShadow), '--is': shadowCss(s.imgShadow),
     '--col-line-c': `var(--c-${s.colLine.role || 'ink'})`, '--col-line-w': s.colLine.width,
@@ -940,7 +942,7 @@ $('#sheet').addEventListener('click', e => {
 
 /* ---------- マイテーマ ---------- */
 // デザインに関わる項目だけを保存・適用する（お品書きの中身には触らない）
-const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill','scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'textShadow', 'imgShadow', 'colLine', 'colors', 'fonts', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill','scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'textShadow', 'imgShadow', 'colLine', 'colors', 'fonts', 'bg', 'pattern', 'frame', 'tab', 'css'];
 // 古い保存データに無い項目を既定値で補う
 // 影の設定 → 「横 縦 ぼかし 色」（text-shadow と drop-shadow の両方でそのまま使える形）
 const shadowCss = sd => `${+sd.x || 0}mm ${+sd.y || 0}mm ${Math.max(0, +sd.blur || 0)}mm ${hexToRgba(sd.color || '#000000', sd.alpha ?? 0.4)}`;
@@ -971,7 +973,7 @@ let myThemes = [];
 const clone = o => JSON.parse(JSON.stringify(o));
 
 // テーマの初期状態の「見た目」。用紙の向き・列数・列の比率・余白の使い方は中身の並びに関わるので含めない
-const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'textShadow', 'imgShadow', 'colLine', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'textShadow', 'imgShadow', 'colLine', 'bg', 'pattern', 'frame', 'tab', 'css'];
 function themeLook(key) {
   const d = defaultState(), look = {};
   for (const k of LOOK_KEYS) look[k] = clone(d[k]);

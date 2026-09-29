@@ -292,13 +292,23 @@
         ギザギザ・斜めのときは、下端に枠線はつきません。</p>
 
         <h3>サイズ</h3>
-        <label class="f">全体の文字サイズ <span class="rangeval" data-show="scale"></span><input type="range" min="0.5" max="1.8" step="0.05" data-k="scale" data-num></label>
+        <div class="sub-h">全体</div>
+        <label class="f">全体の文字サイズ <span class="rangeval" data-show="scale"></span><input type="range" min="0.5" max="3" step="0.05" data-k="scale" data-num></label>
+        <label class="f">頒布物どうしの間隔 <span class="rangeval" data-show="gap"></span><input type="range" min="0" max="3" step="0.1" data-k="gap" data-num></label>
+        <div class="sub-h">ヘッダー</div>
         <label class="f">ヘッダーの大きさ <span class="rangeval" data-show="hs"></span><input type="range" min="0.4" max="1.6" step="0.05" data-k="hs" data-num></label>
-        <label class="f">商品どうしの間隔 <span class="rangeval" data-show="gap"></span><input type="range" min="0" max="3" step="0.1" data-k="gap" data-num></label>
+        <div class="sub-h">区画</div>
+        <label class="f">区画の見出しの大きさ（倍） <span class="rangeval" data-show="grpK"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="grpK" data-num></label>
+        <div class="sub-h">頒布物</div>
+        <label class="f">タイトルの大きさ（倍） <span class="rangeval" data-show="titleK"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="titleK" data-num></label>
+        <label class="f">詳細〜注意書きの大きさ（倍） <span class="rangeval" data-show="textK"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="textK" data-num></label>
+        <label class="f">値段の大きさ（倍） <span class="rangeval" data-show="priceK"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="priceK" data-num></label>
+        <p class="hint" style="margin-top:-6px">値段は、欄の幅に収まる大きさまでしか大きくなりません。</p>
         <label class="f">画像と文字の間(mm) <span class="rangeval" data-show="imgGap"></span><input type="range" min="0" max="20" step="0.5" data-k="imgGap" data-num></label>
+        <div class="sub-h">スタンプ</div>
         <label class="f">スタンプの大きさ（倍） <span class="rangeval" data-show="stampSize"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="stampSize" data-num></label>
-        <label class="f">重ねた見出し（スタンプ）の傾き(度) <span class="rangeval" data-show="stampTilt"></span><input type="range" min="-30" max="30" step="1" data-k="stampTilt" data-num></label>
-        <p class="hint">スタンプの大きさと傾きは、画像や区画に重ねたバッジ・見出しに反映されます。傾きは 0 でまっすぐです。</p>
+        <label class="f">スタンプの傾き(度) <span class="rangeval" data-show="stampTilt"></span><input type="range" min="-30" max="30" step="1" data-k="stampTilt" data-num></label>
+        <p class="hint">画像や区画に重ねたバッジ・見出しに反映されます。傾きは 0 でまっすぐです。</p>
 
         <h3>フォント</h3>
         <label class="f">見出し（サークル名・タイトル）<select data-k="fonts.head" class="fontSel"></select></label>
@@ -398,7 +408,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.6.1（2026/09/29 更新）</span>
+      <span class="ver">v1.7.1（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
