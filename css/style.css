@@ -166,6 +166,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .sheet *{box-sizing:border-box}
 .sheet>*{position:relative;z-index:1}
 .sheet>.deco{position:absolute;z-index:0;pointer-events:none}
+.sheet>.orn{position:absolute;inset:0;z-index:0;pointer-events:none}   /* 飾りのレイヤー（スニペットの「飾り」で使う） */
 .sheet>.bgimg{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:var(--bgimg);background-position:center;background-repeat:no-repeat;background-size:cover;opacity:var(--bg-op,1)}
 /* 背景パターン（--p-s: 大きさmm / --p-w: 太さmm） */
 .sheet>.pattern{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:var(--p-op,1);
@@ -194,7 +195,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .pattern.p-burst{background-image:repeating-conic-gradient(from 0deg at 50% 45%,var(--c) 0 calc(var(--p-w) * 4deg),transparent calc(var(--p-w) * 4deg) calc(var(--p-s) * .5deg))}
 /* 縁取り・枠 */
 .sheet>.frame{position:absolute;z-index:0;pointer-events:none;inset:calc(var(--fr-inset) * 1mm);top:calc((var(--fr-inset) + var(--fr-top,0)) * 1mm);
-  border:calc(var(--fr-w) * 1mm) var(--fr-style,solid) var(--fr-c);border-radius:calc(var(--fr-r) * 1mm);
+  border:calc(var(--fr-w) * 1mm) var(--fr-style,solid) var(--fr-c);border-radius:var(--fr-radius, calc(var(--fr-r) * 1mm));
   background:var(--fr-fill,transparent);box-shadow:calc(var(--fr-sh) * 1mm) calc(var(--fr-sh) * 1mm) 0 var(--fr-c)}
 .frame.f-inner{outline:calc(var(--fr-w) * .5mm) solid var(--fr-c);outline-offset:calc(var(--fr-w) * -3mm - 1.5mm)}
 .sheet.fr-pad{padding:calc((var(--fr-inset) + var(--fr-w) + var(--fr-pad)) * 1mm)}   /* 「上だけさらに下げる」(--fr-top) は線だけを動かし、中身の位置は変えない */

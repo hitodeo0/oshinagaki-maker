@@ -31,7 +31,8 @@ function defaultState() {
     pattern: { type:'none', role:'sub', color:'#c8c8c8', size:10, weight:0.3, opacity:1 },
     // 付箋ヘッダー（日付・イベント名・スペースを色つきの箱にして、用紙の端まで伸ばす）
     tab: { on:false, bgRole:'ink', fgRole:'bg', bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#111111', topLine:false,shape:'straight', size:3, toTop:true, toLeft:false, pad:5 },
-    frame: { type:'none', color:'#111111', width:1, radius:8, inset:10, top:0, fill:false, fillColor:'#ffffff', fillAlpha:1,shadow:0, pad:true, padding:10 },
+    // 角の丸さ: radiusEach がオンなら rTL / rTR / rBR / rBL（左上・右上・右下・左下）をそれぞれ使う
+    frame: { type:'none', color:'#111111', width:1, radius:8, radiusEach:false, rTL:8, rTR:8, rBR:8, rBL:8, inset:10, top:0, fill:false, fillColor:'#ffffff', fillAlpha:1,shadow:0, pad:true, padding:10 },
     fileFonts: [],   // [{ family, file, data(dataURL) }]
     userFonts: [],   // PCにインストール済みのフォント名
     info: { event:'イベント名', eventLogo:'', date:'2026/10/01', circle:'サークル名', logo:'', space:'A01', headline:'', notes:'' },

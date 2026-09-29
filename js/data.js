@@ -79,6 +79,8 @@ const EXTRA_FONTS = [
   ['明朝・レトロ', [['Noto Serif JP', '400;700;900'], ['Kaisei Decol', '400;700'], ['Zen Antique', '400'], ['New Tegomin', '400']]],
   ['英数字', [['Anton', '400'], ['Righteous', '400']]],
 ];
+// 飾りのレイヤー（スニペットの「飾り」がそれぞれ1つずつ使う。線や箱より後ろ・背景より前）
+const ORNAMENT_LAYERS = ["kira","barcode","dots","dots34","xdots","slash","regmark","wave","corners"];
 // 線の端の飾り: キー → [表示名, 文字]
 const LINE_MARKS = { none: ['なし', ''], star: ['✦ キラキラ', '✦'], dot: ['● 丸', '●'], cross: ['× バツ', '×'], plus: ['＋ 十字', '＋'] };
 // 仮の画像の縦横比: キー → [表示名, aspect-ratio]
@@ -224,17 +226,128 @@ const SNIPPETS = {
     '画像を少し傾ける': `.sheet .img img { rotate: -3deg; }`,
   },
   '飾り': {
-    'キラキラ（✦）を背景に散らす': `/* 線や箱より後ろ、背景の模様より前に出ます。
-   1つ分 = var(--kira) no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す
-   色を変えるときは fill='%23e8562a' の e8562a を別の色コードに */
-.sheet::after {
-  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  --kira: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M10 0C10.6 8 12 9.4 20 10C12 10.6 10.6 12 10 20C9.4 12 8 10.6 0 10C8 9.4 9.4 8 10 0Z' fill='%23e8562a'/></svg>");
-  background:
-    var(--kira) no-repeat 95% 16% / 14mm,
-    var(--kira) no-repeat 4% 47% / 10mm,
-    var(--kira) no-repeat 52% 60% / 7mm,
-    var(--kira) no-repeat 96% 93% / 12mm;
+    'キラキラ（✦）を散らす': `/* キラキラ（✦）を散らす
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-accent) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-kira {
+  background: var(--c-accent);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M10 0C10.6 8 12 9.4 20 10C12 10.6 10.6 12 10 20C9.4 12 8 10.6 0 10C8 9.4 9.4 8 10 0Z'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 95% 16% / 14mm,
+    var(--m) no-repeat 4% 47% / 10mm,
+    var(--m) no-repeat 52% 60% / 7mm,
+    var(--m) no-repeat 96% 93% / 12mm;
+          mask:
+    var(--m) no-repeat 95% 16% / 14mm,
+    var(--m) no-repeat 4% 47% / 10mm,
+    var(--m) no-repeat 52% 60% / 7mm,
+    var(--m) no-repeat 96% 93% / 12mm;
+}`,
+    'バーコード（飾り・意味なし）': `/* バーコード（意味のない飾り）
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-ink) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-barcode {
+  background: var(--c-ink);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 51 30'><rect x='0' y='0' width='2' height='30'/><rect x='3' y='0' width='1' height='30'/><rect x='7' y='0' width='1' height='30'/><rect x='10' y='0' width='2' height='30'/><rect x='13' y='0' width='3' height='30'/><rect x='17' y='0' width='1' height='30'/><rect x='20' y='0' width='1' height='30'/><rect x='24' y='0' width='2' height='30'/><rect x='27' y='0' width='1' height='30'/><rect x='30' y='0' width='3' height='30'/><rect x='34' y='0' width='2' height='30'/><rect x='37' y='0' width='1' height='30'/><rect x='41' y='0' width='1' height='30'/><rect x='44' y='0' width='1' height='30'/><rect x='46' y='0' width='2' height='30'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 6% 97% / 38mm auto;
+          mask:
+    var(--m) no-repeat 6% 97% / 38mm auto;
+}`,
+    'ドット 3×3': `/* ドット 3×3
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-ink) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-dots {
+  background: var(--c-ink);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><circle cx='5' cy='5' r='2.4'/><circle cx='15' cy='5' r='2.4'/><circle cx='25' cy='5' r='2.4'/><circle cx='5' cy='15' r='2.4'/><circle cx='15' cy='15' r='2.4'/><circle cx='25' cy='15' r='2.4'/><circle cx='5' cy='25' r='2.4'/><circle cx='15' cy='25' r='2.4'/><circle cx='25' cy='25' r='2.4'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 95% 20% / 12mm,
+    var(--m) no-repeat 5% 70% / 9mm;
+          mask:
+    var(--m) no-repeat 95% 20% / 12mm,
+    var(--m) no-repeat 5% 70% / 9mm;
+}`,
+    'ドット 3×4': `/* ドット 3×4（縦長）
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-ink) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-dots34 {
+  background: var(--c-ink);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 40'><circle cx='5' cy='5' r='2.4'/><circle cx='15' cy='5' r='2.4'/><circle cx='25' cy='5' r='2.4'/><circle cx='5' cy='15' r='2.4'/><circle cx='15' cy='15' r='2.4'/><circle cx='25' cy='15' r='2.4'/><circle cx='5' cy='25' r='2.4'/><circle cx='15' cy='25' r='2.4'/><circle cx='25' cy='25' r='2.4'/><circle cx='5' cy='35' r='2.4'/><circle cx='15' cy='35' r='2.4'/><circle cx='25' cy='35' r='2.4'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 96% 55% / 10mm auto;
+          mask:
+    var(--m) no-repeat 96% 55% / 10mm auto;
+}`,
+    'ばってん 3×3': `/* ばってん（×）3×3
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-ink) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-xdots {
+  background: var(--c-ink);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path d='M2.5 2.5L7.5 7.5M7.5 2.5L2.5 7.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M12.5 2.5L17.5 7.5M17.5 2.5L12.5 7.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M22.5 2.5L27.5 7.5M27.5 2.5L22.5 7.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M2.5 12.5L7.5 17.5M7.5 12.5L2.5 17.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M12.5 12.5L17.5 17.5M17.5 12.5L12.5 17.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M22.5 12.5L27.5 17.5M27.5 12.5L22.5 17.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M2.5 22.5L7.5 27.5M7.5 22.5L2.5 27.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M12.5 22.5L17.5 27.5M17.5 22.5L12.5 27.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/><path d='M22.5 22.5L27.5 27.5M27.5 22.5L22.5 27.5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.4'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 5% 25% / 12mm,
+    var(--m) no-repeat 94% 80% / 10mm;
+          mask:
+    var(--m) no-repeat 5% 25% / 12mm,
+    var(--m) no-repeat 94% 80% / 10mm;
+}`,
+    '四隅のかぎ（┌ ┐ └ ┘）': `/* 四隅のかぎ（┌ ┐ └ ┘）
+   位置は 横の位置 縦の位置、大きさは / の後ろ。色は background の var(--c-ink) を書き換える。線や箱より後ろに出ます */
+.sheet > .orn-corners {
+  background: var(--c-ink);
+  --tl: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><path d='M1 9V1H9' stroke='black' fill='none' stroke-linecap='round' stroke-width='0.9'/></svg>");
+  --tr: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><path d='M1 1H9V9' stroke='black' fill='none' stroke-linecap='round' stroke-width='0.9'/></svg>");
+  --bl: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><path d='M1 1V9H9' stroke='black' fill='none' stroke-linecap='round' stroke-width='0.9'/></svg>");
+  --br: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><path d='M9 1V9H1' stroke='black' fill='none' stroke-linecap='round' stroke-width='0.9'/></svg>");
+  -webkit-mask:
+    var(--tl) no-repeat 2.5% 2% / 14mm, var(--tr) no-repeat 97.5% 2% / 14mm,
+    var(--bl) no-repeat 2.5% 98% / 14mm, var(--br) no-repeat 97.5% 98% / 14mm;
+          mask:
+    var(--tl) no-repeat 2.5% 2% / 14mm, var(--tr) no-repeat 97.5% 2% / 14mm,
+    var(--bl) no-repeat 2.5% 98% / 14mm, var(--br) no-repeat 97.5% 98% / 14mm;
+}`,
+    '斜線（///）': `/* 斜線（///）
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-ink) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-slash {
+  background: var(--c-ink);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 10'><path d='M2 9L6 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/><path d='M7 9L11 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/><path d='M12 9L16 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/><path d='M17 9L21 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/><path d='M22 9L26 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/><path d='M27 9L31 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/><path d='M32 9L36 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/><path d='M37 9L41 1' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.3'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 92% 3% / 30mm auto,
+    var(--m) no-repeat 8% 60% / 22mm auto;
+          mask:
+    var(--m) no-repeat 92% 3% / 30mm auto,
+    var(--m) no-repeat 8% 60% / 22mm auto;
+}`,
+    'トンボ（⊕ 印刷の目印風）': `/* トンボ（⊕ 印刷の目印風）
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-ink) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-regmark {
+  background: var(--c-ink);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><circle cx='10' cy='10' r='6' stroke='black' fill='none' stroke-linecap='round' stroke-width='0.8'/><path d='M10 0V20M0 10H20' stroke='black' fill='none' stroke-linecap='round' stroke-width='0.8'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 50% 1.5% / 9mm,
+    var(--m) no-repeat 50% 98.5% / 9mm,
+    var(--m) no-repeat 1% 50% / 9mm,
+    var(--m) no-repeat 99% 50% / 9mm;
+          mask:
+    var(--m) no-repeat 50% 1.5% / 9mm,
+    var(--m) no-repeat 50% 98.5% / 9mm,
+    var(--m) no-repeat 1% 50% / 9mm,
+    var(--m) no-repeat 99% 50% / 9mm;
+}`,
+    '波線（～～）': `/* 波線（～～）
+   1つ分 = 形 no-repeat 横の位置 縦の位置 / 大きさ 。増やすときはカンマで区切って足す（左上が 0% 0%、右下が 100% 100%）
+   色は background の var(--c-accent) を var(--c-accent) や #e8562a などに書き換える。線や箱より後ろに出ます */
+.sheet > .orn-wave {
+  background: var(--c-accent);
+  --m: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 10'><path d='M0 5Q5 0 10 5T20 5T30 5T40 5T50 5T60 5' stroke='black' fill='none' stroke-linecap='round' stroke-width='1.2'/></svg>");
+  -webkit-mask:
+    var(--m) no-repeat 90% 12% / 36mm auto,
+    var(--m) no-repeat 10% 88% / 28mm auto;
+          mask:
+    var(--m) no-repeat 90% 12% / 36mm auto,
+    var(--m) no-repeat 10% 88% / 28mm auto;
 }`,
   },
   'その他（見出し・テキストブロック）': {

@@ -116,7 +116,9 @@ function render() {
     '--scale': s.scale, '--hs': s.hs, '--gap': s.gap, '--cols': s.cols, '--cols-tpl': colsTpl(s.colRatio, s.cols),
     '--bgimg': s.bg.img ? `url("${urlFor(s.bg.img)}")` : 'none', '--bg-op': s.bg.opacity, '--bg-tile': s.bg.tile,
     '--p-c': roleColor(p.role, p.color), '--p-s': p.size, '--p-w': p.weight, '--p-op': p.opacity,
-    '--fr-c': fr.color, '--fr-w': fr.type === 'none' ? 0 : fr.width, '--fr-r': fr.radius, '--fr-inset': fr.inset,
+    '--fr-c': fr.color, '--fr-w': fr.type === 'none' ? 0 : fr.width, '--fr-r': fr.radius,
+    // 四隅それぞれのときは「左上 右上 右下 左下」。大きすぎる値はブラウザが辺の長さに収まるよう縮めるので、左上・右上を最大にすると半円（アーチ）になる
+    '--fr-radius': fr.radiusEach ? [fr.rTL, fr.rTR, fr.rBR, fr.rBL].map(v => (+v || 0) + 'mm').join(' ') : (+fr.radius || 0) + 'mm', '--fr-inset': fr.inset,
     '--fr-style': ['double', 'dashed', 'dotted'].includes(fr.type) ? fr.type : 'solid',
     '--fr-fill': fr.fill ? hexToRgba(fr.fillColor, fr.fillAlpha ?? 1) : 'transparent', '--fr-sh': fr.shadow, '--fr-top': fr.top || 0, '--fr-pad': fr.padding,
     '--title-k': s.titleK ?? 1, '--price-k': s.priceK ?? 1, '--text-k': s.textK ?? 1, '--grp-k': s.grpK ?? 1, '--circle-k': s.circleK ?? 1,
@@ -135,10 +137,11 @@ function render() {
   const f = (cls, v) => v ? `<div class="${cls}">${esc(v)}</div>` : '';
   const bgLayer = s.bg.img ? `<div class="bgimg fit-${s.bg.fit}"></div>` : '';
   const deco = '<div class="deco"></div>';
-  // 重なり順: パターン → (背景画像:下) → テーマ装飾 → 枠 → (背景画像:上) → 中身
+  // 重なり順: パターン → (背景画像:下) → テーマ装飾 → 枠 → (背景画像:上) → 飾り（スニペットで使う空のレイヤー） → 中身
   const pattern = p.type !== 'none' ? `<div class="pattern p-${p.type}"></div>` : '';
   const frame = hasFrame ? `<div class="frame f-${fr.type}"></div>` : '';
-  sh.innerHTML = `${pattern}${s.bg.layer === 'back' ? bgLayer + deco + frame : deco + frame + bgLayer}
+  const orn = ORNAMENT_LAYERS.map(n => `<div class="orn orn-${n}"></div>`).join('');
+  sh.innerHTML = `${pattern}${s.bg.layer === 'back' ? bgLayer + deco + frame : deco + frame + bgLayer}${orn}
     <header class="sh"><div class="sh-box">${f('sh-date', i.date)}${i.eventLogo ? `<div class="sh-event sh-logo"><img src="${urlFor(i.eventLogo)}" alt="${esc(i.event)}"></div>` : f('sh-event', i.event)}${i.space ? `<div class="sh-space">${spaceHTML(i.space)}</div>` : ''}</div>${i.logo ? `<div class="sh-circle"><img src="${urlFor(i.logo)}" alt="${esc(i.circle)}"></div>` : i.circle ? `<div class="sh-circle"><span class="sh-circle-t">${esc(i.circle)}</span></div>` : ''}</header>
     ${i.headline ? headlineHTML(s, i.headline) : ''}
     <main class="items vfill-${s.vfill || 'start'}">${blocksHTML()}</main>

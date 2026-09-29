@@ -266,7 +266,19 @@
         <label class="f" data-dep="frame.fill">塗りの不透明度 <span class="rangeval" data-show="frame.fillAlpha"></span><input type="range" min="0" max="1" step="0.05" data-k="frame.fillAlpha" data-num></label>
         <label class="f" data-dep="frame.type!=none|frame.fill">用紙の端からの距離(mm)<span class="rangeval" data-show="frame.inset"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.inset" data-num></label>
         <label class="f" data-dep="frame.type!=none|frame.fill">線の上だけさらに下げる(mm) <span class="rangeval" data-show="frame.top"></span><input type="range" min="0" max="80" step="0.5" data-k="frame.top" data-num></label>
-        <label class="f" data-dep="frame.type!=none|frame.fill">角の丸さ(mm) <span class="rangeval" data-show="frame.radius"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.radius" data-num></label>
+        <label class="f" data-dep="frame.type!=none&!frame.radiusEach|frame.fill&!frame.radiusEach">角の丸さ(mm) <span class="rangeval" data-show="frame.radius"></span><input type="range" min="0" max="40" step="0.5" data-k="frame.radius" data-num></label>
+        <label class="chk" style="margin:-4px 0 6px" data-dep="frame.type!=none|frame.fill"><input type="checkbox" data-k="frame.radiusEach">角の丸さを四隅それぞれ決める</label>
+        <div data-dep="frame.type!=none&frame.radiusEach|frame.fill&frame.radiusEach">
+          <div class="row">
+            <label class="f">左上(mm) <span class="rangeval" data-show="frame.rTL"></span><input type="range" min="0" max="220" step="0.5" data-k="frame.rTL" data-num></label>
+            <label class="f">右上(mm) <span class="rangeval" data-show="frame.rTR"></span><input type="range" min="0" max="220" step="0.5" data-k="frame.rTR" data-num></label>
+          </div>
+          <div class="row">
+            <label class="f">左下(mm) <span class="rangeval" data-show="frame.rBL"></span><input type="range" min="0" max="220" step="0.5" data-k="frame.rBL" data-num></label>
+            <label class="f">右下(mm) <span class="rangeval" data-show="frame.rBR"></span><input type="range" min="0" max="220" step="0.5" data-k="frame.rBR" data-num></label>
+          </div>
+          <p class="hint" style="margin-top:-4px">左上と右上を最大にすると、上がアーチ形になります。</p>
+        </div>
         <label class="f" data-dep="frame.type!=none">線の太さ(mm) <span class="rangeval" data-show="frame.width"></span><input type="range" min="0" max="8" step="0.1" data-k="frame.width" data-num></label>
         <label class="f" data-dep="frame.type!=none|frame.fill">影のずれ(mm) <span class="rangeval" data-show="frame.shadow"></span><input type="range" min="0" max="10" step="0.5" data-k="frame.shadow" data-num></label>
         <div class="row">
@@ -492,7 +504,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.17.2（2026/09/29 更新）</span>
+      <span class="ver">v1.19.0（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
