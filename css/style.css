@@ -25,16 +25,17 @@ label.f{display:block;margin-bottom:10px;color:var(--ui-sub);font-size:12px}
 label.f>input,label.f>textarea,label.f>select{display:block;width:100%;margin-top:3px}
 input[type=text],input[type=number],textarea,select{font:inherit;color:var(--ui-ink);border:1px solid var(--ui-line);border-radius:6px;padding:6px 8px;background:#fff}
 textarea{resize:vertical;min-height:54px}
+/* よく使う小さな指定（HTMLに直接書いていたもの） */
+textarea.ta1{min-height:0}                        /* 1行から始まるテキスト欄 */
+input.color-full{width:100%;height:31px;padding:0} /* 欄の幅いっぱいのカラーピッカー */
+.row>.nogrow{flex:none}                           /* 横並びの中で伸ばさない */
+button.btn-c,.btn.btn-c{justify-content:center}   /* 文字を中央に */
 .row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
 .hint{color:var(--ui-sub);font-size:11px;line-height:1.6;margin:4px 0 12px}
 .hint ul{margin:0;padding-left:1.2em}
+.hint li+li{margin-top:2px}
 /* 見出しの中の小見出し（サイズ欄の「全体」「頒布物」など） */
 .sub-h{font-size:11px;font-weight:700;color:var(--ui-sub);margin:12px 0 6px;padding-bottom:2px;border-bottom:1px dashed var(--ui-line)}
-/* 折りたたみ（あまり使わない設定） */
-.fold{margin:0 0 10px}
-.fold>summary{cursor:pointer;color:var(--ui-sub);font-size:12px;margin-bottom:8px}
-.fold[open]{padding-left:10px;border-left:3px solid var(--ui-line)}
-.hint li+li{margin-top:2px}
 h3{font-size:13px;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--ui-line)}
 h3:first-child{margin-top:0}
 /* デザインタブの大項目（クリックで畳める） */
@@ -80,7 +81,6 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 /* 影の設定欄（オフ・テーマのままのときは薄くして触れないように） */
 .dep-off{opacity:.4;pointer-events:none}   /* チェックが入っていないなど、今は反映されない設定 */
 .dep-off .dep-off{opacity:1}   /* 入れ子のときに二重に薄くならないように */
-.shadow-ui.off label{opacity:.4;pointer-events:none}   /* プリセットのボタンは押せる（押すと影がオンになる） */
 .css-warn{background:#fff4d6;border:1px solid #f0c24b;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;line-height:1.7;color:#5c4300}
 .classlist{font-size:12px;color:var(--ui-sub)}
 .classlist details{border:1px solid var(--ui-line);border-radius:6px;margin-bottom:6px;background:#fcfbfa}
@@ -108,6 +108,41 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .scaler{margin:0 auto;position:relative}
 .scaler>.sheet{transform-origin:0 0;position:absolute;left:0;top:0;box-shadow:0 4px 24px rgba(0,0,0,.18)}
 .sheet [data-id]{cursor:pointer}
+
+/* 配色の一覧（プルダウン） */
+.pal-dd{position:relative;margin:4px 0 8px}
+.pal-list{display:none;position:absolute;z-index:30;left:0;right:0;top:calc(100% + 2px);max-height:340px;overflow:auto;background:#fff;border:1px solid var(--ui-line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:4px}
+.pal-dd.open .pal-list{display:block}
+.pal{display:flex;align-items:center;width:100%;justify-content:flex-start;gap:10px;padding:6px 10px;font-size:12.5px;text-align:left;border:0;background:none}
+.pal-list .pal:hover{background:#f2f4ff}
+.pal-btn{border:1px solid var(--ui-line);background:#fff}
+.pal .dots{display:flex;flex:none}
+.pal .dots i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.2);margin-right:-4px}
+
+/* ---------- 使い方・よくある質問 ---------- */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(20,18,16,.45)}
+.modal.on{display:flex}
+.modal-box{width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px);display:flex;flex-direction:column;background:var(--ui-panel);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.3);overflow:hidden}
+.modal-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--ui-line)}
+.modal-head h2{margin:0;font-size:16px;flex:1}
+.modal-tabs{display:flex;gap:4px}
+.modal-tabs button.on{background:var(--ui-accent);border-color:var(--ui-accent);color:#fff}
+.modal-body{overflow:auto;padding:16px 20px 20px;font-size:13.5px;line-height:1.75}
+.modal-body h3{border:0;margin:0 0 6px;font-size:15px}
+.guide-step{display:grid;grid-template-columns:34px 1fr;gap:4px 12px;padding:14px 0;border-bottom:1px solid var(--ui-line)}
+.guide-step:last-child{border-bottom:0}
+.guide-num{width:30px;height:30px;border-radius:50%;background:var(--ui-accent);color:#fff;display:grid;place-items:center;font-weight:700}
+.guide-step ul{margin:4px 0 8px;padding-left:1.2em}
+.guide-shot{display:block;max-width:100%;border:1px solid var(--ui-line);border-radius:6px;margin:6px 0 8px}
+.faq details{border:1px solid var(--ui-line);border-radius:8px;margin-bottom:8px;background:#fcfbfa}
+.faq summary{cursor:pointer;padding:9px 12px;font-weight:700}
+.faq details > div{padding:0 14px 12px}
+.faq pre{background:#f0eeea;border-radius:6px;padding:8px 10px;overflow:auto;font-size:12px;margin:6px 0}
+.faq h4{margin:14px 0 6px;font-size:12px;color:var(--ui-sub)}
+.guide-hl{outline:3px solid #f59f00!important;outline-offset:2px;border-radius:6px;animation:guideBlink 1s ease-in-out 3}
+@keyframes guideBlink{50%{outline-color:transparent}}
+.guide-toast{position:fixed;left:50%;bottom:20px;translate:-50% 0;z-index:90;display:none;align-items:center;gap:10px;background:#26221f;color:#fff;padding:8px 10px 8px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.25);font-size:13px}
+.guide-toast.on{display:flex}
 
 /* ================= お品書き本体(共通) ================= */
 .sheet{
@@ -294,6 +329,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .grp-line-box{border:.5mm solid var(--c-ink);padding:6mm}
 .grp-line-left{border-left:.5mm solid var(--c-ink);padding-left:6mm}
 
+/* ================= テーマ ================= */
 /* ---------- テーマ: 白紙 ----------
    :where() で詳細度を0にしてあるので、CSSタブに書いたものが必ず勝つ */
 :where(.theme-blank){padding:15mm}
@@ -304,7 +340,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 :where(.theme-blank) .sh-space{grid-area:space;font-family:var(--f-num);font-size:5em;font-weight:900;line-height:1}
 :where(.theme-blank) .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(2.6em * var(--circle-k,1));font-weight:900;text-align:right}
 
-/* ---------- テーマ: 方眼×ダークヘッダー ---------- */
+/* ---------- テーマ: 方眼（方眼の背景＋上に濃い色の帯） ---------- */
 .theme-grid{
   padding:0 18mm 16mm;
   background-image:
@@ -322,21 +358,35 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-grid .img :is(img,.ph){filter:drop-shadow(1.8mm 1.8mm 0 var(--c-ink))}
 .theme-grid .badge.r18{background:none;border:0;padding:0;color:var(--c-accent)}
 
-/* ---------- テーマ: ポップ(ストライプ) ---------- */
-.theme-pop{
-  padding:24mm 23mm;
-}
-.theme-pop>.deco{inset:15mm 13mm;background:var(--c-paper);border-radius:10mm;box-shadow:0 -2.6mm 0 var(--c-sub), 0 0 0 1.3mm var(--c-sub)}
-.theme-pop .sh{display:grid;grid-template-columns:1fr auto;grid-template-areas:"date circle" "event circle" "space space";column-gap:8mm;
-  border-bottom:1.3mm dotted var(--c-ink);padding-bottom:5mm;margin-bottom:10mm}
-.theme-pop .sh-box{display:contents}
-.theme-pop .sh-date{grid-area:date;letter-spacing:.35em;font-size:1.5em;font-weight:700}
-.theme-pop .sh-event{grid-area:event;font-size:1.5em;font-weight:700}
-.theme-pop .sh-circle{grid-area:circle;align-self:center;font-family:var(--f-circle,var(--f-head));font-size:calc(2.8em * var(--circle-k,1))}
-.theme-pop .sh-space{grid-area:space;text-align:center;font-family:var(--f-num);font-size:11em;font-weight:700;line-height:1.1}
-.theme-pop .img :is(img,.ph){filter:drop-shadow(1.6mm 1.6mm 0 color-mix(in srgb,var(--c-ink) 70%,#800))}
-.theme-pop .badge.new{border-radius:999px;background:var(--c-paper);color:var(--c-ink);border:.2em solid var(--c-ink);box-shadow:0 0 0 .15em var(--c-paper),0 0 0 .28em var(--c-ink);padding:.3em .8em;font-size:1.2em}
-.theme-pop .title{font-size:calc(2.6em * var(--title-k,1))}
+/* ---------- テーマ: 格子（ひし形格子の背景＋上に色の帯） ---------- */
+.theme-band{padding:0 16mm 14mm}
+.theme-band .sh{margin:0 -16mm 10mm;padding:5mm 16mm 4mm;background:var(--c-paper);color:var(--c-bg);
+  display:grid;grid-template-columns:auto 1fr;grid-template-areas:"space date" "space event" "space circle";column-gap:8mm;align-items:end}
+.theme-band .sh-box{display:contents}
+.theme-band .sh-space{grid-area:space;align-self:center;font-family:var(--f-num);font-size:6em;font-weight:700;line-height:1;white-space:nowrap}
+.theme-band .sh-date,.theme-band .sh-event{text-align:right;font-weight:700;font-size:1.1em;line-height:1.35;white-space:nowrap}
+.theme-band .sh-date{grid-area:date;letter-spacing:.1em}
+.theme-band .sh-event{grid-area:event}
+.theme-band .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-circle,var(--f-head));font-weight:700;font-size:calc(3.2em * var(--circle-k,1));line-height:1.1;white-space:nowrap}
+.theme-band .title{font-weight:700}
+.theme-band .price{font-weight:700;padding:0 .1em;background:linear-gradient(transparent 58%, color-mix(in srgb,var(--c-paper) 30%,transparent) 58%)}
+.theme-band .img :is(img,.ph){filter:drop-shadow(2mm 2mm 0 color-mix(in srgb,var(--c-paper) 75%,transparent))}
+.theme-band .blk-hr{border-top-width:.6mm;opacity:.5}
+
+/* ---------- テーマ: ツートン（2色の帯ヘッダー） ---------- */
+.theme-duo{padding:0 16mm 14mm}
+.theme-duo .sh{margin:0 -16mm 12mm;padding:0 16mm 0 0;background:var(--c-paper);color:var(--c-bg);
+  display:grid;grid-template-columns:auto auto 1fr;grid-template-areas:"space date circle" "space event circle";column-gap:8mm;align-items:center}
+.theme-duo .sh-box{display:contents}
+.theme-duo .sh-space{grid-area:space;align-self:stretch;display:flex;align-items:center;background:var(--c-sub);color:var(--c-paper);
+  font-family:var(--f-num);font-size:6.5em;font-weight:700;line-height:1;padding:.12em .3em .12em 16mm;white-space:nowrap}
+.theme-duo .sh-date{grid-area:date;align-self:end;font-family:var(--f-num);font-size:1.5em;letter-spacing:.05em;color:var(--c-sub);white-space:nowrap}
+.theme-duo .sh-event{grid-area:event;align-self:start;font-size:1.3em;font-weight:700;color:var(--c-sub);white-space:nowrap}
+.theme-duo .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-circle,var(--f-head));font-weight:800;font-size:calc(3.2em * var(--circle-k,1));line-height:1.1;color:var(--c-sub);white-space:nowrap;padding:5mm 0}
+.theme-duo .title{font-weight:800;font-size:calc(2.6em * var(--title-k,1))}
+.theme-duo .desc{font-weight:500}
+.theme-duo .price{font-weight:700}
+.theme-duo .badge.new{background:none;color:var(--c-accent);border-color:var(--c-accent)}
 
 /* ---------- テーマ: 額縁 ---------- */
 .theme-frame{
@@ -356,6 +406,41 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-frame .img :is(img,.ph){filter:drop-shadow(.4mm 0 0 var(--c-ink)) drop-shadow(-.4mm 0 0 var(--c-ink)) drop-shadow(0 .4mm 0 var(--c-ink)) drop-shadow(0 -.4mm 0 var(--c-ink))}
 .theme-frame .headline,.theme-report .headline{position:absolute;z-index:2;top:16mm;right:16mm;max-width:46%;margin:0;
   background:var(--c-ink);color:var(--c-paper);clip-path:var(--burst);padding:1.3em 1.9em;font-size:calc(3.2em * var(--hs));rotate:-4deg}
+
+/* ---------- テーマ: ストライプ（斜めストライプの背景＋角丸カード） ---------- */
+.theme-pop{
+  padding:24mm 23mm;
+}
+.theme-pop>.deco{inset:15mm 13mm;background:var(--c-paper);border-radius:10mm;box-shadow:0 -2.6mm 0 var(--c-sub), 0 0 0 1.3mm var(--c-sub)}
+.theme-pop .sh{display:grid;grid-template-columns:1fr auto;grid-template-areas:"date circle" "event circle" "space space";column-gap:8mm;
+  border-bottom:1.3mm dotted var(--c-ink);padding-bottom:5mm;margin-bottom:10mm}
+.theme-pop .sh-box{display:contents}
+.theme-pop .sh-date{grid-area:date;letter-spacing:.35em;font-size:1.5em;font-weight:700}
+.theme-pop .sh-event{grid-area:event;font-size:1.5em;font-weight:700}
+.theme-pop .sh-circle{grid-area:circle;align-self:center;font-family:var(--f-circle,var(--f-head));font-size:calc(2.8em * var(--circle-k,1))}
+.theme-pop .sh-space{grid-area:space;text-align:center;font-family:var(--f-num);font-size:11em;font-weight:700;line-height:1.1}
+.theme-pop .img :is(img,.ph){filter:drop-shadow(1.6mm 1.6mm 0 color-mix(in srgb,var(--c-ink) 70%,#800))}
+.theme-pop .badge.new{border-radius:999px;background:var(--c-paper);color:var(--c-ink);border:.2em solid var(--c-ink);box-shadow:0 0 0 .15em var(--c-paper),0 0 0 .28em var(--c-ink);padding:.3em .8em;font-size:1.2em}
+.theme-pop .title{font-size:calc(2.6em * var(--title-k,1))}
+
+/* ---------- テーマ: 付箋（付箋ヘッダー・角丸カード・ギザギザの値札） ---------- */
+.theme-tag{padding:15mm}
+.theme-tag .sh{display:grid;grid-template-columns:1fr auto;grid-template-areas:"date circle" "event circle" "space circle";column-gap:8mm;align-items:end;margin-bottom:8mm}
+.theme-tag .sh-box{display:contents}
+.theme-tag .sh-date{grid-area:date;font-weight:700;letter-spacing:.2em}
+.theme-tag .sh-event{grid-area:event;font-weight:700}
+.theme-tag .sh-space{grid-area:space;font-family:var(--f-num);font-size:5em;font-weight:900;line-height:1}
+/* サークル名は白抜き（ふちだけ）の文字 */
+.theme-tag .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(3em * var(--circle-k,1));font-weight:900;line-height:1;color:var(--c-paper)}
+.theme-tag .info-main{background:var(--c-accent);color:#fff;padding:.6em .8em .7em}
+.theme-tag .title{font-size:calc(2.1em * var(--title-k,1))}
+.theme-tag .price{background:#fff200;color:var(--c-paper);padding:.22em .45em .16em;--z:.11em;
+  mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) top/calc(2 * var(--z)) 51% repeat-x,
+       conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/calc(2 * var(--z)) 51% repeat-x}
+.theme-tag .badge.new{clip-path:var(--burst);border:0;padding:.9em 1em;background:var(--c-paper);color:#fff200;font-size:1.3em}
+.theme-tag .badge.r18{background:#fff;border-color:#fff;color:var(--c-accent)}
+.theme-tag .img :is(img,.ph){filter:drop-shadow(1.5mm 1.5mm 0 var(--c-paper))}
+.theme-tag .blk-hr{border-top-color:var(--c-paper)}
 
 /* ---------- テーマ: 報告書 ---------- */
 .theme-report{padding:16mm 18mm}
@@ -377,56 +462,6 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-report .price.text{font-family:var(--f-body);padding:.3em .5em .25em}
 .theme-report .img :is(img,.ph){filter:drop-shadow(1.2mm 1.2mm 0 var(--c-ink))}
 
-/* ================= 印刷 ================= */
-/* ---------- テーマ: 帯ヘッダー（上に色の帯・ひし形格子の背景） ---------- */
-.theme-band{padding:0 16mm 14mm}
-.theme-band .sh{margin:0 -16mm 10mm;padding:5mm 16mm 4mm;background:var(--c-paper);color:var(--c-bg);
-  display:grid;grid-template-columns:auto 1fr;grid-template-areas:"space date" "space event" "space circle";column-gap:8mm;align-items:end}
-.theme-band .sh-box{display:contents}
-.theme-band .sh-space{grid-area:space;align-self:center;font-family:var(--f-num);font-size:6em;font-weight:700;line-height:1;white-space:nowrap}
-.theme-band .sh-date,.theme-band .sh-event{text-align:right;font-weight:700;font-size:1.1em;line-height:1.35;white-space:nowrap}
-.theme-band .sh-date{grid-area:date;letter-spacing:.1em}
-.theme-band .sh-event{grid-area:event}
-.theme-band .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-circle,var(--f-head));font-weight:700;font-size:calc(3.2em * var(--circle-k,1));line-height:1.1;white-space:nowrap}
-.theme-band .title{font-weight:700}
-.theme-band .price{font-weight:700;padding:0 .1em;background:linear-gradient(transparent 58%, color-mix(in srgb,var(--c-paper) 30%,transparent) 58%)}
-.theme-band .img :is(img,.ph){filter:drop-shadow(2mm 2mm 0 color-mix(in srgb,var(--c-paper) 75%,transparent))}
-.theme-band .blk-hr{border-top-width:.6mm;opacity:.5}
-
-/* ---------- テーマ: 付箋ポップ（付箋ヘッダー・角丸カード・ギザギザの値札） ---------- */
-.theme-tag{padding:15mm}
-.theme-tag .sh{display:grid;grid-template-columns:1fr auto;grid-template-areas:"date circle" "event circle" "space circle";column-gap:8mm;align-items:end;margin-bottom:8mm}
-.theme-tag .sh-box{display:contents}
-.theme-tag .sh-date{grid-area:date;font-weight:700;letter-spacing:.2em}
-.theme-tag .sh-event{grid-area:event;font-weight:700}
-.theme-tag .sh-space{grid-area:space;font-family:var(--f-num);font-size:5em;font-weight:900;line-height:1}
-/* サークル名は白抜き（ふちだけ）の文字 */
-.theme-tag .sh-circle{grid-area:circle;font-family:var(--f-circle,var(--f-head));font-size:calc(3em * var(--circle-k,1));font-weight:900;line-height:1;color:var(--c-paper)}
-.theme-tag .info-main{background:var(--c-accent);color:#fff;padding:.6em .8em .7em}
-.theme-tag .title{font-size:calc(2.1em * var(--title-k,1))}
-.theme-tag .price{background:#fff200;color:var(--c-paper);padding:.22em .45em .16em;--z:.11em;
-  mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) top/calc(2 * var(--z)) 51% repeat-x,
-       conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/calc(2 * var(--z)) 51% repeat-x}
-.theme-tag .badge.new{clip-path:var(--burst);border:0;padding:.9em 1em;background:var(--c-paper);color:#fff200;font-size:1.3em}
-.theme-tag .badge.r18{background:#fff;border-color:#fff;color:var(--c-accent)}
-.theme-tag .img :is(img,.ph){filter:drop-shadow(1.5mm 1.5mm 0 var(--c-paper))}
-.theme-tag .blk-hr{border-top-color:var(--c-paper)}
-
-/* ---------- テーマ: ツートン（2色の帯ヘッダー） ---------- */
-.theme-duo{padding:0 16mm 14mm}
-.theme-duo .sh{margin:0 -16mm 12mm;padding:0 16mm 0 0;background:var(--c-paper);color:var(--c-bg);
-  display:grid;grid-template-columns:auto auto 1fr;grid-template-areas:"space date circle" "space event circle";column-gap:8mm;align-items:center}
-.theme-duo .sh-box{display:contents}
-.theme-duo .sh-space{grid-area:space;align-self:stretch;display:flex;align-items:center;background:var(--c-sub);color:var(--c-paper);
-  font-family:var(--f-num);font-size:6.5em;font-weight:700;line-height:1;padding:.12em .3em .12em 16mm;white-space:nowrap}
-.theme-duo .sh-date{grid-area:date;align-self:end;font-family:var(--f-num);font-size:1.5em;letter-spacing:.05em;color:var(--c-sub);white-space:nowrap}
-.theme-duo .sh-event{grid-area:event;align-self:start;font-size:1.3em;font-weight:700;color:var(--c-sub);white-space:nowrap}
-.theme-duo .sh-circle{grid-area:circle;text-align:right;font-family:var(--f-circle,var(--f-head));font-weight:800;font-size:calc(3.2em * var(--circle-k,1));line-height:1.1;color:var(--c-sub);white-space:nowrap;padding:5mm 0}
-.theme-duo .title{font-weight:800;font-size:calc(2.6em * var(--title-k,1))}
-.theme-duo .desc{font-weight:500}
-.theme-duo .price{font-weight:700}
-.theme-duo .badge.new{background:none;color:var(--c-accent);border-color:var(--c-accent)}
-
 /* ---------- 区画の見出し: 「テーマの色を使う」ときの色（テーマごと） ---------- */
 .grp-auto{--grp-bg:var(--c-ink);--grp-fg:var(--c-bg)}
 .theme-grid .grp-auto{--grp-bg:var(--c-paper);--grp-fg:var(--c-bg)}
@@ -441,41 +476,6 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 /* 画像の影（「テーマのまま」以外を選んだときはテーマの影より優先） */
 .sheet.is-none .img :is(img,.ph){filter:none}
 .sheet.is-custom .img :is(img,.ph){filter:drop-shadow(var(--is))}
-
-/* 配色の一覧（プルダウン） */
-.pal-dd{position:relative;margin:4px 0 8px}
-.pal-list{display:none;position:absolute;z-index:30;left:0;right:0;top:calc(100% + 2px);max-height:340px;overflow:auto;background:#fff;border:1px solid var(--ui-line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:4px}
-.pal-dd.open .pal-list{display:block}
-.pal{display:flex;align-items:center;width:100%;justify-content:flex-start;gap:10px;padding:6px 10px;font-size:12.5px;text-align:left;border:0;background:none}
-.pal-list .pal:hover{background:#f2f4ff}
-.pal-btn{border:1px solid var(--ui-line);background:#fff}
-.pal .dots{display:flex;flex:none}
-.pal .dots i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.2);margin-right:-4px}
-
-/* ================= 使い方・よくある質問 ================= */
-.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(20,18,16,.45)}
-.modal.on{display:flex}
-.modal-box{width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px);display:flex;flex-direction:column;background:var(--ui-panel);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.3);overflow:hidden}
-.modal-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--ui-line)}
-.modal-head h2{margin:0;font-size:16px;flex:1}
-.modal-tabs{display:flex;gap:4px}
-.modal-tabs button.on{background:var(--ui-accent);border-color:var(--ui-accent);color:#fff}
-.modal-body{overflow:auto;padding:16px 20px 20px;font-size:13.5px;line-height:1.75}
-.modal-body h3{border:0;margin:0 0 6px;font-size:15px}
-.guide-step{display:grid;grid-template-columns:34px 1fr;gap:4px 12px;padding:14px 0;border-bottom:1px solid var(--ui-line)}
-.guide-step:last-child{border-bottom:0}
-.guide-num{width:30px;height:30px;border-radius:50%;background:var(--ui-accent);color:#fff;display:grid;place-items:center;font-weight:700}
-.guide-step ul{margin:4px 0 8px;padding-left:1.2em}
-.guide-shot{display:block;max-width:100%;border:1px solid var(--ui-line);border-radius:6px;margin:6px 0 8px}
-.faq details{border:1px solid var(--ui-line);border-radius:8px;margin-bottom:8px;background:#fcfbfa}
-.faq summary{cursor:pointer;padding:9px 12px;font-weight:700}
-.faq details > div{padding:0 14px 12px}
-.faq pre{background:#f0eeea;border-radius:6px;padding:8px 10px;overflow:auto;font-size:12px;margin:6px 0}
-.faq h4{margin:14px 0 6px;font-size:12px;color:var(--ui-sub)}
-.guide-hl{outline:3px solid #f59f00!important;outline-offset:2px;border-radius:6px;animation:guideBlink 1s ease-in-out 3}
-@keyframes guideBlink{50%{outline-color:transparent}}
-.guide-toast{position:fixed;left:50%;bottom:20px;translate:-50% 0;z-index:90;display:none;align-items:center;gap:10px;background:#26221f;color:#fff;padding:8px 10px 8px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.25);font-size:13px}
-.guide-toast.on{display:flex}
 
 /* ================= スマホ・狭い画面 ================= */
 /* 上から「ボタン → プレビュー → 編集欄」の順に縦に並べ、プレビューと編集欄はそれぞれの中でスクロールする */
@@ -498,6 +498,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
   .row>*{flex:1 1 130px}
   .tabs button{padding:8px 0;font-size:12px}
 }
+/* ================= 印刷 ================= */
 @media print{
   html,body{height:auto;background:none}
   .app{display:block;height:auto}
