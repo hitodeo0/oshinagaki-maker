@@ -41,6 +41,12 @@ h3:first-child{margin-top:0}
 .card.grp-card{border-color:#7b93e0;background:#eef2ff}
 .card.in-grp{margin-left:16px;border-left:4px solid #7b93e0}
 .card-body{padding:10px}
+/* カードの中の区切り（画像 / 内容 / バッジ・スタンプ / 配置・CSS） */
+.card-sec{border:1px solid var(--ui-line);border-radius:6px;background:#fff;padding:22px 10px 2px;margin:0 0 10px;position:relative}
+.card-sec-h{position:absolute;top:0;left:0;right:0;padding:3px 10px;font-size:11px;font-weight:700;color:var(--ui-sub);background:#f3f1ee;border-bottom:1px solid var(--ui-line);border-radius:6px 6px 0 0}
+.card-sec .imgslot{margin-top:6px}
+.card-div{border-top:1px dashed var(--ui-line);margin:2px 0 10px}
+.stamp-opts{margin:-2px 0 4px 12px;padding-left:10px;border-left:3px solid var(--ui-line)}
 .imgslot{display:flex;gap:10px;align-items:center;margin-bottom:10px;padding:8px;border:1px dashed var(--ui-line);border-radius:6px}
 .imgslot.drag{border-color:var(--ui-accent);background:#eef2ff}
 .imgslot .thumb{width:64px;height:64px;border-radius:4px;background:#eee center/contain no-repeat;flex:none;display:grid;place-items:center;color:#aaa;font-size:10px}
@@ -197,6 +203,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .sheet.tab-on .sh-box > *{grid-area:auto;order:0;width:auto;text-align:left;color:inherit;align-self:flex-start}
 .sheet.tab-on .sh-circle{flex:1;min-width:0;text-align:right;grid-area:auto;order:0;width:auto}
 .sh-circle img{display:block;height:1.3em;width:auto;max-width:100%;object-fit:contain}
+.sh-event img{display:inline-block;vertical-align:middle;height:2.4em;width:auto;max-width:100%;object-fit:contain}
 /* 見出し・テキスト・区切り線ブロック */
 .blk{grid-column:span var(--span,1);min-width:0}
 .blk-sec{font-family:var(--f-head);font-size:2.2em;font-weight:900;margin:0;line-height:1.2;white-space:pre-wrap}

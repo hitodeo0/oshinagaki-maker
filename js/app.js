@@ -29,7 +29,8 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const newItem = (o = {}) => ({ id: uid(), type:'item', cls:'', text:'', title:'',
   sub:'', badgeStyle:'tag', badgePos:'top', badgeBg:'#1f2440', badgeFg:'#ffffff', badgeAuto:false, line:'none', gcols:1, gratio:'',  // 区画用（badgeAuto: 見出しの色をテーマに合わせる。昔のデータは false のまま）
   badge1:'', r18:false, badge2:'', spec:'', cp:'', desc:'', note:'', price:'', unit:'円', img:'', span:1, imgPos:'left', imgAlign:'start', imgW:45, imgFill:false, titlePos:'info',
-  badgeMode:'text', stampPos:'tl', stampShape:'circle', stampRing:'single', stampJag:false,   // バッジをスタンプにするとき
+  badgeMode:'text', stampPos:'tl', stampShape:'circle', stampRing:'single', stampJag:false,   // バッジ1をスタンプにするとき
+  badge2Mode:'text', stamp2Pos:'br', stamp2Shape:'circle', stamp2Ring:'single', stamp2Jag:false,   // バッジ2をスタンプにするとき
   phOn:false, phRatio:'a5', phText:'表紙まだ', phBg:'#dddddd', phFg:'#555555', phLine:false,   // 仮の画像
   ...o });
 
@@ -44,13 +45,14 @@ function defaultState() {
     imgShadow: { mode:'theme', x:1.5, y:1.5, blur:3, color:'#000000', alpha:0.4 },
     colors: { ...THEMES.blank.colors }, fonts: { ...THEMES.blank.fonts },
     bg: { img:'', fit:'cover', layer:'front', opacity:1, tile:60 },
-    pattern: { type:'none', color:'#c8c8c8', size:10, weight:0.3, opacity:1 },
+    // 模様の色・付箋の色は role でデザインの色（sub / ink / paper / accent / bg）に合わせる。custom のときだけ color / bg / fg を使う
+    pattern: { type:'none', role:'sub', color:'#c8c8c8', size:10, weight:0.3, opacity:1 },
     // 付箋ヘッダー（日付・イベント名・スペースを色つきの箱にして、用紙の端まで伸ばす）
-    tab: { on:false, bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#111111', topLine:false,shape:'straight', size:3, toTop:true, toLeft:false, pad:5 },
+    tab: { on:false, bgRole:'ink', fgRole:'bg', bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#111111', topLine:false,shape:'straight', size:3, toTop:true, toLeft:false, pad:5 },
     frame: { type:'none', color:'#111111', width:1, radius:8, inset:10, fill:false, fillColor:'#ffffff', fillAlpha:1,shadow:0, pad:true, padding:10 },
     fileFonts: [],   // [{ family, file, data(dataURL) }]
     userFonts: [],   // PCにインストール済みのフォント名
-    info: { event:'イベント名', date:'2026/10/01', circle:'サークル名', logo:'', space:'A01', headline:'', notes:'' },
+    info: { event:'イベント名', eventLogo:'', date:'2026/10/01', circle:'サークル名', logo:'', space:'A01', headline:'', notes:'' },
     items: [
       newItem({ type:'grp', text:'新刊', span:99, gcols:1, badgeAuto:true }),
       newItem({ title:'サンプル新刊', badge1:'新刊', r18:true, spec:'A5 / 34P', cp:'○○ × △△', desc:'ここに本の説明を書きます。\n改行もそのまま反映されます。', note:'※年齢確認のため、身分証の提示をお願いします。', price:'500', span:2 }),
@@ -177,17 +179,20 @@ function itemHTML(it, n, cols = state.cols, imgExtra = '') {
   // 仮の画像（表紙まだ など）にしている場合は、画像があってもそちらを優先して出す
   const hasImg = it.phOn || it.img;
   const pos = hasImg ? it.imgPos : 'noimg';
+  // バッジ1・バッジ2は、それぞれ画像に重ねるスタンプにできる（形・線・ギザギザは区画の見出しと同じクラス）
+  const stampDiv = (n, text, pos, shape, ring, jag) =>
+    `<div class="item-stamp item-stamp-${n} st-${pos} grp-auto grp-shape-${shape || 'circle'} grp-ring-${ring || 'single'}${jag ? ' grp-jag' : ''}"><span class="grp-badge">${esc(text)}</span></div>`;
   const stamp = it.badge1 && it.badgeMode === 'stamp' && hasImg;
-  if (stamp) {
-    imgExtra += `<div class="item-stamp st-${it.stampPos || 'tl'} grp-auto grp-shape-${it.stampShape || 'circle'} grp-ring-${it.stampRing || 'single'}${it.stampJag ? ' grp-jag' : ''}"><span class="grp-badge">${esc(it.badge1)}</span></div>`;
-  }
+  const stamp2 = it.badge2 && it.badge2Mode === 'stamp' && hasImg;
+  if (stamp) imgExtra += stampDiv(1, it.badge1, it.stampPos || 'tl', it.stampShape, it.stampRing, it.stampJag);
+  if (stamp2) imgExtra += stampDiv(2, it.badge2, it.stamp2Pos || 'br', it.stamp2Shape, it.stamp2Ring, it.stamp2Jag);
   const imgHTML = it.phOn
     ? `<div class="img"><div class="ph${it.phLine ? ' ph-line' : ''}" style="--ph-ar:${PH_RATIOS[it.phRatio]?.[1] || '148 / 210'};--ph-bg:${it.phBg};--ph-fg:${it.phFg}">${esc(it.phText)}</div>${imgExtra}</div>`
     : it.img ? `<div class="img"><img src="${urlFor(it.img)}" alt="">${imgExtra}</div>` : '';
   const isNum = /^[\d,.\s]+$/.test(it.price);
   const badges = [
     !stamp && it.badge1 && `<span class="badge new">${esc(it.badge1)}</span>`,
-    it.badge2 && `<span class="badge free">${esc(it.badge2)}</span>`,
+    !stamp2 && it.badge2 && `<span class="badge free">${esc(it.badge2)}</span>`,
   ].filter(Boolean).join('');
   // タイトルの位置が「ブロックの一番上」なら、バッジとタイトルを画像の上にまたがる行に出す
   const titleTop = it.titlePos === 'top';
@@ -242,6 +247,9 @@ function paperScale() {
   return w === 297 ? 1 : w / 297 * 0.999;
 }
 
+// 色の役割 → CSSの色（「自分で決める」なら指定した色）
+const roleColor = (role, color) => role && role !== 'custom' ? `var(--c-${role})` : color;
+
 function render() {
   const s = state, i = s.info, sh = $('#sheet');
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
@@ -251,14 +259,14 @@ function render() {
     '--f-head': fontStack(s.fonts.head, s.fonts.body), '--f-body': fontStack(s.fonts.body), '--f-num': fontStack(s.fonts.num, s.fonts.head, s.fonts.body),
     '--scale': s.scale, '--hs': s.hs, '--gap': s.gap, '--cols': s.cols, '--cols-tpl': colsTpl(s.colRatio, s.cols),
     '--bgimg': s.bg.img ? `url("${urlFor(s.bg.img)}")` : 'none', '--bg-op': s.bg.opacity, '--bg-tile': s.bg.tile,
-    '--p-c': p.color, '--p-s': p.size, '--p-w': p.weight, '--p-op': p.opacity,
+    '--p-c': roleColor(p.role, p.color), '--p-s': p.size, '--p-w': p.weight, '--p-op': p.opacity,
     '--fr-c': fr.color, '--fr-w': fr.type === 'none' ? 0 : fr.width, '--fr-r': fr.radius, '--fr-inset': fr.inset,
     '--fr-style': ['double', 'dashed', 'dotted'].includes(fr.type) ? fr.type : 'solid',
     '--fr-fill': fr.fill ? hexToRgba(fr.fillColor, fr.fillAlpha ?? 1) : 'transparent', '--fr-sh': fr.shadow, '--fr-pad': fr.padding,
     '--img-gap': s.imgGap ?? 6, '--stamp-tilt': s.stampTilt ?? -8, '--stamp-size': s.stampSize ?? 1,
     '--ts': shadowCss(s.textShadow), '--is': shadowCss(s.imgShadow),
     '--col-line-c': `var(--c-${s.colLine.role || 'ink'})`, '--col-line-w': s.colLine.width,
-    '--tab-bg': s.tab.bg, '--tab-fg': s.tab.fg, '--tab-bw': s.tab.border, '--tab-bc': s.tab.borderColor, '--tab-pad': s.tab.pad,
+    '--tab-bg': roleColor(s.tab.bgRole, s.tab.bg), '--tab-fg': roleColor(s.tab.fgRole, s.tab.fg), '--tab-bw': s.tab.border, '--tab-bc': s.tab.borderColor, '--tab-pad': s.tab.pad,
   };
   const [sw, shh] = paperSize();
   vars['--sheet-w'] = sw; vars['--sheet-h'] = shh;
@@ -270,7 +278,7 @@ function render() {
   const pattern = p.type !== 'none' ? `<div class="pattern p-${p.type}"></div>` : '';
   const frame = hasFrame ? `<div class="frame f-${fr.type}"></div>` : '';
   sh.innerHTML = `${pattern}${s.bg.layer === 'back' ? bgLayer + deco + frame : deco + frame + bgLayer}
-    <header class="sh"><div class="sh-box">${f('sh-date', i.date)}${f('sh-event', i.event)}${i.space ? `<div class="sh-space">${spaceHTML(i.space)}</div>` : ''}</div>${i.logo ? `<div class="sh-circle"><img src="${urlFor(i.logo)}" alt="${esc(i.circle)}"></div>` : i.circle ? `<div class="sh-circle"><span class="sh-circle-t">${esc(i.circle)}</span></div>` : ''}</header>
+    <header class="sh"><div class="sh-box">${f('sh-date', i.date)}${i.eventLogo ? `<div class="sh-event sh-logo"><img src="${urlFor(i.eventLogo)}" alt="${esc(i.event)}"></div>` : f('sh-event', i.event)}${i.space ? `<div class="sh-space">${spaceHTML(i.space)}</div>` : ''}</div>${i.logo ? `<div class="sh-circle"><img src="${urlFor(i.logo)}" alt="${esc(i.circle)}"></div>` : i.circle ? `<div class="sh-circle"><span class="sh-circle-t">${esc(i.circle)}</span></div>` : ''}</header>
     ${i.headline ? `<div class="headline">${esc(i.headline)}</div>` : ''}
     <main class="items vfill-${s.vfill || 'start'}">${blocksHTML()}</main>
     ${i.notes ? `<footer class="notes">${esc(i.notes)}</footer>` : ''}`;
@@ -286,9 +294,11 @@ function render() {
   const th = $('#bgThumb');
   th.style.backgroundImage = s.bg.img ? `url("${urlFor(s.bg.img)}")` : '';
   th.textContent = s.bg.img ? '' : '画像なし';
-  const lt = $('#logoThumb');
-  lt.style.backgroundImage = i.logo ? `url("${urlFor(i.logo)}")` : '';
-  lt.textContent = i.logo ? '' : 'ロゴなし';
+  for (const [id, v] of [['#logoThumb', i.logo], ['#eventLogoThumb', i.eventLogo]]) {
+    const t = $(id);
+    t.style.backgroundImage = v ? `url("${urlFor(v)}")` : '';
+    t.textContent = v ? '' : 'ロゴなし';
+  }
   layoutHeader();
   fitImages();
   fitPrices();
@@ -448,7 +458,7 @@ function tabShape() {
 // 日付・イベント名・スペースの字間を調整して、左右の端を揃える
 function justifyHeader() {
   const sh = $('#sheet');
-  const els = ['.sh-date', '.sh-event', '.sh-space'].map(s => $(s, sh)).filter(Boolean);
+  const els = ['.sh-date', '.sh-event', '.sh-space'].map(s => $(s, sh)).filter(el => el && !el.querySelector('img'));
   for (const el of els) Object.assign(el.style, { letterSpacing: '', width: '', textAlign: '', whiteSpace: '', marginLeft: '' });
   if (state.headAlign === 'none' || els.length < 2) return;
   // 文字の「インク」の幅を測る（大きい数字は字形の左右に余白があるので、送り幅ではなく実際の線の端で揃える）
@@ -679,6 +689,8 @@ document.addEventListener('input', e => {
   if (!el) return;
   const k = el.dataset.k;
   if (k === 'theme') { switchTheme(el.value); return; }   // テーマ切り替えは専用処理（作業中のデザインを自動保存してから切り替える）
+  const ROLE_COLOR = { 'pattern.role': 'pattern.color', 'tab.bgRole': 'tab.bg', 'tab.fgRole': 'tab.fg' };
+  if (ROLE_COLOR[k] && el.value === 'custom') { const prev = getPath(state, k); if (state.colors[prev]) { setPath(state, ROLE_COLOR[k], state.colors[prev]); setTimeout(syncFields); } }
   setPath(state, k, el.type === 'checkbox' ? el.checked : el.hasAttribute('data-num') ? +el.value : el.value);
   if (k === 'pattern.type') { const [, size, weight] = PATTERNS[el.value]; Object.assign(state.pattern, { size, weight }); syncFields(); }
   if (k === 'cols') buildItems();
@@ -711,9 +723,14 @@ bgSlot.addEventListener('dragleave', () => bgSlot.classList.remove('drag'));
 bgSlot.addEventListener('drop', e => { e.preventDefault(); bgSlot.classList.remove('drag'); setBg(e.dataTransfer.files[0]); });
 
 $$('.tabs button').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+// スクロール位置はタブごとに覚えておく（全タブで1つのスクロール欄を共有しているため、覚えないと前のタブの位置のまま開く）
+const tabScroll = {};
 function showTab(name) {
+  const panes = $('.panes'), cur = $('.pane.on');
+  if (cur) tabScroll[cur.dataset.pane] = panes.scrollTop;
   $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
   $$('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === name));
+  panes.scrollTop = tabScroll[name] || 0;
 }
 
 /* ---------- エディター: 頒布物 ---------- */
@@ -724,6 +741,28 @@ const cardTitle = it =>
   (it.type === 'item' ? it.title : it.text).split('\n')[0] || (it.type === 'grp' ? '(見出しなし)' : '(無題)');
 const opts = (list, cur) => list.map(([v, l]) => `<option value="${v}"${cur === v ? ' selected' : ''}>${l}</option>`).join('');
 // ctxCols: このブロックが置かれている場所の列数（区画の中なら区画の列数）
+// 頒布物カードの中の区切り（見出しつきの枠）
+// バッジ1・バッジ2の設定欄（n: 1 or 2）
+function badgeUI(it, n) {
+  const k = n === 1
+    ? { text:'badge1', mode:'badgeMode', pos:'stampPos', shape:'stampShape', ring:'stampRing', jag:'stampJag', defPos:'tl', ph:'新刊 / 既刊 / NEW', list:' list="badgeList"' }
+    : { text:'badge2', mode:'badge2Mode', pos:'stamp2Pos', shape:'stamp2Shape', ring:'stamp2Ring', jag:'stamp2Jag', defPos:'br', ph:'残りわずか など', list:'' };
+  return `<div class="row">
+        <label class="f">バッジ${n}<input type="text" data-ik="${k.text}" value="${esc(it[k.text])}"${k.list} placeholder="${k.ph}"></label>
+        <label class="f" data-dep="${k.text}">出し方<select data-ik="${k.mode}">${opts([['text','タイトルの上'],['stamp','スタンプ（画像に重ねる）']], it[k.mode] || 'text')}</select></label>
+      </div>
+      ${it[k.mode] === 'stamp' ? `<div class="stamp-opts" data-dep="${k.text}">
+        <div class="row">
+          <label class="f">スタンプの位置<select data-ik="${k.pos}">${opts([['tl','左上'],['tr','右上'],['bl','左下'],['br','右下']], it[k.pos] || k.defPos)}</select></label>
+          <label class="f">スタンプの形<select data-ik="${k.shape}">${opts([['none','文字だけ'],['rect','長方形'],['round','角丸'],['circle','正円']], it[k.shape] || 'circle')}</select></label>
+        </div>
+        <div class="row">
+          <label class="f" data-dep="${k.shape}!=none">内側の線<select data-ik="${k.ring}">${opts([['none','なし'],['single','1本'],['double','2本'],['dotted','点線']], it[k.ring] || 'single')}</select></label>
+          <label class="chk" data-dep="${k.shape}!=none"><input type="checkbox" data-ik="${k.jag}"${it[k.jag] ? ' checked' : ''}>ギザギザ</label>
+        </div>
+      </div>` : ''}`;
+}
+const cardSec = (title, body) => `<div class="card-sec"><div class="card-sec-h">${title}</div>${body}</div>`;
 function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
   const spanOpts = Array.from({ length: ctxCols }, (_, i) => `<option value="${i + 1}"${+it.span === i + 1 ? ' selected' : ''}>${i + 1}列分</option>`).join('')
     + `<option value="99"${+it.span >= 99 ? ' selected' : ''}>全幅</option>`;
@@ -736,7 +775,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f">クラス名（CSS用）<input type="text" data-ik="cls" value="${esc(it.cls)}" placeholder="big など"></label>
       </div>`;
   if (it.type === 'end') return head + `<p class="hint" style="margin:0">ここより下のブロックは、区画に入らず用紙に直接並びます。</p></div></details>`;
-  if (it.type === 'grp') return head + `
+  if (it.type === 'grp') return head + cardSec('見出し', `
       <div class="row">
         <label class="f">見出し<input type="text" data-ik="text" value="${esc(it.text)}" list="badgeList" placeholder="新刊 / 既刊 / NEW / OLD"></label>
         <label class="f">サブ文字<input type="text" data-ik="sub" value="${esc(it.sub)}" placeholder="残部少！ など"></label>
@@ -746,24 +785,21 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f" data-dep="badgeShape!=none">内側の線<select data-ik="badgeRing">${opts([['none','なし'],['single','1本'],['double','2本'],['dotted','点線']], grpShape(it).ring)}</select></label>
         <label class="chk" style="flex:.7" data-dep="badgeShape!=none"><input type="checkbox" data-ik="badgeJag"${grpShape(it).jag ? ' checked' : ''}>ギザギザ</label>
       </div>
-      <div class="row">
-        <label class="f">見出しの位置<select data-ik="badgePos">${opts([['top','区画の上'],['overlay','区画の左上に重ねる'],['overlay-r','区画の右上に重ねる'],['img-tl','最初の画像の左上'],['img-tr','最初の画像の右上'],['img-bl','最初の画像の左下'],['img-br','最初の画像の右下'],['side','区画の左に縦書き（線つき）'],['side-r','区画の右に縦書き（線つき）']], it.badgePos)}</select></label>
-      </div>
+      <label class="f">見出しの位置<select data-ik="badgePos">${opts([['top','区画の上'],['overlay','区画の左上に重ねる'],['overlay-r','区画の右上に重ねる'],['img-tl','最初の画像の左上'],['img-tr','最初の画像の右上'],['img-bl','最初の画像の左下'],['img-br','最初の画像の右下'],['side','区画の左に縦書き（線つき）'],['side-r','区画の右に縦書き（線つき）']], it.badgePos)}</select></label>
       <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-ik="badgeAuto"${it.badgeAuto ? ' checked' : ''}>見出しの色をテーマの色に合わせる</label>
       <div class="row"${it.badgeAuto ? ' style="opacity:.4;pointer-events:none"' : ''}>
         <label class="f">見出しの色<input type="color" data-ik="badgeBg" value="${esc(it.badgeBg)}" style="width:100%;height:31px;padding:0"${it.badgeAuto ? ' disabled' : ''}></label>
         <label class="f">見出しの文字色<input type="color" data-ik="badgeFg" value="${esc(it.badgeFg)}" style="width:100%;height:31px;padding:0"${it.badgeAuto ? ' disabled' : ''}></label>
-      </div>
+      </div>`) + cardSec('区画の中', `
       <div class="row">
         <label class="f">区画の線<select data-ik="line">${opts([['none','なし'],['top','上に線'],['left','左に線'],['box','四角で囲む']], it.line)}</select></label>
         <label class="f">区画の中の列数<select data-ik="gcols" data-num>${opts([1, 2, 3, 4].map(c => [c, c + '列']), +it.gcols)}</select></label>
       </div>
       <label class="f" data-dep="gcols>1">区画の中の列の幅の比率（空欄なら均等）<input type="text" data-ik="gratio" value="${esc(it.gratio)}" placeholder="例: 60 40"></label>
-      ${common}
-      <p class="hint" style="margin:0">次の「区画」か「区画おわり」までのブロックが、この区画に入ります。</p>
+      <p class="hint" style="margin:0 0 8px">次の「区画」か「区画おわり」までのブロックが、この区画に入ります。</p>`) + cardSec('配置・CSS', common) + `
     </div></details>`;
   if (it.type !== 'item') return head + (it.type === 'hr' ? '' :`<label class="f">${TYPE_LABEL[it.type]}<textarea data-ik="text">${esc(it.text)}</textarea></label>`) + common + '</div></details>';
-  return head + `
+  return head + cardSec('画像', `
       <div class="imgslot">
         <div class="thumb" style="${it.img ? `background-image:url(${urlFor(it.img)})` : ''}">${it.img ? '' : '画像なし'}</div>
         <div><label class="btn">画像を選択<input type="file" accept="image/*" data-act="img" hidden></label>
@@ -777,31 +813,6 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
       </div>
       <label class="f">仮の画像の文字<textarea data-ik="phText" rows="1" style="min-height:0">${esc(it.phText)}</textarea></label>
       <label class="chk" style="margin:-4px 0 8px"><input type="checkbox" data-ik="phLine"${it.phLine ? ' checked' : ''}>内側に点線の枠を表示する</label>` : ''}
-      <label class="f">タイトル<textarea data-ik="title" rows="1" style="min-height:0">${esc(it.title)}</textarea></label>
-      <div class="row">
-        <label class="f">バッジ<input type="text" data-ik="badge1" value="${esc(it.badge1)}" list="badgeList" placeholder="新刊/既刊/NEW"></label>
-        <label class="f">自由バッジ<input type="text" data-ik="badge2" value="${esc(it.badge2)}" placeholder="残りわずか 等"></label>
-        <label class="chk"><input type="checkbox" data-ik="r18"${it.r18 ? ' checked' : ''}>R-18</label>
-      </div>
-      <div class="row">
-        <label class="f" data-dep="badge1">バッジの出し方<select data-ik="badgeMode">${opts([['text','タイトルの上'],['stamp','画像に重ねる（スタンプ）']], it.badgeMode || 'text')}</select></label>
-        ${it.badgeMode === 'stamp' ? `<label class="f" data-dep="badge1">スタンプの位置<select data-ik="stampPos">${opts([['tl','左上'],['tr','右上'],['bl','左下'],['br','右下']], it.stampPos || 'tl')}</select></label>` : ''}
-      </div>
-      ${it.badgeMode === 'stamp' ? `<div class="row" data-dep="badge1">
-        <label class="f">スタンプの形<select data-ik="stampShape">${opts([['none','文字だけ'],['rect','長方形'],['round','角丸'],['circle','正円']], it.stampShape || 'circle')}</select></label>
-        <label class="f" data-dep="stampShape!=none">内側の線<select data-ik="stampRing">${opts([['none','なし'],['single','1本'],['double','2本'],['dotted','点線']], it.stampRing || 'single')}</select></label>
-        <label class="chk" style="flex:.7" data-dep="stampShape!=none"><input type="checkbox" data-ik="stampJag"${it.stampJag ? ' checked' : ''}>ギザギザ</label>
-      </div>
-      <p class="hint" style="margin-top:-4px">大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>` : ''}
-      <label class="f">詳細（判型・ページ数・サイズ）<textarea data-ik="spec" rows="1" style="min-height:0" placeholder="A5 / 34P">${esc(it.spec)}</textarea></label>
-      <label class="f">カップリング・ジャンル<textarea data-ik="cp" rows="1" style="min-height:0">${esc(it.cp)}</textarea></label>
-      <label class="f">説明文<textarea data-ik="desc">${esc(it.desc)}</textarea></label>
-      <label class="f">注意書き（小さい文字）<textarea data-ik="note" rows="1" style="min-height:0">${esc(it.note)}</textarea></label>
-      <div class="row">
-        <label class="f">価格<input type="text" data-ik="price" value="${esc(it.price)}" placeholder="500 / 無料配布"></label>
-        <label class="f" style="flex:.5">単位<input type="text" data-ik="unit" value="${esc(it.unit)}"></label>
-      </div>
-      ${common}
       <div class="row" data-dep="img|phOn">
         <label class="f">画像の位置<select data-ik="imgPos">
           ${[['left','左'],['right','右'],['top','上']].map(([v, l]) => `<option value="${v}"${it.imgPos === v ? ' selected' : ''}>${l}</option>`).join('')}
@@ -810,9 +821,23 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
           ${[['start','上'],['center','中央'],['end','下']].map(([v, l]) => `<option value="${v}"${(it.imgAlign || 'start') === v ? ' selected' : ''}>${l}</option>`).join('')}
         </select></label>
       </div>
-      <label class="chk" style="margin:-2px 0 8px" data-dep="img&imgPos!=top|phOn&imgPos!=top"><input type="checkbox" data-ik="imgFill"${it.imgFill ? ' checked' : ''}>画像の縦幅を区画の縦幅に合わせる（横幅は自動。画像の位置が左・右のとき）</label>
       <label class="f" data-dep="img|phOn">画像の幅 <span class="rangeval">${it.imgW}%</span><input type="range" min="15" max="100" step="1" data-ik="imgW" data-num value="${it.imgW}"></label>
-      <label class="f" data-dep="img|phOn">タイトルの位置<select data-ik="titlePos">${opts([['info','画像の横（詳細と同じ欄）'],['top','ブロックの一番上（画像の上にまたがる）']], it.titlePos || 'info')}</select></label>
+      <label class="chk" style="margin:-2px 0 8px" data-dep="img&imgPos!=top|phOn&imgPos!=top"><input type="checkbox" data-ik="imgFill"${it.imgFill ? ' checked' : ''}>画像の縦幅を区画の縦幅に合わせる（横幅は自動。画像の位置が左・右のとき）</label>`) + cardSec('内容', `
+      <label class="f">タイトル<textarea data-ik="title" rows="1" style="min-height:0">${esc(it.title)}</textarea></label>
+      <div class="row">
+        <label class="f">詳細（判型・ページ数・サイズ）<textarea data-ik="spec" rows="1" style="min-height:0" placeholder="A5 / 34P">${esc(it.spec)}</textarea></label>
+        <label class="chk" style="flex:.3"><input type="checkbox" data-ik="r18"${it.r18 ? ' checked' : ''}>R-18</label>
+      </div>
+      <label class="f">カップリング・ジャンル<textarea data-ik="cp" rows="1" style="min-height:0">${esc(it.cp)}</textarea></label>
+      <label class="f">説明文<textarea data-ik="desc">${esc(it.desc)}</textarea></label>
+      <label class="f">注意書き（小さい文字）<textarea data-ik="note" rows="1" style="min-height:0">${esc(it.note)}</textarea></label>
+      <div class="row">
+        <label class="f">価格<input type="text" data-ik="price" value="${esc(it.price)}" placeholder="500 / 無料配布"></label>
+        <label class="f" style="flex:.5">単位<input type="text" data-ik="unit" value="${esc(it.unit)}"></label>
+      </div>`) + cardSec('バッジ・スタンプ', badgeUI(it, 1) + '<div class="card-div"></div>' + badgeUI(it, 2) + `
+      <p class="hint" style="margin:0 0 8px">バッジ1は「新刊」など、頒布物の種類を表すバッジです（CSSの <code>.item[data-badge="新刊"]</code> はバッジ1で見分けます）。スタンプの大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>`) + cardSec('配置・CSS', `
+      ${common}
+      <label class="f" data-dep="img|phOn">タイトルの位置<select data-ik="titlePos">${opts([['info','画像の横（詳細と同じ欄）'],['top','ブロックの一番上（画像の上にまたがる）']], it.titlePos || 'info')}</select></label>`) + `
     </div>
   </details>`;
 }
@@ -841,7 +866,7 @@ $('#itemList').addEventListener('input', e => {
   it[k] = el.type === 'checkbox' ? el.checked : el.hasAttribute('data-num') ? +el.value : el.value;
   if (k === 'title' || k === 'text') $('.t', card).textContent = cardTitle(it);
   if (k === 'gcols') { render(); save(); buildItems(); return; }  // 区画内の横幅の選択肢を作り直す
-  if (k === 'phOn' || k === 'badgeAuto' || k === 'badgeMode') { render(); save(); buildItems(); return; }   // 設定欄の出し入れ・有効/無効を切り替える
+  if (k === 'phOn' || k === 'badgeAuto' || k === 'badgeMode' || k === 'badge2Mode') { render(); save(); buildItems(); return; }   // 設定欄の出し入れ・有効/無効を切り替える
   if (k === 'imgW') el.previousElementSibling.textContent = el.value + '%';
   itemDeps(card, it);
   render(); save();
@@ -890,17 +915,19 @@ $$('[data-add]').forEach(b => b.onclick = () => {
   render(); save();
 });
 
-// サークルロゴ
-async function setLogo(file) {
+// サークルロゴ・イベントロゴ（key: info.logo / info.eventLogo）
+async function setLogo(file, key) {
   if (!file || !file.type.startsWith('image/')) return;
-  state.info.logo = await readFile(file); render(); save();
+  state.info[key] = await readFile(file); render(); save();
 }
-$('#logoFile').onchange = e => { setLogo(e.target.files[0]); e.target.value = ''; };
-$('#logoClear').onclick = () => { state.info.logo = ''; render(); save(); };
-const logoSlot = $('#logoSlot');
-logoSlot.addEventListener('dragover', e => { e.preventDefault(); logoSlot.classList.add('drag'); });
-logoSlot.addEventListener('dragleave', () => logoSlot.classList.remove('drag'));
-logoSlot.addEventListener('drop', e => { e.preventDefault(); logoSlot.classList.remove('drag'); setLogo(e.dataTransfer.files[0]); });
+for (const [pre, key] of [['logo', 'logo'], ['eventLogo', 'eventLogo']]) {
+  $(`#${pre}File`).onchange = e => { setLogo(e.target.files[0], key); e.target.value = ''; };
+  $(`#${pre}Clear`).onclick = () => { state.info[key] = ''; render(); save(); };
+  const slot = $(`#${pre}Slot`);
+  slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag'); });
+  slot.addEventListener('dragleave', () => slot.classList.remove('drag'));
+  slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('drag'); setLogo(e.dataTransfer.files[0], key); });
+}
 
 // プレビュークリック → 該当カードへ
 $('#sheet').addEventListener('click', e => {
@@ -934,6 +961,9 @@ function withDefaults(s) {
   const IS = { soft: { mode:'custom', x:0, y:1.5, blur:3, alpha:0.4 }, hard: { mode:'custom', x:2, y:2, blur:0, alpha:1 }, none: { mode:'none' }, theme: { mode:'theme' } };
   if (typeof s.textShadow === 'string') s.textShadow = TS[s.textShadow] || {};
   if (typeof s.imgShadow === 'string') s.imgShadow = IS[s.imgShadow] || {};
+  const roleOf = c => ['sub', 'ink', 'paper', 'accent', 'bg'].find(r => s.colors && (s.colors[r] || '').toLowerCase() === (c || '').toLowerCase()) || 'custom';
+  if (s.pattern && !s.pattern.role) s.pattern.role = roleOf(s.pattern.color);
+  if (s.tab && !s.tab.bgRole) { s.tab.bgRole = roleOf(s.tab.bg); s.tab.fgRole = roleOf(s.tab.fg); }
   for (const k of ['info', 'bg', 'pattern', 'frame', 'tab', 'textShadow', 'imgShadow', 'colLine']) s[k] = { ...d[k], ...s[k] };
   return s;
 }

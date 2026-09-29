@@ -19,10 +19,10 @@ const THEMES = {
             look: { scale: 1.15, hs: 0.85, headAlign: 'max', circleFit: true, circleSX: 85,
                     pattern: { type:'grid', color:'#e3f4fc', size:24, weight:1.6, opacity:1 },
                     frame: { type:'solid', color:'#1136e8', width:1.4, radius:12, inset:9, fill:true, fillColor:'#ffffff', fillAlpha:0.7, shadow:0, pad:true, padding:8 },
-                    tab: { on:true, bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#1136e8', topLine:false, shape:'straight', size:3, toTop:true, toLeft:false, pad:5 } } },
+                    tab: { on:true, bgRole:'paper', fgRole:'custom', bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#1136e8', topLine:false, shape:'straight', size:3, toTop:true, toLeft:false, pad:5 } } },
   report: { name: '報告書', desc: '書類風。色の箱＋ラベル付きの値札',               colors: { bg:'#fbf7f1', paper:'#ffffff', ink:'#111111', accent:'#ea5230', sub:'#1136e8' }, fonts: { head:'Zen Old Mincho', body:'Zen Kaku Gothic New', num:'Oswald' },
             // テーマの初期状態で変えたい見た目（themeLook で既定値に上書きされる）。報告書は付箋ヘッダー（白地・黒枠）
-            look: { scale: 1.1, hs: 0.8, headAlign: 'max', tab: { on:true, bg:'#ffffff',   /* 色の箱の余白がある分、文字は少し小さめ */ fg:'#111111', border:0.5, borderColor:'#111111', topLine:false, shape:'straight', toTop:true, toLeft:false, pad:5 } } },
+            look: { scale: 1.1, hs: 0.8, headAlign: 'max', tab: { on:true, bgRole:'custom', fgRole:'ink', bg:'#ffffff',   /* 色の箱の余白がある分、文字は少し小さめ */ fg:'#111111', border:0.5, borderColor:'#111111', topLine:false, shape:'straight', toTop:true, toLeft:false, pad:5 } } },
 };
 // 配色（色の役割: bg 背景 / paper 面・帯 / ink 文字 / accent アクセント / sub 模様・線）
 // 各テーマの色 + よくある組み合わせ
@@ -157,7 +157,7 @@ const SNIPPETS = {
     'クラス名 big の頒布物のタイトルだけ大きく': `.sheet .big .title { font-size: 3.5em; }`,
     'クラス名 big の頒布物の価格だけ大きく': `.sheet .big .price { font-size: 6em; }`,
     'big 以外を小さめに': `.sheet .item:not(.big) { font-size: .85em; }`,
-    '「新刊」バッジの頒布物を大きく': `/* 頒布物のバッジ欄が「新刊」のもの */
+    '「新刊」バッジの頒布物を大きく': `/* 頒布物のバッジ1が「新刊」のもの */
 .sheet .item[data-badge="新刊"] { font-size: 1.4em; }`,
     '「既刊」バッジの頒布物を小さめに': `.sheet .item[data-badge="既刊"] { font-size: .85em; }`,
     '1番目のブロックだけ大きく': `/* 編集欄の #番号 で指定 */
@@ -268,6 +268,7 @@ const CLASS_REF = [
     ['.tab-on .sh-box', '付箋そのもの'],
     ['.sh-date', '日付'],
     ['.sh-event', 'イベント名'],
+    ['.sh-event img', 'イベントロゴ画像（大きさは height で）'],
     ['.sh-space', 'スペース'],
     ['.sh-space-pre', 'スペースの前半（「東7 B63b」のように空白で区切ったときの「東7」）'],
     ['.sh-circle', 'サークル名'],
@@ -277,7 +278,7 @@ const CLASS_REF = [
   ]],
   ['頒布物', [
     ['.item', '頒布物ひとつ分（.pos-left / .pos-right / .pos-top / .noimg）'],
-    ['.item[data-badge="新刊"]', 'バッジが「新刊」の頒布物だけ'],
+    ['.item[data-badge="新刊"]', 'バッジ1が「新刊」の頒布物だけ'],
     ['[data-n="1"]', '1番目のブロックだけ（編集欄の #番号）'],
     ['.big', 'クラス名欄に big と書いたブロックだけ（名前は自由）'],
     ['.img img', '画像'],
@@ -286,8 +287,9 @@ const CLASS_REF = [
     ['.title', 'タイトル'],
     ['.item-head', 'タイトルの位置を「ブロックの一番上」にしたときの、タイトルとバッジの入れ物'],
     ['.badges', 'バッジの並び'],
-    ['.badge.new', 'バッジ'],
-    ['.badge.free', '自由バッジ'],
+    ['.badge.new', 'バッジ1'],
+    ['.badge.free', 'バッジ2'],
+    ['.item-stamp', '画像に重ねたスタンプ（バッジ1だけなら .item-stamp-1、バッジ2だけなら .item-stamp-2）'],
     ['.badge.r18', 'R-18'],
     ['.spec', '詳細（判型・ページ数）'],
     ['.cp', 'カップリング・ジャンル'],
@@ -386,7 +388,7 @@ const FAQ = [
       <p><code>.big .title</code> の<b>順番が大事</b>です。逆に書くと反映されません。</p>
       <p>クラス名をつけずに「新刊」だけ大きくするスニペットもあります（スニペットの「区画」「頒布物：大きさ」）。</p>`],
     ['頒布物1つずつに「新刊」スタンプを付けたい', `
-      <p>頒布物の「バッジ」に「新刊」などと書き、「バッジの出し方」を「画像に重ねる（スタンプ）」にします。位置・形・内側の線・ギザギザも選べます。</p>
+      <p>頒布物の「バッジ1」に「新刊」などと書き、「出し方」を「スタンプ（画像に重ねる）」にします。バッジ2も同じようにスタンプにできるので、左上と右下に1つずつ、のようにも置けます。位置・形・内側の線・ギザギザも選べます。</p>
       <p>大きさと傾きは、デザインタブの「スタンプの大きさ」「重ねた見出し（スタンプ）の傾き」で変えられます。</p>`],
     ['区画の「新刊」見出しの形・位置・大きさを変えたい', `
       <ul>
