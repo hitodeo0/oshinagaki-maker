@@ -51,11 +51,14 @@ async function buildFontEmbedCss(node) {
 }
 
 // 画像で保存（PNG / JPG）。選んだ用紙サイズを 300dpi で書き出す（A3 なら 3508×4961px、横向きなら縦横が逆）
+// type: png / jpg / png-clear（用紙の背景色だけを透明にした PNG。あとでペイントソフトで背景を描き足せるように）
 async function exportImage(type) {
   if (!window.htmlToImage) { alert('画像を作る部品を読み込めませんでした。インターネットにつながっているか確認してください。'); return; }
   const sh = $('#sheet');
   const status = $('#status'), before = status.textContent;
   status.textContent = '画像を作成中…（少し時間がかかります）';
+  const clear = type === 'png-clear';
+  if (clear) sh.classList.add('export-clear');
   try {
     await document.fonts.ready;
     // Webフォントは使っている分だけ埋め込む。ファイルから読み込んだフォントはこちらで足す
@@ -72,7 +75,7 @@ async function exportImage(type) {
     // JPG は部品の backgroundColor を使うと用紙の背景色まで白で上書きされるので、
     // PNG と同じように描いてから、白い下地に重ねて JPG にする
     let url;
-    if (type === 'png') url = await htmlToImage.toPng(sh, opts);
+    if (type !== 'jpg') url = await htmlToImage.toPng(sh, opts);
     else {
       const src = await htmlToImage.toCanvas(sh, opts);
       const c = document.createElement('canvas');
@@ -83,12 +86,14 @@ async function exportImage(type) {
       url = c.toDataURL('image/jpeg', 0.92);
     }
     const a = document.createElement('a');
-    a.href = url; a.download = `${fileBaseName()}.${type === 'png' ? 'png' : 'jpg'}`; a.click();
+    a.href = url; a.download = `${fileBaseName()}${clear ? '_背景なし' : ''}.${type === 'jpg' ? 'jpg' : 'png'}`; a.click();
     status.textContent = '画像を保存しました';
   } catch (e) {
     console.error(e);
     status.textContent = before;
     alert('画像を作れませんでした: ' + (e.message || e));
+  } finally {
+    sh.classList.remove('export-clear');
   }
 }
 $('#imgExport').onchange = e => { const t = e.target.value; e.target.value = ''; if (t) exportImage(t); };

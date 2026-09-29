@@ -477,6 +477,9 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .sheet.is-none .img :is(img,.ph){filter:none}
 .sheet.is-custom .img :is(img,.ph){filter:drop-shadow(var(--is))}
 
+/* 「PNG（背景を透明に）」で書き出す間だけ: 用紙の背景色だけを消す（模様・背景画像・飾りは残す） */
+.sheet.export-clear{background-color:transparent!important}
+
 /* ================= スマホ・狭い画面 ================= */
 /* 上から「ボタン → プレビュー → 編集欄」の順に縦に並べ、プレビューと編集欄はそれぞれの中でスクロールする */
 @media (max-width:820px){
