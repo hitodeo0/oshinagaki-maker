@@ -765,6 +765,18 @@ bgSlot.addEventListener('dragleave', () => bgSlot.classList.remove('drag'));
 bgSlot.addEventListener('drop', e => { e.preventDefault(); bgSlot.classList.remove('drag'); setBg(e.dataTransfer.files[0]); });
 
 $$('.tabs button').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+// デザインタブの大項目の開閉は、このブラウザに覚えておく（読めなくても全部開いた状態で動く）
+(() => {
+  const KEY = 'oshinagaki-dsec-closed';
+  let closed = [];
+  try { closed = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch {}
+  for (const d of $$('.dsec')) {
+    if (closed.includes(d.dataset.sec)) d.open = false;
+    d.addEventListener('toggle', () => {
+      try { localStorage.setItem(KEY, JSON.stringify($$('.dsec').filter(x => !x.open).map(x => x.dataset.sec))); } catch {}
+    });
+  }
+})();
 // スクロール位置はタブごとに覚えておく（全タブで1つのスクロール欄を共有しているため、覚えないと前のタブの位置のまま開く）
 const tabScroll = {};
 function showTab(name) {

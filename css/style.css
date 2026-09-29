@@ -37,6 +37,15 @@ textarea{resize:vertical;min-height:54px}
 .hint li+li{margin-top:2px}
 h3{font-size:13px;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--ui-line)}
 h3:first-child{margin-top:0}
+/* デザインタブの大項目（クリックで畳める） */
+.dsec>summary{list-style:none;cursor:pointer}
+.dsec>summary::-webkit-details-marker{display:none}
+.dsec>summary h3{margin:18px 0 8px;display:flex;align-items:center;gap:6px}
+.dsec:first-child>summary h3{margin-top:0}
+.dsec>summary h3::before{content:"";width:0;height:0;border:4px solid transparent;border-top:5px solid var(--ui-sub);border-bottom:0;transition:rotate .15s}
+.dsec:not([open])>summary h3{margin-bottom:0}
+.dsec:not([open])>summary h3::before{rotate:-90deg}
+.dsec>summary:hover h3{color:var(--ui-accent)}
 .card{border:1px solid var(--ui-line);border-radius:8px;margin-bottom:10px;background:#fcfbfa}
 .card>summary{list-style:none;display:flex;align-items:center;gap:6px;padding:8px 10px;cursor:pointer;font-weight:700}
 .card>summary::-webkit-details-marker{display:none}

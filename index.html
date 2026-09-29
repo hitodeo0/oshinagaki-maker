@@ -111,7 +111,8 @@
 
       <!-- デザイン -->
       <section class="pane" data-pane="design">
-        <h3>用紙・レイアウト</h3>
+        <details class="dsec" open data-sec="用紙・レイアウト">
+        <summary><h3>用紙・レイアウト</h3></summary>
         <div class="row">
           <label class="f">用紙サイズ<select data-k="paper"><option value="A3">A3</option><option value="B4">B4</option><option value="A4">A4</option><option value="B5">B5</option></select></label>
           <label class="f">向き<select data-k="orient"><option value="portrait">縦</option><option value="landscape">横</option></select></label>
@@ -162,8 +163,10 @@
           <label class="f">線のはみ出し(mm) <span class="rangeval" data-show="lineDeco.over"></span><input type="range" min="0" max="20" step="0.5" data-k="lineDeco.over" data-num></label>
         </div>
         <p class="hint" style="margin-top:-4px">列の区切り線・「区切り線」ブロック・区画の「上に線」の両端につきます。はみ出しは、線を両端から少し伸ばします。</p>
+        </details>
 
-        <h3>マイテーマ</h3>
+        <details class="dsec" open data-sec="マイテーマ">
+        <summary><h3>マイテーマ</h3></summary>
         <div class="row" style="margin-bottom:8px">
           <input type="text" id="myThemeName" placeholder="テーマ名（例: 冬イベント用）">
           <button id="btnSaveTheme" style="flex:none">今のデザインを保存</button>
@@ -174,16 +177,20 @@
           <label class="btn" style="justify-content:center" title="「テーマをファイルに保存」で保存したマイテーマを追加します">テーマのファイルを開く<input type="file" id="themeImport" accept=".json,application/json" hidden></label>
         </div>
         <p class="hint">色・フォント・サイズ・背景・CSSなど、見た目だけをまとめて保存します。保存先はこのブラウザです。</p>
+        </details>
 
-        <h3>ベーステーマ</h3>
+        <details class="dsec" open data-sec="ベーステーマ">
+        <summary><h3>ベーステーマ</h3></summary>
         <div class="row" style="align-items:flex-end">
           <label class="f"><select data-k="theme" id="themeSel"></select></label>
           <button id="btnResetTheme" style="flex:none;margin-bottom:10px" title="色・フォント・サイズ・ヘッダー・背景・枠・付箋・影・CSSを、すべて今のテーマの初期状態に戻します">デザインを全部リセット</button>
         </div>
         <p class="hint">切り替えると、見た目の設定がそのテーマの初期状態になります（用紙の向き・列数・余白の使い方はそのまま）。<br>
         それまでのデザインは、マイテーマに「作業中：テーマ名」で自動保存されます。</p>
+        </details>
 
-        <h3>色</h3>
+        <details class="dsec" open data-sec="色">
+        <summary><h3>色</h3></summary>
         <div class="colors">
           <label><input type="color" data-k="colors.bg">背景</label>
           <label><input type="color" data-k="colors.paper">面・帯</label>
@@ -197,8 +204,10 @@
           <div class="pal-list" id="palettes"></div>
         </div>
         <p class="hint">レイアウトやフォントはそのままで、色の組み合わせだけ入れ替えます。</p>
+        </details>
 
-        <h3>背景パターン</h3>
+        <details class="dsec" open data-sec="背景パターン">
+        <summary><h3>背景パターン</h3></summary>
         <div class="row">
           <label class="f">模様<select data-k="pattern.type" id="patternSel"></select></label>
         </div>
@@ -210,8 +219,10 @@
         <label class="f" data-dep="pattern.type!=none">線・点の太さ <span class="rangeval" data-show="pattern.weight"></span><input type="range" min="0.1" max="20" step="0.1" data-k="pattern.weight" data-num></label>
         <label class="f" data-dep="pattern.type!=none">濃さ <span class="rangeval" data-show="pattern.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="pattern.opacity" data-num></label>
         <p class="hint">模様を切り替えると、大きさ・太さがその模様のおすすめ値に戻ります。</p>
+        </details>
 
-        <h3>背景画像</h3>
+        <details class="dsec" open data-sec="背景画像">
+        <summary><h3>背景画像</h3></summary>
         <div class="imgslot" id="bgSlot">
           <div class="thumb" id="bgThumb">画像なし</div>
           <div><label class="btn">画像を選択<input type="file" accept="image/*" id="bgFile" hidden></label>
@@ -232,8 +243,10 @@
         <label class="f" data-dep="bg.img">濃さ <span class="rangeval" data-show="bg.opacity"></span><input type="range" min="0" max="1" step="0.05" data-k="bg.opacity" data-num></label>
         <label class="f" data-dep="bg.img&bg.fit=repeat">タイルの大きさ(mm) <span class="rangeval" data-show="bg.tile"></span><input type="range" min="5" max="300" step="1" data-k="bg.tile" data-num></label>
         <p class="hint">文字が読みにくいときは、濃さを下げてください。</p>
+        </details>
 
-        <h3>縁取り・枠</h3>
+        <details class="dsec" open data-sec="縁取り・枠">
+        <summary><h3>縁取り・枠</h3></summary>
         <div class="row">
           <label class="f">線<select data-k="frame.type">
             <option value="none">なし</option>
@@ -260,8 +273,10 @@
           <label class="f" data-dep="frame.type!=none&frame.pad|frame.fill&frame.pad">枠と中身の間(mm) <span class="rangeval" data-show="frame.padding"></span><input type="range" min="0" max="30" step="0.5" data-k="frame.padding" data-num></label>
         </div>
         <p class="hint">「枠の中を塗る」と角の丸さを組み合わせると、模様の上に白いカードを置いたような見た目になります。</p>
+        </details>
 
-        <h3>ヘッダー</h3>
+        <details class="dsec" open data-sec="ヘッダー">
+        <summary><h3>ヘッダー</h3></summary>
         <label class="f">日付・イベント名・スペースの左右揃え<select data-k="headAlign">
           <option value="none">揃えない</option>
           <option value="max">一番長い行の幅に揃える</option>
@@ -315,8 +330,10 @@
         </div>
         <p class="hint">白い箱に黒い枠線にするなら、付箋の色を白、枠線の太さを 0.5mm くらいにします。<br>
         ギザギザ・斜めのときは、下端に枠線はつきません。</p>
+        </details>
 
-        <h3>サイズ</h3>
+        <details class="dsec" open data-sec="サイズ">
+        <summary><h3>サイズ</h3></summary>
         <div class="sub-h">全体</div>
         <label class="f">全体の文字サイズ <span class="rangeval" data-show="scale"></span><input type="range" min="0.5" max="3" step="0.05" data-k="scale" data-num></label>
         <label class="f">頒布物どうしの間隔 <span class="rangeval" data-show="gap"></span><input type="range" min="0" max="3" step="0.1" data-k="gap" data-num></label>
@@ -335,8 +352,10 @@
         <label class="f">スタンプの大きさ（倍） <span class="rangeval" data-show="stampSize"></span><input type="range" min="0.5" max="2.5" step="0.05" data-k="stampSize" data-num></label>
         <label class="f">スタンプの傾き(度) <span class="rangeval" data-show="stampTilt"></span><input type="range" min="-30" max="30" step="1" data-k="stampTilt" data-num></label>
         <p class="hint">画像や区画に重ねたバッジ・見出しに反映されます。傾きは 0 でまっすぐです。</p>
+        </details>
 
-        <h3>フォント</h3>
+        <details class="dsec" open data-sec="フォント">
+        <summary><h3>フォント</h3></summary>
         <label class="f">見出し（サークル名・タイトル）<select data-k="fonts.head" class="fontSel"></select></label>
         <label class="f">サークル名だけ別のフォントにする<select data-k="fonts.circle" class="fontSel" data-same="見出しと同じ"></select></label>
         <label class="f">本文<select data-k="fonts.body" class="fontSel"></select></label>
@@ -356,8 +375,10 @@
           <li>読み込んだフォントファイルは保存したファイルにも入るので、その分ファイルが大きくなります。</li>
           <li>PCのフォントを読み込んで作業ファイルを保存し別のPCで開く場合、そのPCにも同じフォントが必要です。</li>
         </ul></div>
+        </details>
 
-        <h3>文字の影</h3>
+        <details class="dsec" open data-sec="文字の影">
+        <summary><h3>文字の影</h3></summary>
         <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-k="textShadow.on">タイトル・値段・ヘッダー・見出しに影をつける</label>
         <div class="shadow-ui" data-shadow="textShadow">
           <div class="row" style="margin-bottom:6px">
@@ -374,8 +395,10 @@
             <label class="f" style="flex:.5">色<input type="color" data-k="textShadow.color" style="width:100%;height:31px;padding:0"></label>
           </div>
         </div>
+        </details>
 
-        <h3>画像の影</h3>
+        <details class="dsec" open data-sec="画像の影">
+        <summary><h3>画像の影</h3></summary>
         <label class="f"><select data-k="imgShadow.mode">
           <option value="theme">テーマのまま</option>
           <option value="none">なし</option>
@@ -397,6 +420,7 @@
           </div>
         </div>
         <p class="hint">数値で調整したいときは「自分で決める」にします。透過画像では形に沿って影がつきます。</p>
+        </details>
       </section>
 
       <!-- CSS -->
@@ -435,7 +459,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.12.2（2026/09/29 更新）</span>
+      <span class="ver">v1.13.1（2026/09/29 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
