@@ -32,10 +32,13 @@ function buildFontOptions() {
   const file = state.fileFonts.map(f => f.family);
   let pc = uniq([...state.userFonts, ...pcFonts]);
   // 選択中なのに一覧に無いフォント（別PCで保存した等）も選べるように残す
-  const missing = Object.values(state.fonts).filter(f => f && ![...FONTS, ...file, ...pc].includes(f));
+  const extra = EXTRA_FONTS.flatMap(([, list]) => list.map(([f]) => f));
+  const missing = Object.values(state.fonts).filter(f => f && ![...FONTS, ...extra, ...file, ...pc].includes(f));
   pc = uniq([...pc, ...missing]);
   const opt = (f, styled) => `<option value="${esc(f)}"${styled ? ` style="font-family:${esc(fontStack(f))}"` : ''}>${esc(f)}</option>`;
-  const groups = [['Webフォント', FONTS, true], ['読み込んだフォント', file, true], ['PCのフォント', pc, pc.length < 80]];
+  // 追加のWebフォントは、選ぶまで読み込まないので一覧では見本の書体にしない
+  const groups = [['Webフォント', FONTS, true], ...EXTRA_FONTS.map(([label, list]) => [`Webフォント：${label}`, list.map(([f]) => f), false]),
+    ['読み込んだフォント', file, true], ['PCのフォント', pc, pc.length < 80]];
   const html = groups.filter(g => g[1].length).map(([label, fs, styled]) => `<optgroup label="${label}">${fs.map(f => opt(f, styled)).join('')}</optgroup>`).join('');
   // data-same がある欄（サークル名）は「見出しと同じ」を先頭に足す
   $$('.fontSel').forEach(sel => { sel.innerHTML = (sel.dataset.same ? `<option value="">${sel.dataset.same}</option>` : '') + html; sel.value = getPath(state, sel.dataset.k) || ''; });
@@ -60,7 +63,7 @@ $('#fontFile').onchange = async e => {
   const files = [...e.target.files]; e.target.value = '';
   for (const file of files) {
     let family = file.name.replace(/\.(ttf|otf|woff2?|ttc)$/i, '');
-    const taken = new Set([...FONTS, ...state.fileFonts.map(f => f.family)]);
+    const taken = new Set([...FONTS, ...EXTRA_FONTS.flatMap(([, list]) => list.map(([f]) => f)), ...state.fileFonts.map(f => f.family)]);
     for (let n = 2; taken.has(family); n++) family = family.replace(/ \(\d+\)$/, '') + ` (${n})`;
     state.fileFonts.push({ family, file: file.name, data: await readFile(file) });
   }

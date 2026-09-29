@@ -66,6 +66,25 @@ function depOk(expr, get) {
 }
 const applyDeps = (root, get) => root && root.querySelectorAll('[data-dep]').forEach(el => el.classList.toggle('dep-off', !depOk(el.dataset.dep, get)));
 
+// 追加のWebフォントを、使うときだけ読み込む（Google Fonts の link を足す。読み込めたら描き直す）
+const loadedExtraFonts = new Set();
+function ensureFont(name) {
+  if (!name || loadedExtraFonts.has(name)) return;
+  const hit = EXTRA_FONTS.flatMap(([, list]) => list).find(([f]) => f === name);
+  if (!hit) return;
+  loadedExtraFonts.add(name);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet'; link.crossOrigin = 'anonymous';   // 画像で保存するときにフォントを埋め込めるように
+  link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}:wght@${hit[1]}&display=swap`;
+  link.onload = () => document.fonts.ready.then(() => render());
+  document.head.appendChild(link);
+}
+// 今のお品書きで使っている追加フォント（フォントの指定と、CSS欄に名前が書かれているもの）を読み込む
+function ensureUsedFonts(s) {
+  for (const f of Object.values(s.fonts)) ensureFont(f);
+  for (const [, list] of EXTRA_FONTS) for (const [f] of list) if (s.css && s.css.includes(f)) ensureFont(f);
+}
+
 /* ---------- 保存（IndexedDB） ---------- */
 const DB = {
   open() { return this._p ??= new Promise((res, rej) => { const r = indexedDB.open('oshinagaki', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },

@@ -106,6 +106,7 @@ function headlineHTML(s, text) {
 
 function render() {
   const s = state, i = s.info, sh = $('#sheet');
+  ensureUsedFonts(s);
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
   sh.className = `sheet theme-${s.theme} ${s.orient}${hasFrame && fr.pad ? ' fr-pad' : ''}${s.tab.on ? ' tab-on' : ''}${s.tab.on && s.tab.topLine === false ? ' tab-notop' : ''}${s.textShadow.on ? ' ts-on' : ''}${s.lineDeco.mark !== 'none' ? ' ld-on' : ''}${s.imgShadow.mode !== 'theme' ? ' is-' + s.imgShadow.mode : ''}`;
   const vars = {

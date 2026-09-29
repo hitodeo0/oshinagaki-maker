@@ -59,6 +59,7 @@ const PATTERNS = {
   burst:      ['集中線（放射）', 20, 1],
   cross:      ['×印を散らす', 45, 0.6],
 };
+// 最初から読み込むWebフォント（index.html の Google Fonts の link と対応）
 const FONTS = ['Noto Sans JP','Zen Kaku Gothic New','M PLUS 1p','M PLUS Rounded 1c','Zen Maru Gothic','Dela Gothic One','Zen Old Mincho','Shippori Mincho B1','DotGothic16','Train One','Oswald','Bebas Neue'];
 // 用紙サイズ: キー → [表示名, 幅mm, 高さmm]（縦向き）。B判は日本の印刷で使う JIS B
 // 用紙は「短い辺 = 297mm（A3 と同じ）」の大きさで作り、長い辺は選んだ用紙の縦横比に合わせる。
@@ -69,6 +70,15 @@ const PAPERS = {
   A4: ['A4', 210, 297],
   B5: ['B5', 182, 257],
 };
+// 追加のWebフォント。選んだとき（またはCSS欄で名前を使ったとき）だけ Google Fonts から読み込む
+// [分類, [[フォント名, 読み込む太さ], ...]]
+const EXTRA_FONTS = [
+  ['丸・やわらか', [['Kiwi Maru', '400;500'], ['Kosugi Maru', '400']]],
+  ['ポップ・デザイン', [['RocknRoll One', '400'], ['Mochiy Pop One', '400'], ['Rampart One', '400'], ['Reggae One', '400'], ['Potta One', '400'], ['Hachi Maru Pop', '400']]],
+  ['手書き・筆', [['Yusei Magic', '400'], ['Klee One', '400;600'], ['Yomogi', '400'], ['Zen Kurenaido', '400'], ['Yuji Syuku', '400']]],
+  ['明朝・レトロ', [['Noto Serif JP', '400;700;900'], ['Kaisei Decol', '400;700'], ['Zen Antique', '400'], ['New Tegomin', '400']]],
+  ['英数字', [['Anton', '400'], ['Righteous', '400']]],
+];
 // 線の端の飾り: キー → [表示名, 文字]
 const LINE_MARKS = { none: ['なし', ''], star: ['✦ キラキラ', '✦'], dot: ['● 丸', '●'], cross: ['× バツ', '×'], plus: ['＋ 十字', '＋'] };
 // 仮の画像の縦横比: キー → [表示名, aspect-ratio]
