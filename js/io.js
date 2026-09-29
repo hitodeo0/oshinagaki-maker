@@ -50,6 +50,11 @@ async function buildFontEmbedCss(node) {
   return parts.filter(Boolean).join('\n');
 }
 
+// Safari（iPhone・iPad・Mac）かどうか。iPad は「Mac の Safari」を名乗るので、タッチの有無でも見分ける
+const IS_SAFARI = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// Safari の canvas は面積の上限がある（約1677万ピクセル）。超えると真っ白になるので、その手前まで縮める
+const SAFARI_MAX_AREA = 16777216;
+
 // 画像で保存（PNG / JPG）。選んだ用紙サイズを 300dpi で書き出す（A3 なら 3508×4961px、横向きなら縦横が逆）
 // type: png / jpg / png-clear（用紙の背景色だけを透明にした PNG。あとでペイントソフトで背景を描き足せるように）
 async function exportImage(type) {
@@ -65,13 +70,20 @@ async function exportImage(type) {
     let fontCss = '';
     try { fontCss = await buildFontEmbedCss(sh); } catch (e) { console.warn(e); }
     fontCss += state.fileFonts.map(f => `@font-face{font-family:'${f.family.replace(/'/g, "\\'")}';src:url(${f.data});font-weight:100 900}`).join('\n');
+    let pixelRatio = 300 / 96 * paperScale(), shrunk = false;
+    if (IS_SAFARI && sh.offsetWidth * sh.offsetHeight * pixelRatio ** 2 > SAFARI_MAX_AREA) {
+      pixelRatio = Math.sqrt(SAFARI_MAX_AREA / (sh.offsetWidth * sh.offsetHeight)) * 0.98; shrunk = true;
+    }
     const opts = {
-      pixelRatio: 300 / 96 * paperScale(), fontEmbedCSS: fontCss,
+      pixelRatio, fontEmbedCSS: fontCss,
       width: sh.offsetWidth, height: sh.offsetHeight,
       // プレビュー用の縮小・影を外して、用紙そのままの大きさで描く。
       // position は relative のまま（static にすると、背景の模様・枠などの重ねたレイヤーの位置の基準がなくなって消える）
       style: { transform: 'none', position: 'relative', left: '0', top: '0', margin: '0', boxShadow: 'none' },
     };
+    // Safari は1回目の描画で画像（表紙など）の読み込みが間に合わず抜けることがある。
+    // 小さい倍率で2回描いて画像を読み込ませておいてから、本番を描く
+    if (IS_SAFARI) for (let n = 0; n < 2; n++) await htmlToImage.toCanvas(sh, { ...opts, pixelRatio: 0.2 });
     // JPG は部品の backgroundColor を使うと用紙の背景色まで白で上書きされるので、
     // PNG と同じように描いてから、白い下地に重ねて JPG にする
     let url;
@@ -87,7 +99,7 @@ async function exportImage(type) {
     }
     const a = document.createElement('a');
     a.href = url; a.download = `${fileBaseName()}${clear ? '_背景なし' : ''}.${type === 'jpg' ? 'jpg' : 'png'}`; a.click();
-    status.textContent = '画像を保存しました';
+    status.textContent = shrunk ? '画像を保存しました（Safari の上限に合わせて少し小さめ）' : '画像を保存しました';
   } catch (e) {
     console.error(e);
     status.textContent = before;

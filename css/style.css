@@ -506,6 +506,11 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
   .panes{padding:10px}
 }
 @media (max-width:520px){
+  /* 使い方: 見出し・閉じるボタンを1行目、タブを2行目に（見出しが縦に伸びて閉じるボタンが画面の外に出ないように） */
+  .modal-head{flex-wrap:wrap;row-gap:8px}
+  .modal-head h2{flex:1 1 auto;min-width:0;white-space:nowrap}
+  .modal-tabs{order:3;flex:1 1 100%;flex-wrap:wrap}
+  .modal-tabs button{flex:1 1 auto;justify-content:center}
   /* 横に並べた欄は、狭いときは折り返す */
   .row{flex-wrap:wrap}
   .row>*{flex:1 1 130px}
