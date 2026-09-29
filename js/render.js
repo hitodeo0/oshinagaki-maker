@@ -108,7 +108,7 @@ function render() {
   const s = state, i = s.info, sh = $('#sheet');
   ensureUsedFonts(s);
   const p = s.pattern, fr = s.frame, hasFrame = fr.type !== 'none' || fr.fill;
-  sh.className = `sheet theme-${s.theme} ${s.orient}${hasFrame && fr.pad ? ' fr-pad' : ''}${s.tab.on ? ' tab-on' : ''}${s.tab.on && s.tab.topLine === false ? ' tab-notop' : ''}${s.textShadow.on ? ' ts-on' : ''}${s.lineDeco.mark !== 'none' ? ' ld-on' : ''}${s.circleAlign && s.circleAlign !== 'theme' ? ' ca-' + s.circleAlign : ''}${s.imgShadow.mode !== 'theme' ? ' is-' + s.imgShadow.mode : ''}`;
+  sh.className = `sheet theme-${s.theme} ${s.orient}${hasFrame && fr.pad ? ' fr-pad' : ''}${s.tab.on ? ' tab-on' : ''}${s.tab.on && s.tab.topLine === false ? ' tab-notop' : ''}${s.textShadow.on ? ' ts-on' : ''}${s.lineDeco.mark !== 'none' ? ' ld-on' + (s.lineDeco.role === 'line' ? ' ld-line' : '') : ''}${s.circleAlign && s.circleAlign !== 'theme' ? ' ca-' + s.circleAlign : ''}${s.imgShadow.mode !== 'theme' ? ' is-' + s.imgShadow.mode : ''}`;
   const vars = {
     '--c-bg': s.colors.bg, '--c-paper': s.colors.paper, '--c-ink': s.colors.ink, '--c-accent': s.colors.accent, '--c-sub': s.colors.sub,
     '--f-head': fontStack(s.fonts.head, s.fonts.body), '--f-body': fontStack(s.fonts.body), '--f-num': fontStack(s.fonts.num, s.fonts.head, s.fonts.body),
@@ -126,7 +126,7 @@ function render() {
     '--hl-bg': roleColor(s.hlStyle.bgRole, s.hlStyle.bg), '--hl-fg': roleColor(s.hlStyle.fgRole, s.hlStyle.fg), '--hl-tilt': s.hlStyle.tilt ?? 0,
     '--img-gap': s.imgGap ?? 6, '--stamp-tilt': s.stampTilt ?? -8, '--stamp-size': s.stampSize ?? 1,
     '--ts': shadowCss(s.textShadow), '--is': shadowCss(s.imgShadow),
-    '--ld-char': JSON.stringify((LINE_MARKS[s.lineDeco.mark] || LINE_MARKS.none)[1]), '--ld-c': `var(--c-${s.lineDeco.role || 'accent'})`,
+    '--ld-mask': (LINE_MARKS[s.lineDeco.mark] || LINE_MARKS.none)[1] ? `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${LINE_MARKS[s.lineDeco.mark][1]}</svg>")` : 'none', '--ld-c': `var(--c-${s.lineDeco.role === 'line' ? 'ink' : s.lineDeco.role || 'accent'})`,
     '--ld-size': s.lineDeco.size, '--ld-over': s.lineDeco.over,
     '--col-line-c': `var(--c-${s.colLine.role || 'ink'})`, '--col-line-w': s.colLine.width,
     '--tab-bg': roleColor(s.tab.bgRole, s.tab.bg), '--tab-fg': roleColor(s.tab.fgRole, s.tab.fg), '--tab-bw': s.tab.border, '--tab-bc': s.tab.borderColor, '--tab-pad': s.tab.pad,

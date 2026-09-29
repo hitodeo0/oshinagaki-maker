@@ -289,13 +289,19 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .blk-hr{border:0;border-top:.5mm solid currentColor;margin:0;height:0;align-self:center;
   position:relative;overflow:visible;width:calc(100% + var(--ld-over,0) * 2mm);margin-left:calc(var(--ld-over,0) * -1mm)}
 /* 線の端の飾り（区切り線ブロックは ::before/::after、列の区切り線は JS で .line-mark を置く） */
-.ld-on .blk-hr::before,.ld-on .blk-hr::after,.ld-on .grp-line-top::before,.ld-on .grp-line-top::after,.line-mark{content:var(--ld-char);position:absolute;translate:-50% -50%;
-  font-size:calc(var(--ld-size,6) * 1mm);line-height:1;color:var(--ld-c);font-family:"Noto Sans JP",sans-serif;font-weight:400;pointer-events:none;z-index:-1}   /* 線・箱・画像より後ろ（背景の模様よりは前） */
-.ld-on .blk-hr::before,.ld-on .blk-hr::after{top:.25mm}
+/* 形は SVG を mask にして飾りの色で塗る（文字だとフォントの上下の余白で中心がずれるため）。真ん中が線の端に来る */
+.ld-on .blk-hr::before,.ld-on .blk-hr::after,.ld-on .grp-line-top::before,.ld-on .grp-line-top::after,.line-mark{content:"";position:absolute;translate:-50% -50%;
+  width:calc(var(--ld-size,6) * 1mm);height:calc(var(--ld-size,6) * 1mm);background:var(--ld-c);
+  -webkit-mask:var(--ld-mask) center / contain no-repeat;mask:var(--ld-mask) center / contain no-repeat;pointer-events:none;z-index:-1}   /* 線・箱・画像より後ろ（背景の模様よりは前） */
+.ld-on .blk-hr::before,.ld-on .blk-hr::after{top:-.25mm}   /* 線(.5mm)の真ん中 */
 .ld-on .blk-hr::before{left:0}
 .ld-on .blk-hr::after{left:100%}
 /* 区画の「上に線」の両端にも */
-.ld-on .grp-line-top::before,.ld-on .grp-line-top::after{top:.25mm}
+.ld-on .grp-line-top::before,.ld-on .grp-line-top::after{top:-.25mm}
+/* 飾りの色「線と同じ色」: それぞれの線の色で塗る */
+.sheet.ld-line .blk-hr::before,.sheet.ld-line .blk-hr::after{background:currentColor}
+.sheet.ld-line .grp-line-top::before,.sheet.ld-line .grp-line-top::after{background:var(--c-ink)}
+.sheet.ld-line .line-mark{background:var(--col-line-c)}
 .ld-on .grp-line-top::before{left:0}
 .ld-on .grp-line-top::after{left:100%}
 /* 区画（新刊ブロック・既刊ブロックなど） */

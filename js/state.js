@@ -21,7 +21,7 @@ function defaultState() {
     imgGap: 6, stampTilt: -8, stampSize: 1,   // 画像と文字の間(mm)・スタンプの傾き(度)・大きさ(倍)
     titleK: 1, priceK: 1, textK: 1, grpK: 1, circleK: 1,   // 文字ごとの大きさ（倍）: タイトル・値段・詳細〜説明文・区画の見出し・サークル名
     colLine: { on:false, width:0.4, role:'ink', inner:true },   // 列の間の区切り線（太さmm・色はデザインの色の役割・区画の中にも引くか）
-    lineDeco: { mark:'none', role:'accent', size:6, over:0 },   // 列の区切り線・区切り線ブロックの両端の飾り（大きさ・はみ出しは mm）
+    lineDeco: { mark:'none', role:'line', size:6, over:0 },   // role: line=線と同じ色 / デザインの色   // 列の区切り線・区切り線ブロックの両端の飾り（大きさ・はみ出しは mm）
     // 影（ずれ・ぼかしは mm、濃さは 0〜1）。画像の影 mode: theme=テーマのまま / none=なし / custom=自分で決める
     textShadow: { on:false, x:0.3, y:0.3, blur:0.8, color:'#000000', alpha:0.35 },
     imgShadow: { mode:'theme', x:1.5, y:1.5, blur:3, color:'#000000', alpha:0.4 },

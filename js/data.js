@@ -82,7 +82,14 @@ const EXTRA_FONTS = [
 // 飾りのレイヤー（スニペットの「飾り」がそれぞれ1つずつ使う。線や箱より後ろ・背景より前）
 const ORNAMENT_LAYERS = ["kira","barcode","dots","dots34","xdots","slash","regmark","wave","corners"];
 // 線の端の飾り: キー → [表示名, 文字]
-const LINE_MARKS = { none: ['なし', ''], star: ['✦ キラキラ', '✦'], dot: ['● 丸', '●'], cross: ['× バツ', '×'], plus: ['＋ 十字', '＋'] };
+// [表示名, 形（20×20 の SVG の中身。黒い部分が飾りの色で塗られる）]
+const LINE_MARKS = {
+  none: ['なし', ''],
+  star: ['✦ キラキラ', "<path d='M10 0C10.6 8 12 9.4 20 10C12 10.6 10.6 12 10 20C9.4 12 8 10.6 0 10C8 9.4 9.4 8 10 0Z'/>"],
+  dot: ['● 丸', "<circle cx='10' cy='10' r='6'/>"],
+  cross: ['× バツ', "<path d='M5 5L15 15M15 5L5 15' stroke='black' stroke-width='2.6' stroke-linecap='round'/>"],
+  plus: ['＋ 十字', "<path d='M10 3V17M3 10H17' stroke='black' stroke-width='2.6' stroke-linecap='round'/>"],
+};
 // 仮の画像の縦横比: キー → [表示名, aspect-ratio]
 const PH_RATIOS = {
   a5:  ['A5 縦', '148 / 210'], b5:  ['B5 縦', '182 / 257'],

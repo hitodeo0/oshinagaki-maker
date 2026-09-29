@@ -49,7 +49,7 @@ function drawColLines() {
         // 両端の飾り
         if (mark) for (const y of [t, b]) {
           const m = document.createElement('span');
-          m.className = 'line-mark'; m.textContent = mark;
+          m.className = 'line-mark';
           m.style.left = bx + 'px'; m.style.top = y + 'px';
           l.appendChild(m);
         }
