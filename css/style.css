@@ -400,7 +400,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 /* ---------- テーマ: 額縁 ---------- */
 .theme-frame{padding:22mm 22mm}   /* 方眼は背景パターン（テーマの初期設定）で描く */
 .theme-frame>.deco{inset:8mm;border:1.2mm solid var(--c-paper);border-radius:4mm;outline:.5mm solid var(--c-paper);outline-offset:-3.2mm}
-.theme-frame .sh{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.6em;margin-bottom:8mm;max-width:52%}
+.theme-frame .sh{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.6em;margin-bottom:8mm;max-width:52%;width:fit-content;align-self:flex-start}   /* 幅を日付〜スペースの塊に合わせる（サークル名はその中で中央） */
 .theme-frame .sh-box{display:contents}
 .theme-frame .sh-date{order:1;font-weight:700;font-size:1.35em}
 .theme-frame .sh-event{order:2;font-weight:700;font-size:1.35em}
