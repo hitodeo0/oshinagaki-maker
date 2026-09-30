@@ -131,16 +131,24 @@ bgSlot.addEventListener('dragleave', () => bgSlot.classList.remove('drag'));
 bgSlot.addEventListener('drop', e => { e.preventDefault(); bgSlot.classList.remove('drag'); setBg(e.dataTransfer.files[0]); });
 
 $$('.tabs button').forEach(b => b.onclick = () => showTab(b.dataset.tab));
-// デザインタブの大項目の開閉は、このブラウザに覚えておく（読めなくても全部開いた状態で動く）
+// デザインタブの大項目・小項目の開閉は、このブラウザに覚えておく（読めなくても最初の状態で動く）
+// 最初の状態: 大項目は開く・小項目（付箋・キャッチなど）は閉じる。{ 項目名: 開いているか } で保存
 (() => {
-  const KEY = 'oshinagaki-dsec-closed';
-  let closed = [];
-  try { closed = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch {}
-  for (const d of $$('.dsec')) {
-    if (closed.includes(d.dataset.sec)) d.open = false;
-    d.addEventListener('toggle', () => {
-      try { localStorage.setItem(KEY, JSON.stringify($$('.dsec').filter(x => !x.open).map(x => x.dataset.sec))); } catch {}
-    });
+  // v2: ページを開いたときにブラウザが出す toggle まで保存してしまっていたので、クリックしたときだけ保存する形にして記録をやり直す
+  const KEY = 'oshinagaki-dsec-state2';
+  let st = {};
+  try {
+    st = JSON.parse(localStorage.getItem(KEY) || '{}');
+    // 前の形式（閉じた大項目の一覧）も読む
+    for (const name of JSON.parse(localStorage.getItem('oshinagaki-dsec-closed') || '[]')) if (!(name in st)) st[name] = false;
+  } catch {}
+  for (const d of $$('.dsec, .dsub')) {
+    if (d.dataset.sec in st) d.open = st[d.dataset.sec];
+    // 見出しをクリックしたときだけ記録する（開閉はクリックの後に切り替わるので、少し待ってから読む）
+    d.querySelector(':scope > summary').addEventListener('click', () => setTimeout(() => {
+      st[d.dataset.sec] = d.open;
+      try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {}
+    }));
   }
 })();
 // スクロール位置はタブごとに覚えておく（全タブで1つのスクロール欄を共有しているため、覚えないと前のタブの位置のまま開く）

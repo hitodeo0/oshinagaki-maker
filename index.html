@@ -137,6 +137,8 @@
         </div>
         <p class="hint">左の列から順に、数字をスペースで区切って書きます。「60 40」なら左60%・右40%です。<br>
         区画の中の列数・比率は、頒布物タブの各区画で決めます。ここの設定は、区画に入っていないブロックと、横幅を「全幅」以外にした区画の並びに使われます。</p>
+        <details class="dsub" data-sec="区切り線">
+        <summary class="sub-h">区切り線</summary>
         <label class="chk" style="margin:4px 0 6px"><input type="checkbox" data-k="colLine.on">列の間に区切り線を引く</label>
         <div class="row" data-dep="colLine.on">
           <label class="f">線の太さ(mm) <span class="rangeval" data-show="colLine.width"></span><input type="range" min="0.1" max="3" step="0.1" data-k="colLine.width" data-num></label>
@@ -149,7 +151,9 @@
         </div>
         <label class="chk" style="margin:0 0 6px" data-dep="colLine.on"><input type="checkbox" data-k="colLine.inner">区画の中の列の間にも引く</label>
         <p class="hint">横いっぱいの見出しや区画があるところでは、線が途切れます。</p>
-        <div class="sub-h">線の端の飾り</div>
+        </details>
+        <details class="dsub" data-sec="線の端の飾り">
+        <summary class="sub-h">線の端の飾り</summary>
         <div class="row">
           <label class="f">飾り<select data-k="lineDeco.mark" id="lineMarkSel"></select></label>
           <label class="f" data-dep="lineDeco.mark!=none">飾りの色<select data-k="lineDeco.role">
@@ -165,6 +169,7 @@
           <label class="f">線のはみ出し(mm) <span class="rangeval" data-show="lineDeco.over"></span><input type="range" min="0" max="20" step="0.5" data-k="lineDeco.over" data-num></label>
         </div>
         <p class="hint" style="margin-top:-4px">列の区切り線・「区切り線」ブロック・区画の「上に線」の両端につきます。はみ出しは、線を両端から少し伸ばします。</p>
+        </details>
         </details>
 
         <details class="dsec" open data-sec="マイテーマ">
@@ -208,7 +213,7 @@
         <p class="hint">レイアウトやフォントはそのままで、色の組み合わせだけ入れ替えます。</p>
         </details>
 
-        <details class="dsec" open data-sec="背景パターン">
+        <details class="dsec" data-sec="背景パターン">
         <summary><h3>背景パターン</h3></summary>
         <div class="row">
           <label class="f">模様<select data-k="pattern.type" id="patternSel"></select></label>
@@ -223,7 +228,7 @@
         <p class="hint">模様を切り替えると、大きさ・太さがその模様のおすすめ値に戻ります。</p>
         </details>
 
-        <details class="dsec" open data-sec="背景画像">
+        <details class="dsec" data-sec="背景画像">
         <summary><h3>背景画像</h3></summary>
         <div class="imgslot" id="bgSlot">
           <div class="thumb" id="bgThumb">画像なし</div>
@@ -247,7 +252,7 @@
         <p class="hint">文字が読みにくいときは、濃さを下げてください。</p>
         </details>
 
-        <details class="dsec" open data-sec="縁取り・枠">
+        <details class="dsec" data-sec="縁取り・枠">
         <summary><h3>縁取り・枠</h3></summary>
         <div class="row">
           <label class="f">線<select data-k="frame.type">
@@ -318,7 +323,9 @@
         <p class="hint">サークル名（ロゴ画像）の大きさを自動で決めます。<br>
         左右揃え・高さ合わせは、日付とサークル名が横に並ぶテーマ（白紙・付箋ヘッダー）向けです。</p>
 
-        <label class="chk" style="margin:12px 0 6px"><input type="checkbox" data-k="tab.on">日付・イベント名・スペースを付箋（タブ）にする</label>
+        <details class="dsub" data-sec="付箋">
+        <summary class="sub-h">付箋</summary>
+        <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-k="tab.on">日付・イベント名・スペースを付箋（タブ）にする</label>
         <div data-dep="tab.on">
         <div class="row">
           <label class="f">付箋の色<select data-k="tab.bgRole"><option value="sub">サブの色（模様・線）</option><option value="ink">文字の色</option><option value="paper">面・帯の色</option><option value="accent">アクセントの色</option><option value="bg">背景の色</option><option value="custom">自分で決める</option></select></label>
@@ -350,7 +357,9 @@
         </div>
         <p class="hint">白い箱に黒い枠線にするなら、付箋の色を白、枠線の太さを 0.5mm くらいにします。<br>
         ギザギザ・斜めのときは、下端に枠線はつきません。</p>
-        <div class="sub-h">キャッチ（全部新刊!! など）</div>
+        </details>
+        <details class="dsub" data-sec="キャッチ">
+        <summary class="sub-h">キャッチ（全部新刊!! など）</summary>
         <label class="f">キャッチの大きさ（倍） <span class="rangeval" data-show="headlineK"></span><input type="range" min="0.3" max="3" step="0.05" data-k="headlineK" data-num></label>
         <label class="f">キャッチの見た目<select data-k="hlStyle.mode">
           <option value="theme">テーマのまま</option>
@@ -382,6 +391,7 @@
           <label class="f">縦の位置(%) <span class="rangeval" data-show="headlineY"></span><input type="range" min="0" max="100" step="0.5" data-k="headlineY" data-num></label>
         </div>
         <p class="hint" style="margin-top:-4px">用紙の左上が 0・0、右下が 100・100 です。キャッチの真ん中がその位置に来ます。</p>
+        </details>
         </details>
 
         <details class="dsec" open data-sec="サイズ">
@@ -429,7 +439,7 @@
         </ul></div>
         </details>
 
-        <details class="dsec" open data-sec="文字の影">
+        <details class="dsec" data-sec="文字の影">
         <summary><h3>文字の影</h3></summary>
         <label class="chk" style="margin:0 0 6px"><input type="checkbox" data-k="textShadow.on">タイトル・値段・ヘッダー・見出しに影をつける</label>
         <div data-shadow="textShadow">
@@ -511,7 +521,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.20.3（2026/09/29 更新）</span>
+      <span class="ver">v1.21.2（2026/09/30 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
