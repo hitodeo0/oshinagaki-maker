@@ -72,7 +72,8 @@ if (window.CodeMirror) {
   };
   cssEditor.on('changes', () => { clearTimeout(swatchTimer); swatchTimer = setTimeout(refreshSwatches, 200); });
   // タブを開いたときに表示を整える（非表示の間に作ると幅が0になるため）
-  $$('.tabs button').forEach(b => b.addEventListener('click', () => { if (b.dataset.tab === 'css') setTimeout(() => { cssEditor.refresh(); refreshSwatches(); }, 0); }));
+  // 隠れている間は描けないので、CSSタブを開いたときに描き直す（タブのクリックでも「使い方」の「画面で見る」でも）
+  document.addEventListener('tabshown', e => { if (e.detail === 'css') setTimeout(() => { cssEditor.refresh(); refreshSwatches(); }, 0); });
 }
 
 // inline=true: 改行を足さずカーソル位置にそのまま入れる（変数など）

@@ -65,8 +65,18 @@ h3:first-child{margin-top:0}
 .card.in-grp{margin-left:16px;border-left:4px solid #7b93e0}
 .card-body{padding:10px}
 /* カードの中の区切り（画像 / 内容 / バッジ・スタンプ / 配置・CSS） */
-.card-sec{border:1px solid var(--ui-line);border-radius:6px;background:#fff;padding:22px 10px 2px;margin:0 0 10px;position:relative}
-.card-sec-h{position:absolute;top:0;left:0;right:0;padding:3px 10px;font-size:11px;font-weight:700;color:var(--ui-sub);background:#f3f1ee;border-bottom:1px solid var(--ui-line);border-radius:6px 6px 0 0}
+/* 見出しをクリックで畳める（最初は開いている） */
+.card-sec{border:1px solid var(--ui-line);border-radius:6px;background:#fff;padding:0 10px 2px;margin:0 0 10px}
+.card-sec-h{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;margin:0 -10px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--ui-sub);background:#f3f1ee;border-bottom:1px solid var(--ui-line);border-radius:5px 5px 0 0}
+.card-sec-h::-webkit-details-marker{display:none}
+.card-sec-h::before{content:"";width:0;height:0;border:3.5px solid transparent;border-top:4.5px solid var(--ui-sub);border-bottom:0;transition:rotate .15s}
+.card-sec-h:hover{color:var(--ui-accent)}
+.card-sec:not([open]){padding-bottom:0}
+.card-sec:not([open])>.card-sec-h{border-bottom:0;border-radius:5px}
+.card-sec:not([open])>.card-sec-h::before{rotate:-90deg}
+.card-sec[open]>.card-sec-h{margin-bottom:0}
+/* 「空欄で非表示」の小さい注記（基本情報のよく聞かれる欄） */
+.blank-note{margin-left:6px;font-size:10px;font-weight:400;color:var(--ui-sub)}
 .card-sec .imgslot{margin-top:6px}
 .card-div{border-top:1px dashed var(--ui-line);margin:2px 0 10px}
 .stamp-opts{margin:-2px 0 4px 12px;padding-left:10px;border-left:3px solid var(--ui-line)}

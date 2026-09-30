@@ -69,14 +69,14 @@
     <div class="panes">
       <!-- 基本情報 -->
       <section class="pane on" data-pane="info">
-        <label class="f">イベント名<input type="text" data-k="info.event"></label>
+        <label class="f">イベント名<span class="blank-note">空欄で非表示</span><input type="text" data-k="info.event"></label>
         <div class="imgslot" id="eventLogoSlot">
           <div class="thumb" id="eventLogoThumb">ロゴなし</div>
           <div><label class="btn">イベントロゴ画像<input type="file" accept="image/*" id="eventLogoFile" hidden></label>
           <button id="eventLogoClear">外す</button>
           <div class="hint" style="margin:4px 0 0">イベント名の文字の代わりに表示されます。</div></div>
         </div>
-        <label class="f">開催日<input type="text" data-k="info.date" placeholder="2026/01/01"></label>
+        <label class="f">開催日<span class="blank-note">空欄で非表示</span><input type="text" data-k="info.date" placeholder="2026/01/01"></label>
         <label class="f">サークル名<input type="text" data-k="info.circle"></label>
         <div class="imgslot" id="logoSlot">
           <div class="thumb" id="logoThumb">ロゴなし</div>
@@ -84,10 +84,12 @@
           <button id="logoClear">外す</button>
           <div class="hint" style="margin:4px 0 0">サークル名の文字の代わりに表示されます。</div></div>
         </div>
-        <label class="f">スペース<input type="text" data-k="info.space" placeholder="A01a"></label>
+        <label class="f">スペース<span class="blank-note">空欄で非表示</span><input type="text" data-k="info.space" placeholder="A01a"></label>
         <label class="f">キャッチ（任意）<textarea data-k="info.headline" rows="2" class="ta1" placeholder="全部新刊!!"></textarea></label>
         <label class="f">フッター（注意書きなど・任意）<textarea data-k="info.notes" placeholder="※R-18頒布物は年齢確認のため身分証の提示をお願いします。"></textarea></label>
-        <p class="hint">改行はそのまま反映されます。</p>
+        <div class="hint"><ul>
+          <li>空欄にした項目は、お品書きに表示されません。</li>
+          <li>改行はそのまま反映されます。</li></ul></div>
       </section>
 
       <!-- 頒布物 -->
@@ -521,7 +523,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.21.2（2026/09/30 更新）</span>
+      <span class="ver">v1.22.2（2026/09/30 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>

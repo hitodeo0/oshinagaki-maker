@@ -159,6 +159,7 @@ function showTab(name) {
   $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
   $$('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === name));
   panes.scrollTop = tabScroll[name] || 0;
+  document.dispatchEvent(new CustomEvent('tabshown', { detail: name }));   // CSSタブの CodeMirror はこれを受けて描き直す
 }
 
 document.addEventListener('click', e => {

@@ -28,9 +28,13 @@ function badgeUI(it, n) {
       </div>` : ''}`;
 }
 // 頒布物カードの中の区切り（見出しつきの枠）
-const cardSec = (title, body) => `<div class="card-sec"><div class="card-sec-h">${title}</div>${body}</div>`;
+// クリックで畳める。閉じた区切りは cardSecClosed に「カードのid:見出し」で覚えておき、カードを作り直しても閉じたままにする
+const cardSecClosed = new Set();
+const cardSec = (title, body, id) => `<details class="card-sec" data-cs="${id}:${title}"${cardSecClosed.has(id + ':' + title) ? '' : ' open'}><summary class="card-sec-h">${title}</summary>${body}</details>`;
+const BLANK_HINT = '<p class="hint" style="margin:6px 0 8px">空欄にした項目は、お品書きに表示されません。</p>';
 // ctxCols: このブロックが置かれている場所の列数（区画の中なら区画の列数）
 function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
+  const sec = (title, body) => cardSec(title, body, it.id);
   const spanOpts = Array.from({ length: ctxCols }, (_, i) => `<option value="${i + 1}"${+it.span === i + 1 ? ' selected' : ''}>${i + 1}列分</option>`).join('')
     + `<option value="99"${+it.span >= 99 ? ' selected' : ''}>全幅</option>`;
   const head = `<details class="card${it.type === 'grp' || it.type === 'end' ? ' grp-card' : ''}${inGrp ? ' in-grp' : ''}" data-id="${it.id}"${open ? ' open' : ''}>
@@ -42,7 +46,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f">クラス名（CSS用）<input type="text" data-ik="cls" value="${esc(it.cls)}" placeholder="big など"></label>
       </div>`;
   if (it.type === 'end') return head + `<p class="hint" style="margin:0">ここより下のブロックは、区画に入らず用紙に直接並びます。</p></div></details>`;
-  if (it.type === 'grp') return head + cardSec('見出し', `
+  if (it.type === 'grp') return head + sec('見出し', BLANK_HINT + `
       <div class="row">
         <label class="f">見出し<input type="text" data-ik="text" value="${esc(it.text)}" list="badgeList" placeholder="新刊 / 既刊 / NEW / OLD"></label>
         <label class="f">サブ文字<input type="text" data-ik="sub" value="${esc(it.sub)}" placeholder="残部少！ など"></label>
@@ -57,16 +61,16 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
       <div class="row" data-dep="!badgeAuto">
         <label class="f">見出しの色<input type="color" data-ik="badgeBg" value="${esc(it.badgeBg)}" class="color-full"></label>
         <label class="f">見出しの文字色<input type="color" data-ik="badgeFg" value="${esc(it.badgeFg)}" class="color-full"></label>
-      </div>`) + cardSec('区画の中', `
+      </div>`) + sec('区画の中', `
       <div class="row">
         <label class="f">区画の線<select data-ik="line">${opts([['none','なし'],['top','上に線'],['left','左に線'],['box','四角で囲む']], it.line)}</select></label>
         <label class="f">区画の中の列数<select data-ik="gcols" data-num>${opts([1, 2, 3, 4].map(c => [c, c + '列']), +it.gcols)}</select></label>
       </div>
       <label class="f" data-dep="gcols>1">区画の中の列の幅の比率（空欄なら均等）<input type="text" data-ik="gratio" value="${esc(it.gratio)}" placeholder="例: 60 40"></label>
-      <p class="hint" style="margin:0 0 8px">次の「区画」か「区画おわり」までのブロックが、この区画に入ります。</p>`) + cardSec('配置・CSS', common) + `
+      <p class="hint" style="margin:0 0 8px">次の「区画」か「区画おわり」までのブロックが、この区画に入ります。</p>`) + sec('配置・CSS', common) + `
     </div></details>`;
   if (it.type !== 'item') return head + (it.type === 'hr' ? '' :`<label class="f">${TYPE_LABEL[it.type]}<textarea data-ik="text">${esc(it.text)}</textarea></label>`) + common + '</div></details>';
-  return head + cardSec('画像', `
+  return head + sec('画像', `
       <div class="imgslot">
         <div class="thumb" style="${it.img ? `background-image:url(${urlFor(it.img)})` : ''}">${it.img ? '' : '画像なし'}</div>
         <div><label class="btn">画像を選択<input type="file" accept="image/*" data-act="img" hidden></label>
@@ -89,7 +93,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         </select></label>
       </div>
       <label class="f" data-dep="img|phOn">画像の幅 <span class="rangeval">${it.imgW}%</span><input type="range" min="15" max="100" step="1" data-ik="imgW" data-num value="${it.imgW}"></label>
-      <label class="chk" style="margin:-2px 0 8px" data-dep="img&imgPos!=top|phOn&imgPos!=top"><input type="checkbox" data-ik="imgFill"${it.imgFill ? ' checked' : ''}>画像の縦幅を区画の縦幅に合わせる（横幅は自動。画像の位置が左・右のとき）</label>`) + cardSec('内容', `
+      <label class="chk" style="margin:-2px 0 8px" data-dep="img&imgPos!=top|phOn&imgPos!=top"><input type="checkbox" data-ik="imgFill"${it.imgFill ? ' checked' : ''}>画像の縦幅を区画の縦幅に合わせる（横幅は自動。画像の位置が左・右のとき）</label>`) + sec('内容', BLANK_HINT + `
       <label class="f">タイトル<textarea data-ik="title" rows="1" class="ta1">${esc(it.title)}</textarea></label>
       <div class="row">
         <label class="f">詳細（判型・ページ数・サイズ）<textarea data-ik="spec" rows="1" class="ta1" placeholder="A5 / 34P">${esc(it.spec)}</textarea></label>
@@ -101,8 +105,8 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
       <div class="row">
         <label class="f">価格<input type="text" data-ik="price" value="${esc(it.price)}" placeholder="500 / 無料配布"></label>
         <label class="f" style="flex:.5">単位<input type="text" data-ik="unit" value="${esc(it.unit)}"></label>
-      </div>`) + cardSec('バッジ・スタンプ', badgeUI(it, 1) + '<div class="card-div"></div>' + badgeUI(it, 2) + `
-      <p class="hint" style="margin:0 0 8px">バッジ1は「新刊」など、頒布物の種類を表すバッジです（CSSの <code>.item[data-badge="新刊"]</code> はバッジ1で見分けます）。スタンプの大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>`) + cardSec('配置・CSS', `
+      </div>`) + sec('バッジ・スタンプ', badgeUI(it, 1) + '<div class="card-div"></div>' + badgeUI(it, 2) + `
+      <p class="hint" style="margin:0 0 8px">バッジ1は「新刊」など、頒布物の種類を表すバッジです（CSSの <code>.item[data-badge="新刊"]</code> はバッジ1で見分けます）。スタンプの大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>`) + sec('配置・CSS', `
       ${common}
       <label class="f" data-dep="img|phOn">タイトルの位置<select data-ik="titlePos">${opts([['info','画像の横（詳細と同じ欄）'],['top','ブロックの一番上（画像の上にまたがる）']], it.titlePos || 'info')}</select></label>
       <label class="f">値段の位置<select data-ik="pricePos">${opts([['bottom','文字の下（右下）'],['side','説明文の横（右）'],['over','説明文に重ねる（右下）']], it.pricePos || 'bottom')}</select></label>`) + `
@@ -110,7 +114,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
   </details>`;
 }
 function buildItems() {
-  const open = new Set($$('#itemList details[open]').map(d => d.dataset.id));
+  const open = new Set($$('#itemList .card[open]').map(d => d.dataset.id));
   const first = !$('#itemList').children.length;
   let grp = null;
   $('#itemList').innerHTML = state.items.map((it, n) => {
@@ -140,6 +144,9 @@ $('#itemList').addEventListener('input', e => {
   render(); save();
 });
 $('#itemList').addEventListener('click', e => {
+  // カードの中の区切りの開閉を覚える（開閉はクリックの後に切り替わるので、少し待ってから読む）
+  const cs = e.target.closest('.card-sec-h');
+  if (cs) { const d = cs.parentElement; setTimeout(() => cardSecClosed[d.open ? 'delete' : 'add'](d.dataset.cs)); return; }
   const b = e.target.closest('button[data-act]'); if (!b) return;
   e.preventDefault();
   const [, idx] = findItem(b); const items = state.items;
