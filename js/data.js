@@ -120,7 +120,7 @@ const SKELETON = `/* ===== 用紙 ===== */
 .sheet .items {}
 .sheet .item {}
 .sheet .item .img img {}
-.sheet .badge.new {}
+.sheet .badge.badge-1 {}
 .sheet .badge.r18 {}
 .sheet .title {}
 .sheet .spec {}
@@ -217,8 +217,8 @@ const SNIPPETS = {
     '価格を左寄せに': `.sheet .price { align-self: flex-start; }`,
   },
   '頒布物：バッジ': {
-    'NEWバッジを星型に': `.sheet .badge.new { clip-path: var(--burst); border: 0; padding: 1em 1.2em; background: #1136e8; color: #fff200; font-size: 1.6em; }`,
-    'NEWバッジを丸スタンプに': `.sheet .badge.new { border-radius: 999px; background: none; color: var(--c-ink); border: .25em double var(--c-ink); padding: .4em .9em; font-size: 1.2em; }`,
+    'NEWバッジを星型に': `.sheet .badge.badge-1 { clip-path: var(--burst); border: 0; padding: 1em 1.2em; background: #1136e8; color: #fff200; font-size: 1.6em; }`,
+    'NEWバッジを丸スタンプに': `.sheet .badge.badge-1 { border-radius: 999px; background: none; color: var(--c-ink); border: .25em double var(--c-ink); padding: .4em .9em; font-size: 1.2em; }`,
     'R-18を赤文字だけに': `.sheet .badge.r18 { background: none; border: 0; padding: 0; color: var(--c-accent); }`,
   },
   '頒布物：画像': {
@@ -392,6 +392,7 @@ const VALUE_HINTS = {
   'border-color': ['var(--c-ink)', 'var(--c-accent)', 'currentColor'],
 };
 // 「使えるクラス」一覧: [グループ名, [[セレクタ, 説明], ...]]
+// 「名前: 値;」の形のもの（よく使う指定）は、クリックするとカーソル位置に入り、値が選ばれた状態になる
 const CLASS_REF = [
   ['用紙・背景', [
     ['.sheet', '用紙全体（ここに書くと全体に反映）'],
@@ -437,8 +438,8 @@ const CLASS_REF = [
     ['.title', 'タイトル'],
     ['.item-head', 'タイトルの位置を「ブロックの一番上」にしたときの、タイトルとバッジの入れ物'],
     ['.badges', 'バッジの並び'],
-    ['.badge.new', 'バッジ1'],
-    ['.badge.free', 'バッジ2'],
+    ['.badge.badge-1', 'バッジ1（「タイトルの上」に出したとき）'],
+    ['.badge.badge-2', 'バッジ2（「タイトルの上」に出したとき）'],
     ['.item-stamp', '画像に重ねたスタンプ（バッジ1だけなら .item-stamp-1、バッジ2だけなら .item-stamp-2）'],
     ['.badge.r18', 'R-18'],
     ['.spec', '詳細（判型・ページ数）'],
@@ -455,9 +456,45 @@ const CLASS_REF = [
     ['--c-bg', '背景色'], ['--c-paper', '面・帯の色'], ['--c-ink', '文字色'], ['--c-accent', 'アクセント色'], ['--c-sub', 'サブ色'],
     ['--f-head', '見出しフォント'], ['--f-body', '本文フォント'], ['--f-num', '数字フォント'],
   ]],
+  ['よく使う指定：文字', [
+    ['font-size: 1.2em;', '文字の大きさ（em は今の大きさの何倍か）'],
+    ['font-weight: 900;', '文字の太さ（400 で普通、700 で太字、900 でもっと太く）'],
+    ['font-family: var(--f-head);', 'フォント（変数か、\'Noto Sans JP\' のようにフォント名を引用符で囲んで）'],
+    ['letter-spacing: .05em;', '字間'],
+    ['line-height: 1.5;', '行間（文字の高さの何倍か）'],
+    ['text-align: center;', '文字の揃え（left / center / right）'],
+    ['white-space: nowrap;', '折り返さない'],
+    ['writing-mode: vertical-rl;', '縦書き'],
+    ['text-shadow: 0 0 1mm #ffffff;', '文字の影（横 縦 ぼかし 色）'],
+  ]],
+  ['よく使う指定：色・線', [
+    ['color: #cc0000;', '文字の色'],
+    ['background: #ffffff;', '背景の色'],
+    ['border: .5mm solid var(--c-ink);', '線で囲む（太さ 種類 色。種類は solid / dashed / dotted / double）'],
+    ['border-bottom: .5mm solid var(--c-ink);', '下にだけ線（上は border-top、左は border-left）'],
+    ['border-radius: 2mm;', '角の丸さ'],
+    ['opacity: .8;', '透明度（0 で透明、1 でそのまま）'],
+  ]],
+  ['よく使う指定：大きさ・余白・位置', [
+    ['width: 80%;', '幅'],
+    ['margin-top: 2mm;', '外側の余白（上。下は margin-bottom）'],
+    ['padding: 2mm;', '内側の余白'],
+    ['rotate: -5deg;', '傾き（度）'],
+    ['translate: 0 -2mm;', '位置をずらす（横 縦）'],
+    ['z-index: 5;', '重なり順（大きいほど上）'],
+    ['display: none;', '表示しない'],
+  ]],
+  ['よく使う指定：このサイトの大きさ（倍。書いたところはデザインタブの倍率の代わりにこの値になる）', [
+    ['--stamp-size: 1.3;', 'スタンプの大きさ。.item-stamp-1 / .item-stamp-2 に書くと、バッジ1・バッジ2で別々に変えられる'],
+    ['--stamp-tilt: -8;', 'スタンプの傾き（度）'],
+    ['--title-k: 1.2;', 'タイトルの大きさ。.item や .big などに書くと、その頒布物だけ'],
+    ['--price-k: 1.2;', '値段の大きさ'],
+    ['--text-k: 1.2;', '詳細〜説明文の大きさ'],
+    ['--grp-k: 1.2;', '区画の見出しの大きさ（.grp に書く）'],
+  ]],
 ];
 // 全テーマ共通の指定のうち、よく編集するものだけ（セレクタが完全一致するルールを書き出す）
-const COMMON_EXPORT = ['.title', '.spec', '.cp', '.desc', '.note', '.price', '.price .unit', '.badge', '.badge.new', '.badge.r18', '.grp-badge', '.grp-sub'];
+const COMMON_EXPORT = ['.title', '.spec', '.cp', '.desc', '.note', '.price', '.price .unit', '.badge', '.badge.badge-1', '.badge.r18', '.grp-badge', '.grp-sub'];
 // テーマのCSSを書き出すとき、各指定の上につける1行コメント（.sheet / .theme-xxx を除いたセレクタで引く）
 const EXPORT_NOTES = {
   '': '用紙全体（背景色・文字色・余白など）',
@@ -485,7 +522,7 @@ const EXPORT_NOTES = {
   '.price::before': '値段の前につく飾り',
   '.price.text': '値段欄に「無料配布」など文字を書いたとき',
   '.badge': '頒布物のバッジ（新刊・R-18 などの小さい札）',
-  '.badge.new': '「新刊」バッジ',
+  '.badge.badge-1': 'バッジ1',
   '.badge.r18': '「R-18」バッジ',
 };
 // 使い方の流れ。tab: 開くエディターのタブ / hl: 「画面で見る」で光らせる場所 / shot: guide フォルダに置けば表示されるスクショ

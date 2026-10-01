@@ -47,6 +47,7 @@
     <button id="btnNew">新規</button>
     <button id="btnExport" title="基本情報・頒布物・画像・デザイン・読み込んだフォントを、まるごと1つのファイルに保存します">ファイルに保存</button>
     <label class="btn" title="「ファイルに保存」で保存したお品書きを開きます（今の内容は置き換わります）">ファイルを開く<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
+    <button id="btnTpl" class="quiet" title="見本のデザインと並べ方を、今のお品書きに当てはめます" hidden>テンプレート</button>
     <span class="sp"></span>
     <span class="status" id="status"></span>
     <button id="btnHelp">使い方</button>
@@ -124,6 +125,7 @@
         <p class="hint" style="margin-top:-4px">選んだ用紙の縦横比で作ります。小さい用紙では印刷したときの文字も小さくなるので、「全体の文字サイズ」で調整してください。</p>
         <label class="f">縦に余った余白の使い方<select data-k="vfill">
           <option value="start">上に詰める（下に余白が残る）</option>
+          <option value="end">下に詰める（上に余白が残る）</option>
           <option value="evenly">均等に配置（ブロックの上下に同じだけ余白）</option>
           <option value="between">上下に振り分け（最初は上端・最後は下端にぴったり）</option>
           <option value="stretch">ブロックを縦に引き伸ばす</option>
@@ -508,7 +510,7 @@
 /* 2番目の商品だけ */
 .sheet .item:nth-child(2) .price { font-size: 3em; }"></textarea>
         <h3>使えるクラス</h3>
-        <p class="hint" style="margin-top:0">クリックすると、クラスはCSS欄の一番最後に、変数はカーソルの位置に入ります。</p>
+        <p class="hint" style="margin-top:0">クリックすると、クラスはCSS欄の一番最後に、変数とよく使う指定はカーソルの位置に入ります。</p>
         <div class="classlist" id="classRef"></div>
       </section>
     </div>
@@ -523,7 +525,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.22.2（2026/09/30 更新）</span>
+      <span class="ver">v1.24.1（2026/10/01 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
@@ -562,6 +564,24 @@
     </div>
   </div>
 </div>
+<!-- テンプレート（templates/list.json にあるものを並べる） -->
+<div class="modal" id="tplModal" role="dialog" aria-modal="true" aria-labelledby="tplTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="tplTitle">テンプレート</h2>
+      <button id="tplClose" aria-label="閉じる">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="hint" style="margin-top:0"><ul>
+        <li><b>デザインだけ</b>：色・フォント・CSSなどを置き換えます。文字・画像・並べ方はそのままです。</li>
+        <li><b>デザインと並べ方</b>：区画の構成や画像の位置なども置き換えます。文字と画像は、上から順にテンプレートの頒布物に入ります。頒布物が足りない分はテンプレートのサンプルが残るので、要らなければ削除してください。</li>
+        <li>用紙サイズと向きは今のままです。</li>
+      </ul></div>
+      <div class="tpl-list" id="tplList"></div>
+    </div>
+  </div>
+</div>
+<div class="guide-toast" id="tplToast"><span>テンプレートを適用しました</span><button id="tplUndo">元に戻す</button><button id="tplToastClose" aria-label="閉じる">✕</button></div>
 <div class="guide-toast" id="guideToast"><span id="guideToastText"></span><button id="guideBack">使い方に戻る</button></div>
 
 <script src="js/data.js"></script>
@@ -575,6 +595,7 @@
 <script src="js/css-editor.js"></script>
 <script src="js/io.js"></script>
 <script src="js/help.js"></script>
+<script src="js/templates.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

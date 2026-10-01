@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: お品書きのデータ（初期値・古いデータの補完・テーマの初期状態・配色）
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 // type: item=頒布物 / sec=見出し / txt=テキスト / hr=区切り線 / grp=区画 / end=区画おわり
 const newItem = (o = {}) => ({ id: uid(), type:'item', cls:'', text:'', title:'',

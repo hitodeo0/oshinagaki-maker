@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: CSSタブ（CodeMirror・スニペット・使えるクラス・テーマのCSSを書き出す）
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 /* ---------- CSS: 骨組み・スニペット ---------- */
 $('#snippetSel').innerHTML += Object.entries(SNIPPETS).map(([group, list]) =>
@@ -98,6 +98,24 @@ function insertCss(text, inline = false) {
   ta.dispatchEvent(new Event('input', { bubbles: true }));
   ta.focus();
 }
+// 「名前: 値;」をカーソル位置に入れて、値の部分を選んだ状態にする（そのまま打てば値を書き換えられる）
+function insertProp(text) {
+  // 値を打った直後（カーソルが「;」の手前）なら「;」の後ろへ移ってから入れる。前の指定とは空白1つあける
+  const value = cssEditor ? cssEditor.getValue() : $('.css-area').value;
+  let at = cssEditor ? cssEditor.indexFromPos(cssEditor.getCursor()) : $('.css-area').selectionStart ?? value.length;
+  const m = value.slice(at).match(/^[ \t]*;/); if (m) at += m[0].length;
+  if (at > 0 && !/[\s{]/.test(value[at - 1])) text = ' ' + text;
+  if (cssEditor) cssEditor.setCursor(cssEditor.posFromIndex(at)); else $('.css-area').setSelectionRange(at, at);
+  const i = text.indexOf(': ') + 2, j = text.length - 1;
+  insertCss(text, true);
+  if (cssEditor) {
+    const end = cssEditor.indexFromPos(cssEditor.getCursor());
+    cssEditor.setSelection(cssEditor.posFromIndex(end - text.length + i), cssEditor.posFromIndex(end - text.length + j));
+    return;
+  }
+  const ta = $('.css-area'), end = ta.selectionStart;
+  ta.setSelectionRange(end - text.length + i, end - text.length + j);
+}
 // CSS欄の一番最後に追加する（スニペット・骨組み・テーマの書き出し用。書きかけの指定の途中に割り込まないように）
 function appendCss(text) {
   if (cssEditor) {
@@ -126,6 +144,7 @@ $('#classRef').addEventListener('click', e => {
   const c = e.target.closest('[data-sel]'); if (!c) return;
   const sel = c.dataset.sel;
   // 変数はカーソル位置に、クラスはスニペットと同じく一番最後に足す
+  if (/^[-a-z]+: .*;$/.test(sel)) { insertProp(sel); return; }
   if (sel.startsWith('--')) { insertCss(`var(${sel})`, true); return; }
   // .theme-xxx や .tab-on は用紙(.sheet)自身につくクラスなので、間をあけずにつなげる
   appendCss(sel === '.sheet' || /^\.(theme-|tab-on)/.test(sel) ? `.sheet${sel === '.sheet' ? '' : sel} {  }` : `.sheet ${sel} {  }`);

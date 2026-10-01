@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: ファイルの保存・読み込み・印刷・画像で保存
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 /* ---------- 上部ボタン ---------- */
 $('#btnPrint').onclick = () => window.print();

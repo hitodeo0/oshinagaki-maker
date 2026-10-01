@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: プレビューの用紙を描く（state → HTML）
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 /* ---------- プレビュー描画 ---------- */
 // 「60 40」→ grid-template-columns。足りない列は指定した比率の平均で埋める
@@ -66,8 +66,9 @@ function itemHTML(it, n, cols = state.cols, imgExtra = '') {
     : it.img ? `<div class="img"><img src="${urlFor(it.img)}" alt="">${imgExtra}</div>` : '';
   const isNum = /^[\d,.\s]+$/.test(it.price);
   const badges = [
-    !stamp && it.badge1 && `<span class="badge new">${esc(it.badge1)}</span>`,
-    !stamp2 && it.badge2 && `<span class="badge free">${esc(it.badge2)}</span>`,
+    // badge-1 / badge-2 がいまの名前。new / free は昔の名前（前に書いたCSSも反映されるように残している）
+    !stamp && it.badge1 && `<span class="badge badge-1 new">${esc(it.badge1)}</span>`,
+    !stamp2 && it.badge2 && `<span class="badge badge-2 free">${esc(it.badge2)}</span>`,
   ].filter(Boolean).join('');
   // タイトルの位置が「ブロックの一番上」なら、バッジとタイトルを画像の上にまたがる行に出す
   const titleTop = it.titlePos === 'top';

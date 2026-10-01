@@ -160,6 +160,25 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 @keyframes guideBlink{50%{outline-color:transparent}}
 .guide-toast{position:fixed;left:50%;bottom:20px;translate:-50% 0;z-index:90;display:none;align-items:center;gap:10px;background:#26221f;color:#fff;padding:8px 10px 8px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.25);font-size:13px}
 .guide-toast.on{display:flex}
+/* テンプレート: 上のバーのボタンは目立たせない */
+.topbar button.quiet{background:transparent;border-color:transparent;color:#cfc8c1}
+.topbar button.quiet:hover{border-color:#57504a;color:#fff}
+.tpl-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:12px}
+.tpl-card{border:1px solid var(--ui-line);border-radius:8px;background:#fff;padding:10px;display:flex;flex-direction:column;gap:6px}
+.tpl-thumb{position:relative;overflow:hidden;background:#eee;border-radius:4px}
+.tpl-thumb iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none}
+.tpl-card h3{margin:2px 0 0;font-size:14px}
+.tpl-meta{font-size:11px;color:var(--ui-sub)}
+.tpl-note{font-size:12px;line-height:1.5}
+.tpl-card .row{margin-top:auto;gap:6px;flex-direction:column;align-items:stretch}
+.tpl-card .row button{flex:none;justify-content:center;font-size:12px;padding:5px 4px}
+#tplToast button{background:#3a3531;color:#fff;border-color:#57504a}
+/* テンプレートの縮小プレビュー（iframe の中）: 用紙だけを出す */
+body.tpl-preview{background:#fff}
+body.tpl-preview .topbar,body.tpl-preview .editor,body.tpl-preview .stagebar,body.tpl-preview .modal,body.tpl-preview .guide-toast{display:none!important}
+body.tpl-preview .app,body.tpl-preview .stagewrap{display:block;height:100vh}
+body.tpl-preview .stage{height:100vh;padding:0;overflow:hidden;background:#fff}
+body.tpl-preview .scaler>.sheet{box-shadow:none}
 /* 画像で保存（iPhone・iPad）の結果 */
 .img-result img{display:block;max-width:100%;max-height:62vh;margin:12px auto 0;box-shadow:0 2px 12px rgba(0,0,0,.2);
   background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/16px 16px}   /* 透明な部分が分かるように市松模様の下地 */
@@ -233,7 +252,8 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 /* 列の間の区切り線（位置は JS で列の境目を測って置く。横いっぱいのブロックのところでは途切れる） */
 .col-line{position:absolute;z-index:0;pointer-events:none;background:var(--col-line-c);width:calc(var(--col-line-w) * 1mm);translate:-50% 0}
 /* 縦に余った余白の使い方（一覧を用紙の残りの高さいっぱいに広げて、行の並べ方を変える） */
-.items.vfill-evenly,.items.vfill-between,.items.vfill-stretch{flex:1 1 auto;min-height:0}
+.items.vfill-end,.items.vfill-evenly,.items.vfill-between,.items.vfill-stretch{flex:1 1 auto;min-height:0}
+.items.vfill-end{align-content:end}
 .items.vfill-evenly{align-content:space-evenly}
 .items.vfill-between{align-content:space-between}
 .items.vfill-stretch{align-content:stretch}
@@ -264,7 +284,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .badges{display:flex;flex-wrap:wrap;gap:.4em;align-items:center}
 .badge{display:inline-block;font-weight:900;line-height:1.2;padding:.12em .5em;border:.14em solid currentColor;border-radius:.3em;font-size:.95em}
 .badge.r18{background:var(--c-accent);border-color:var(--c-accent);color:#fff;margin-right:.3em;font-family:var(--f-num)}
-.badge.new{background:var(--c-ink);border-color:var(--c-ink);color:var(--c-bg)}
+.badge.badge-1{background:var(--c-ink);border-color:var(--c-ink);color:var(--c-bg)}
 .title{font-family:var(--f-head);font-size:calc(2.3em * var(--title-k,1));line-height:1.15;margin:0;font-weight:900;white-space:pre-wrap}
 .spec{font-weight:700;font-size:calc(1.25em * var(--text-k,1));white-space:pre-wrap}
 .cp{font-weight:700;font-size:calc(1.05em * var(--text-k,1));white-space:pre-wrap}
@@ -422,7 +442,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-duo .title{font-weight:800;font-size:calc(2.6em * var(--title-k,1))}
 .theme-duo .desc{font-weight:500}
 .theme-duo .price{font-weight:700}
-.theme-duo .badge.new{background:none;color:var(--c-accent);border-color:var(--c-accent)}
+.theme-duo .badge.badge-1{background:none;color:var(--c-accent);border-color:var(--c-accent)}
 
 /* ---------- テーマ: 額縁 ---------- */
 .theme-frame{padding:22mm 22mm}   /* 方眼は背景パターン（テーマの初期設定）で描く */
@@ -450,7 +470,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-pop .sh-circle{grid-area:circle;align-self:center;font-family:var(--f-circle,var(--f-head));font-size:calc(2.8em * var(--circle-k,1))}
 .theme-pop .sh-space{grid-area:space;text-align:center;font-family:var(--f-num);font-size:11em;font-weight:700;line-height:1.1}
 .theme-pop .img :is(img,.ph){filter:drop-shadow(1.6mm 1.6mm 0 color-mix(in srgb,var(--c-ink) 70%,#800))}
-.theme-pop .badge.new{border-radius:999px;background:var(--c-paper);color:var(--c-ink);border:.2em solid var(--c-ink);box-shadow:0 0 0 .15em var(--c-paper),0 0 0 .28em var(--c-ink);padding:.3em .8em;font-size:1.2em}
+.theme-pop .badge.badge-1{border-radius:999px;background:var(--c-paper);color:var(--c-ink);border:.2em solid var(--c-ink);box-shadow:0 0 0 .15em var(--c-paper),0 0 0 .28em var(--c-ink);padding:.3em .8em;font-size:1.2em}
 .theme-pop .title{font-size:calc(2.6em * var(--title-k,1))}
 
 /* ---------- テーマ: 付箋（付箋ヘッダー・角丸カード・ギザギザの値札） ---------- */
@@ -467,7 +487,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-tag .price{background:#fff200;color:var(--c-paper);padding:.22em .45em .16em;--z:.11em;
   mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) top/calc(2 * var(--z)) 51% repeat-x,
        conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/calc(2 * var(--z)) 51% repeat-x}
-.theme-tag .badge.new{clip-path:var(--burst);border:0;padding:.9em 1em;background:var(--c-paper);color:#fff200;font-size:1.3em}
+.theme-tag .badge.badge-1{clip-path:var(--burst);border:0;padding:.9em 1em;background:var(--c-paper);color:#fff200;font-size:1.3em}
 .theme-tag .badge.r18{background:#fff;border-color:#fff;color:var(--c-accent)}
 .theme-tag .img :is(img,.ph){filter:drop-shadow(1.5mm 1.5mm 0 var(--c-paper))}
 .theme-tag .blk-hr{border-top-color:var(--c-paper)}
@@ -483,7 +503,7 @@ code{background:#f0eeea;padding:1px 4px;border-radius:3px;font-size:11px}
 .theme-report .headline{top:auto;bottom:14mm;right:14mm;background:var(--c-sub);color:#fff200;rotate:-8deg;font-family:var(--f-num)}
 .theme-report .info-main{background:var(--c-accent);color:#fff;padding:.6em .8em .7em;border:.5mm solid var(--c-ink)}
 .theme-report .title{font-size:calc(2.1em * var(--title-k,1))}
-.theme-report .badge.new{background:var(--c-sub);border-color:var(--c-sub);color:#fff200;font-family:var(--f-num)}
+.theme-report .badge.badge-1{background:var(--c-sub);border-color:var(--c-sub);color:#fff200;font-family:var(--f-num)}
 .theme-report .badge.r18{background:#fff;border-color:#fff;color:var(--c-accent)}
 /* 値札: 細い枠の内側・左上に、上の線からぶら下がる小さなラベル(::before)がある形（書類ケースのラベル風） */
 .theme-report .price{position:relative;margin-top:auto;border:.5mm solid var(--c-ink);background:var(--c-paper);padding:.2em .4em .12em .45em;line-height:1;font-weight:700}

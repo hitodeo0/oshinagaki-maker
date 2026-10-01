@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: 頒布物タブ（カードの編集欄・追加・並べ替え・画像）
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 /* ---------- エディター: 頒布物 ---------- */
 const TYPE_LABEL = { item: '', sec: '見出し', txt: 'テキスト', hr: '区切り線', grp: '区画', end: '区画おわり' };

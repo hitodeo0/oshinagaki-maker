@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: ベーステーマの切り替えとマイテーマ
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 let myThemes = [];   // マイテーマの一覧（IndexedDB の myThemes に保存）
 

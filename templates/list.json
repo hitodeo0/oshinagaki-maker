@@ -1,0 +1,4 @@
+[
+  { "file": "pop-2col.json", "name": "ストライプ/2段", "note": "新刊1つ+既刊4つ向け" },
+  { "file": "frame-goods.json", "name": "額縁/グッズ横並び", "note": "グッズ3つを横に並べる" }
+]

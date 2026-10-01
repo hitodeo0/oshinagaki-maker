@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: 使い方・よくある質問
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 /* ---------- 使い方・よくある質問 ---------- */
 let guideLastStep = 0;

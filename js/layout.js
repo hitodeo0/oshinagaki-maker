@@ -1,5 +1,5 @@
 // 海星式お品書きメーカー: 描いた後の自動調整（区切り線・値段・画像・ヘッダー・はみ出し・表示倍率）
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 // 列の間の区切り線。列の境目（列と列のすき間の真ん中）に縦線を置く。
 // 境目をまたぐブロック（横いっぱいの見出し・区画など）があるところは線を途切れさせる
@@ -326,7 +326,8 @@ function checkOverflow() {
 function fit() {
   const sh = $('#sheet'), stage = $('#stage'), sc = $('#scaler');
   const w = sh.offsetWidth, h = sh.offsetHeight;
-  const aw = stage.clientWidth - 48, ah = stage.clientHeight - 48;
+  const m = TPL_PREVIEW ? 0 : 48;   // テンプレートのプレビューは余白なしで枠いっぱいに
+  const aw = stage.clientWidth - m, ah = stage.clientHeight - m;
   const z = $('#zoomSel').value;
   const k = z === 'fit' ? Math.min(aw / w, ah / h) : z === 'width' ? aw / w : +z * paperScale();   // 100% = 実際の用紙の大きさ
   sh.style.transform = `scale(${k})`;

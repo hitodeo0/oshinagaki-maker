@@ -1,7 +1,9 @@
 // 海星式お品書きメーカー: 共通の小道具（DOM・文字列・画像・保存・設定欄の有効/無効）
-// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → main.js）
+// （読み込み順: data.js → core.js → state.js → render.js → layout.js → editor.js → items.js → themes.js → css-editor.js → io.js → help.js → templates.js → main.js）
 
 const $ = (s, r = document) => r.querySelector(s);
+// テンプレートの一覧で、縮小プレビューとして iframe の中に開かれているとき（?tpl-preview=ファイル名）。保存などはしない
+const TPL_PREVIEW = new URLSearchParams(location.search).get('tpl-preview');
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 /* ---------- utils ---------- */
@@ -93,6 +95,7 @@ const DB = {
 };
 let saveTimer;
 function save() {
+  if (TPL_PREVIEW) return;
   $('#status').textContent = '編集中…';
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
