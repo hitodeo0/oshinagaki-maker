@@ -1,6 +1,7 @@
 [
-  { "file": "pop-2col.json", "name": "ストライプ/2段", "note": "新刊1つ+既刊4つ" },
+  { "file": "navy-dome-1pc.json", "name": "ネイビー/アーチ", "note": "頒布物1種" },
+  { "file": "hougan.json", "name": "方眼", "note": "頒布物1種" },
   { "file": "frame-goods.json", "name": "額縁/グッズ横並び", "note": "グッズ3つ" },
-  { "file": "navy-dome-1pc.json", "name": "ネイビー/アーチ/1種", "note": "頒布物1種" },
-  { "file": "houkokusyo-1pc.json", "name": "報告書/1種", "note": "頒布物1種" }
+  { "file": "pop-2col.json", "name": "ストライプ/2段", "note": "新刊1つ+既刊4つ" },
+  { "file": "houkokusyo-1pc.json", "name": "報告書", "note": "頒布物1種" }
 ]
