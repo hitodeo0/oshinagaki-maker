@@ -10,10 +10,10 @@ const cardTitle = it =>
 // バッジ1・バッジ2の設定欄（n: 1 or 2）
 function badgeUI(it, n) {
   const k = n === 1
-    ? { text:'badge1', mode:'badgeMode', pos:'stampPos', shape:'stampShape', ring:'stampRing', jag:'stampJag', defPos:'tl', ph:'新刊 / 既刊 / NEW', list:' list="badgeList"' }
-    : { text:'badge2', mode:'badge2Mode', pos:'stamp2Pos', shape:'stamp2Shape', ring:'stamp2Ring', jag:'stamp2Jag', defPos:'br', ph:'残りわずか など', list:'' };
+    ? { text:'badge1', mode:'badgeMode', pos:'stampPos', shape:'stampShape', ring:'stampRing', jag:'stampJag', defPos:'tl', ph:'新刊 / 既刊 / NEW' }
+    : { text:'badge2', mode:'badge2Mode', pos:'stamp2Pos', shape:'stamp2Shape', ring:'stamp2Ring', jag:'stamp2Jag', defPos:'br', ph:'残りわずか など' };
   return `<div class="row">
-        <label class="f">バッジ${n}<input type="text" data-ik="${k.text}" value="${esc(it[k.text])}"${k.list} placeholder="${k.ph}"></label>
+        <label class="f">バッジ${n}<textarea data-ik="${k.text}" rows="1" class="ta1" placeholder="${k.ph}">${esc(it[k.text])}</textarea></label>
         <label class="f" data-dep="${k.text}">出し方<select data-ik="${k.mode}">${opts([['text','タイトルの上'],['stamp','スタンプ（画像に重ねる）']], it[k.mode] || 'text')}</select></label>
       </div>
       ${it[k.mode] === 'stamp' ? `<div class="stamp-opts" data-dep="${k.text}">
@@ -48,7 +48,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
   if (it.type === 'end') return head + `<p class="hint" style="margin:0">ここより下のブロックは、区画に入らず用紙に直接並びます。</p></div></details>`;
   if (it.type === 'grp') return head + sec('見出し', BLANK_HINT + `
       <div class="row">
-        <label class="f">見出し<input type="text" data-ik="text" value="${esc(it.text)}" list="badgeList" placeholder="新刊 / 既刊 / NEW / OLD"></label>
+        <label class="f">見出し<textarea data-ik="text" rows="1" class="ta1" placeholder="新刊 / 既刊 / NEW / OLD">${esc(it.text)}</textarea></label>
         <label class="f">サブ文字<input type="text" data-ik="sub" value="${esc(it.sub)}" placeholder="残部少！ など"></label>
       </div>
       <div class="row">
@@ -67,7 +67,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f">区画の中の列数<select data-ik="gcols" data-num>${opts([1, 2, 3, 4].map(c => [c, c + '列']), +it.gcols)}</select></label>
       </div>
       <label class="f" data-dep="gcols>1">区画の中の列の幅の比率（空欄なら均等）<input type="text" data-ik="gratio" value="${esc(it.gratio)}" placeholder="例: 60 40"></label>
-      <p class="hint" style="margin:0 0 8px">次の「区画」か「区画おわり」までのブロックが、この区画に入ります。</p>`) + sec('配置・CSS', common) + `
+      <p class="hint" style="margin:0 0 8px">次の「区画」か「区画おわり」までのブロックが、この区画に入ります。見出しは改行もできます（中央ぞろえ）。</p>`) + sec('配置・CSS', common) + `
     </div></details>`;
   if (it.type !== 'item') return head + (it.type === 'hr' ? '' :`<label class="f">${TYPE_LABEL[it.type]}<textarea data-ik="text">${esc(it.text)}</textarea></label>`) + common + '</div></details>';
   return head + sec('画像', `
@@ -106,7 +106,7 @@ function itemCard(it, n, open, ctxCols = state.cols, inGrp = false) {
         <label class="f">価格<input type="text" data-ik="price" value="${esc(it.price)}" placeholder="500 / 無料配布"></label>
         <label class="f" style="flex:.5">単位<input type="text" data-ik="unit" value="${esc(it.unit)}"></label>
       </div>`) + sec('バッジ・スタンプ', badgeUI(it, 1) + '<div class="card-div"></div>' + badgeUI(it, 2) + `
-      <p class="hint" style="margin:0 0 8px">バッジ1は「新刊」など、頒布物の種類を表すバッジです（CSSの <code>.item[data-badge="新刊"]</code> はバッジ1で見分けます）。スタンプの大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>`) + sec('配置・CSS', `
+      <p class="hint" style="margin:0 0 8px">バッジ1は「新刊」など、頒布物の種類を表すバッジです（CSSの <code>.item[data-badge="新刊"]</code> はバッジ1で見分けます）。改行すると2行になり、中央ぞろえになります。スタンプの大きさと傾きは、デザインタブの「サイズ」で変えられます。画像がないときはタイトルの上に出ます。</p>`) + sec('配置・CSS', `
       ${common}
       <label class="f" data-dep="img|phOn">タイトルの位置<select data-ik="titlePos">${opts([['info','画像の横（詳細と同じ欄）'],['top','ブロックの一番上（画像の上にまたがる）']], it.titlePos || 'info')}</select></label>
       <label class="f">値段の位置<select data-ik="pricePos">${opts([['bottom','文字の下（右下）'],['side','説明文の横（右）'],['over','説明文に重ねる（右下）']], it.pricePos || 'bottom')}</select></label>`) + `
@@ -122,8 +122,7 @@ function buildItems() {
     if (it.type === 'end') grp = null;
     const inGrp = grp && it.type !== 'grp';
     return itemCard(it, n + 1, first ? n === 0 : open.has(it.id), inGrp ? +grp.gcols || 1 : state.cols, inGrp);
-  }).join('')
-    + `<datalist id="badgeList"><option>新刊</option><option>既刊</option><option>NEW</option><option>OLD</option><option>再販</option></datalist>`;
+  }).join('');
   $$('#itemList .card').forEach(card => { const it = state.items.find(x => x.id === card.dataset.id); if (it) itemDeps(card, it); });
 }
 // 頒布物カードの「今は反映されない設定」を薄くする（区画の見出しの形は昔のデータの読み替えも含めて判定）

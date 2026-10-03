@@ -120,6 +120,8 @@ function render() {
     '--fr-c': fr.color, '--fr-w': fr.type === 'none' ? 0 : fr.width, '--fr-r': fr.radius,
     // 四隅それぞれのときは「左上 右上 右下 左下」。大きすぎる値はブラウザが辺の長さに収まるよう縮めるので、左上・右上を最大にすると半円（アーチ）になる
     '--fr-radius': fr.radiusEach ? [fr.rTL, fr.rTR, fr.rBR, fr.rBL].map(v => (+v || 0) + 'mm').join(' ') : (+fr.radius || 0) + 'mm', '--fr-inset': fr.inset,
+    // 「内側にもう1本」の線の角の丸さ: 外の角の丸さから、外の線の外側→内側の線の外側までの距離を引く（中心をそろえて、線の間が角でも同じ幅になるように）
+    '--fr-radius-in': (fr.radiusEach ? [fr.rTL, fr.rTR, fr.rBR, fr.rBL] : [fr.radius]).map(v => Math.max(0, (+v || 0) - (2.5 * (+fr.width || 0) + 1.5)) + 'mm').join(' '),
     '--fr-style': ['double', 'dashed', 'dotted'].includes(fr.type) ? fr.type : 'solid',
     '--fr-fill': fr.fill ? hexToRgba(fr.fillColor, fr.fillAlpha ?? 1) : 'transparent', '--fr-sh': fr.shadow, '--fr-top': fr.top || 0, '--fr-pad': fr.padding,
     '--title-k': s.titleK ?? 1, '--price-k': s.priceK ?? 1, '--text-k': s.textK ?? 1, '--grp-k': s.grpK ?? 1, '--circle-k': s.circleK ?? 1,
