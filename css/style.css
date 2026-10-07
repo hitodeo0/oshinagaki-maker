@@ -559,7 +559,8 @@ body.tpl-preview .scaler>.sheet{box-shadow:none}
 }
 /* ================= 印刷 ================= */
 @media print{
-  html,body{height:auto;background:none}
+  /* 用紙は1枚ぴったりの大きさ。端数（1px 未満）のはみ出しで白紙の2ページ目ができないように、1ページ分の高さで切る */
+  html,body{height:100%;overflow:hidden;background:none}
   .app{display:block;height:auto}
   .topbar,.editor,.stagebar,.modal,.guide-toast{display:none!important}
   .stage{padding:0;overflow:visible}
