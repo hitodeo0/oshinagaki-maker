@@ -6,23 +6,23 @@ const DEFAULT_CSS = `/* 「新刊」区画の中を全部大きく（区画の�
 const THEMES = {
   blank:  { name: '白紙', desc: '飾りなし。ここから自由に作る',                 colors: { bg:'#ffffff', paper:'#f0f0f0', ink:'#111111', accent:'#d7262f', sub:'#bbbbbb' }, fonts: { head:'Noto Sans JP', body:'Noto Sans JP', num:'Noto Sans JP' } },
   grid:   { name: '方眼', desc: '方眼の背景＋上に濃い色の帯', colors: { bg:'#e6e1dc', paper:'#4a3236', ink:'#4a3236', accent:'#e8562a', sub:'#8e9179' }, fonts: { head:'Dela Gothic One', body:'M PLUS 1p', num:'Dela Gothic One' },
-            look: { hs: 0.85, pattern: { type:'grid', role:'sub', size:11, weight:0.3, opacity:0.45 } } },
+            look: { lineRole: 'ink', hs: 0.85, pattern: { type:'grid', role:'sub', size:11, weight:0.3, opacity:0.45 } } },
   band:   { name: '格子', desc: 'ひし形格子の背景＋上に色の帯', colors: { bg:'#e3e0df', paper:'#6f6364', ink:'#5e5354', accent:'#d7262f', sub:'#c9c2c1' }, fonts: { head:'Zen Maru Gothic', body:'Zen Maru Gothic', num:'Zen Maru Gothic' },
-            look: { hs: 0.9, pattern: { type:'diamonddot', color:'#c9c2c1', size:26, weight:0.5, opacity:1 } } },
+            look: { lineRole: 'ink', hs: 0.9, pattern: { type:'diamonddot', color:'#c9c2c1', size:26, weight:0.5, opacity:1 } } },
   duo:    { name: 'ツートン', desc: '2色の帯ヘッダー。左の色ブロックに大きなスペース番号', colors: { bg:'#eceee1', paper:'#555c6c', ink:'#555c6c', accent:'#c0392b', sub:'#9ec4c3' }, fonts: { head:'M PLUS 1p', body:'M PLUS 1p', num:'Oswald' },
-            look: { hs: 0.9 } },
+            look: { lineRole: 'ink', hs: 0.9 } },
   frame:  { name: '額縁', desc: '二重の枠＋大きなスペース番号',                 colors: { bg:'#7ea2b7', paper:'#ece6d8', ink:'#1f2440', accent:'#d23a3a', sub:'#9dbbcc' }, fonts: { head:'Zen Kaku Gothic New', body:'Zen Kaku Gothic New', num:'Noto Sans JP' },
-            look: { scale: 1.15, hs: 0.7, pattern: { type:'grid', role:'sub', size:21, weight:0.5, opacity:0.7 } } },
+            look: { lineRole: 'ink', scale: 1.15, hs: 0.7, pattern: { type:'grid', role:'sub', size:21, weight:0.5, opacity:0.7 } } },
   pop:    { name: 'ストライプ', desc: '斜めストライプの背景＋角丸カード',  colors: { bg:'#f39321', paper:'#e8e9ea', ink:'#222222', accent:'#d7262f', sub:'#d9601f' }, fonts: { head:'Dela Gothic One', body:'M PLUS Rounded 1c', num:'Zen Kaku Gothic New' },
-            look: { scale: 1.1, hs: 0.55, pattern: { type:'diag', color:'#d9601f', size:60, weight:7, opacity:1 } } },   // スペース番号がとても大きいテーマなので、ヘッダーは小さめから
+            look: { lineRole: 'ink', scale: 1.1, hs: 0.55, pattern: { type:'diag', color:'#d9601f', size:60, weight:7, opacity:1 } } },   // スペース番号がとても大きいテーマなので、ヘッダーは小さめから
   tag:    { name: '付箋', desc: '付箋ヘッダー＋ギザギザの値札', colors: { bg:'#bfe3f5', paper:'#1136e8', ink:'#14163a', accent:'#ea5230', sub:'#e3f4fc' }, fonts: { head:'Noto Sans JP', body:'Noto Sans JP', num:'Zen Kaku Gothic New', circle:'Train One' },
-            look: { scale: 1.15, hs: 0.85, headAlign: 'max', circleFit: false, circleSX: 100, circleK: 2.6, circlePos: 'corner', circleTop: 2, circleRight: -3,
+            look: { scale: 1.15, hs: 0.85, headAlign: 'max', circleFit: false, circleSX: 100, circleK: 2.6, circlePos: 'corner', circleTop: 2, circleRight: -3, lineRole: 'paper',
                     pattern: { type:'grid', color:'#e3f4fc', size:24, weight:1.6, opacity:1 },
                     frame: { type:'solid', color:'#1136e8', width:1.4, radius:12, inset:9, top:30, fill:true, fillColor:'#ffffff', fillAlpha:0.7, shadow:0, pad:true, padding:8 },
                     tab: { on:true, bgRole:'paper', fgRole:'custom', bg:'#1136e8', fg:'#fff200', border:0, borderColor:'#1136e8', topLine:false, shape:'straight', size:3, toTop:true, toLeft:false, pad:5 } } },
   report: { name: '報告書', desc: '書類風。色の箱＋ラベル付きの値札',               colors: { bg:'#fbf7f1', paper:'#ffffff', ink:'#111111', accent:'#ea5230', sub:'#1136e8' }, fonts: { head:'Zen Old Mincho', body:'Zen Kaku Gothic New', num:'Oswald' },
             // テーマの初期状態で変えたい見た目（themeLook で既定値に上書きされる）。報告書は付箋ヘッダー（白地・黒枠）
-            look: { scale: 1.1, hs: 0.8, headAlign: 'max',
+            look: { lineRole: 'ink', scale: 1.1, hs: 0.8, headAlign: 'max',
                     // P7風: サークル名は用紙の右上に大きく、列の区切り線あり
                     circlePos: 'corner', circleTop: 3, circleRight: 8, circleK: 1.5,
                     colLine: { on:true, width:0.3, role:'ink', inner:true },

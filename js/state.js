@@ -20,6 +20,7 @@ function defaultState() {
     hlStyle: { mode:'theme', shape:'rect', ring:'none', jag:false, bgRole:'ink', fgRole:'bg', bg:'#111111', fg:'#ffffff', tilt:-4 },   // キャッチの位置（theme: テーマのまま / free: 用紙の左上から % で、キャッチの真ん中の位置）   // サークル名の位置（box: 日付〜スペースの塊とそろえる / corner: 用紙の右上。距離は用紙の端から mm）
     imgGap: 6, stampTilt: -8, stampSize: 1,   // 画像と文字の間(mm)・スタンプの傾き(度)・大きさ(倍)
     titleK: 1, priceK: 1, textK: 1, grpK: 1, circleK: 1,   // 文字ごとの大きさ（倍）: タイトル・値段・詳細〜説明文・区画の見出し・サークル名
+    lineRole: 'sub',   // 区切り線の色（ヘッダーの下の線・区画の線・区切り線ブロック）。デザインの色の役割
     colLine: { on:false, width:0.4, role:'ink', inner:true },   // 列の間の区切り線（太さmm・色はデザインの色の役割・区画の中にも引くか）
     lineDeco: { mark:'none', role:'line', size:6, over:0 },   // role: line=線と同じ色 / デザインの色   // 列の区切り線・区切り線ブロックの両端の飾り（大きさ・はみ出しは mm）
     // 影（ずれ・ぼかしは mm、濃さは 0〜1）。画像の影 mode: theme=テーマのまま / none=なし / custom=自分で決める
@@ -95,7 +96,7 @@ function paperScale() {
 
 // テーマの初期状態の「見た目」。用紙の向き・列数・列の比率・余白の使い方は中身の並びに関わるので含めない
 // （用紙サイズはテーマでもマイテーマでも変えない）
-const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'circlePos', 'circleTop', 'circleRight', 'circleAlign', 'headlinePos', 'headlineX', 'headlineY', 'headlineK', 'hlStyle', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'circleK', 'textShadow', 'imgShadow', 'colLine', 'lineDeco', 'bg', 'pattern', 'frame', 'tab', 'css'];
+const LOOK_KEYS = ['colors', 'fonts', 'scale', 'hs', 'gap', 'headAlign', 'circleFit', 'circleSX', 'circlePos', 'circleTop', 'circleRight', 'circleAlign', 'headlinePos', 'headlineX', 'headlineY', 'headlineK', 'hlStyle', 'imgGap', 'stampTilt', 'stampSize', 'titleK', 'priceK', 'textK', 'grpK', 'circleK', 'textShadow', 'imgShadow', 'lineRole', 'colLine', 'lineDeco', 'bg', 'pattern', 'frame', 'tab', 'css'];
 // マイテーマに保存・適用する項目 = 見た目 ＋ テーマ・並び方（お品書きの中身には触らない）
 const DESIGN_KEYS = ['theme', 'orient', 'cols', 'colRatio', 'vfill', ...LOOK_KEYS];
 function themeLook(key) {

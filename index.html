@@ -143,6 +143,12 @@
         区画の中の列数・比率は、頒布物タブの各区画で決めます。ここの設定は、区画に入っていないブロックと、横幅を「全幅」以外にした区画の並びに使われます。</p>
         <details class="dsub" data-sec="区切り線">
         <summary class="sub-h">区切り線</summary>
+        <label class="f" style="margin-top:4px">線の色（ヘッダーの下・区画の線・区切り線ブロック）<select data-k="lineRole">
+          <option value="ink">文字の色</option>
+          <option value="sub">サブの色（模様・線）</option>
+          <option value="accent">アクセントの色</option>
+          <option value="paper">面・帯の色</option>
+        </select></label>
         <label class="chk" style="margin:4px 0 6px"><input type="checkbox" data-k="colLine.on">列の間に区切り線を引く</label>
         <div class="row" data-dep="colLine.on">
           <label class="f">線の太さ(mm) <span class="rangeval" data-show="colLine.width"></span><input type="range" min="0.1" max="3" step="0.1" data-k="colLine.width" data-num></label>
@@ -525,7 +531,7 @@
       </select>
       <span class="warn" id="warn">⚠ 用紙からはみ出しています（文字サイズ・列数・画像幅を調整してください）</span>
       <!-- 更新したらここのバージョン番号と日付を書き換える -->
-      <span class="ver">v1.25.1（2026/10/08 更新）</span>
+      <span class="ver">v1.26.0（2026/10/08 更新）</span>
       <a class="credit" href="https://hitodeo0.github.io/shinkai11000m/" target="_blank" rel="noopener">サイトを作った人：海星</a>
     </div>
     <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="sheet" id="sheet"></div></div></div>
